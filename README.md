@@ -1,6 +1,6 @@
 # Pockybot 📍👏🏆🤖
 
-> Spark bot that handles team recognition. A chatbot for [pegs & pocky](#pegsandpocky).
+> Spark bot that handles team recognition. A chatbot for [pegs & pocky](#what-is-pegs--pocky).
 
 ## Details
 
@@ -43,7 +43,7 @@ Here's a few links:
 
 1. `node_modules/.bin/jasmine-node .`
 
-## What is Pegs & Pocky? {#pegsandpocky}
+## What is Pegs & Pocky?
 
 Pegs & Pocky was created within GlobalX as a merit-based system to encourage good behaviour and to continuously improve within our complex environment, so people are motivated to reach their full potential. It started out as a physical system of pegs and cups on everyone’s desk, however as our development team expanded interstate we needed an electronic system to include everyone. Here's how it works:
 
