@@ -44,7 +44,7 @@ In this readme, mentions will be identified by `@PockyBot`.
 Table `generalconfig` is initialised with default values as follows:
 
 Value | Default | Explanation
-:--: | :--: | :--
+:-- | :-- | :--
 limit | 10 | The number of pegs each user is allowed to give out each cycle
 minimum | 5 | The minimum number of pegs each user is *required* to give out to be eligible to win
 winners | 3 | The number of winners displayed (using a dense ranking)
