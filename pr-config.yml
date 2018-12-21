@@ -1,0 +1,29 @@
+#config variables for di
+apiVersion: v1
+kind: List
+items:
+# Environment variable for the bot token.
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: pocky-config
+      namespace: <<namespace_placeholder>>
+    data:
+      spark-access-token: "<<spark_access_token_placeholder>>"
+      bot-id: "<<bot_id_placeholder>>"
+      bot-name: "<<bot_name_placeholder>>"
+      file-url: "<<file_url_placeholder>>"
+      post-url: "<<post_url_placeholder>>"
+      pm-url: "<<pm_url_placeholder>>"
+      version-branch: "<<version_branch_placeholder>>"
+      PGUSER: "<<PGUSER_placeholder>>"
+      PGHOST: "<<PGHOST_placeholder>>"
+      PGDATABASE: "<<PGDATABASE_placeholder>>"
+      PGPORT: "<<PGPORT_placeholder>>"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: pocky-config
+      namespace: <<namespace_placeholder>>
+    data:
+      PGPASSWORD: "<<PG_password_placeholder>>"

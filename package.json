@@ -1,0 +1,35 @@
+{
+	"name": "PockyBot",
+	"version": "1.0.0",
+	"description": "Spark bot that handles team recognition",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"test": "jasmine"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Lauraducky/pockybot.git"
+	},
+	"keywords": [
+		"sparkbot",
+		"bot",
+		"rest",
+		"notifier",
+		"pegs",
+		"pocky",
+		"recognition"
+	],
+	"author": "blake.mccririck@globalx.com.au",
+	"license": "ISC",
+	"dependencies": {
+		"ciscospark": "^1.32.23",
+		"express": "^4.16.4",
+		"jasmine-node": "^1.16.2",
+		"libxmljs": "^0.19.5",
+		"pg": "^7.7.1",
+		"string-width": "^2.1.1",
+		"tableify": "^1.1.0",
+		"unescape": "^1.0.1"
+	}
+}
