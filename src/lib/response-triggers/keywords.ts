@@ -1,11 +1,17 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import Config from '../config';
+import constants from '../../../constants';
 
-module.exports = class keywords {
+export default class Keywords extends Trigger {
+	readonly commandText : string = 'keywords';
+	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
+
+	config : Config;
+
 	constructor(config) {
-		this.config = config;
+		super();
 
-		this.commandText = 'keywords';
-		this.keywordsCommand = `(?: )*${this.commandText}(?: )*`;
+		this.config = config;
 	}
 
 	isToTriggerOn(message) {

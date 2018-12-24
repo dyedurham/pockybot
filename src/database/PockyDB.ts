@@ -1,6 +1,32 @@
-const dbConstants = require('./db-constants');
+import dbConstants from './db-constants';
+import { Client } from 'pg';
+import Config from '../lib/config';
+import __logger from '../lib/logger';
 
-module.exports = class PockyDB {
+export default class PockyDB {
+	readonly sqlCreateUser : string;
+	readonly sqlExists : string;
+	readonly sqlGivePegWithComment : string;
+	readonly sqlPegsGiven : string;
+	readonly sqlReset : string;
+	readonly sqlReturnResults : string;
+	readonly sqlReturnWinners : string;
+	readonly sqlReturnGives : string;
+	readonly sqlUpdate : string;
+	readonly sqlGetUsers : string;
+	readonly sqlGetUser : string;
+
+	readonly sqlGetConfig : string;
+	readonly sqlGetStringConfig : string;
+	readonly sqlGetRoles : string;
+	readonly sqlSetConfig : string;
+	readonly sqlSetStringConfig : string;
+	readonly sqlSetRoles : string;
+
+	client : Client;
+	spark : any;
+	fs : any;
+	config : Config;
 
 	constructor(Client, sparkService) {
 		this.client = Client;

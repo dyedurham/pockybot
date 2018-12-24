@@ -1,12 +1,26 @@
-const constants = require(__base + `constants`);
-const tableHelper = require('../parsers/tableHelper')
-const fs = require('fs');
-const lineEnding = '\r\n';
+import Trigger from './trigger';
+import constants from '../../../constants';
+import TableHelper from '../parsers/tableHelper';
+import * as fs from 'fs';
+import PockyDB from '../../database/PockyDB';
+import TableSizeParser from '../TableSizeParser';
+import Config from '../config';
+import __logger from '../logger';
 
+const lineEnding = '\r\n';
 const resultsCommand = '(?: )*results(?: )*';
 
-module.exports = class results {
+export default class Results extends Trigger {
+	readonly cannotDisplayResults : string = "Error encountered; cannot display results.";
+
+	spark : any;
+	database : PockyDB;
+	tableSizer : TableSizeParser;
+	config : Config;
+
 	constructor(sparkService, databaseService, tableSizer, config) {
+		super();
+
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.tableSizer = tableSizer;
@@ -48,15 +62,15 @@ module.exports = class results {
 		var today = new Date();
 		var todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
-		if (fs.existsSync(__base + "pegs-" + todayString + ".txt")) {
-			fs.unlinkSync(__base + "pegs-" + todayString + ".txt");
+		if (fs.existsSync(__dirname + "/pegs-" + todayString + ".txt")) {
+			fs.unlinkSync(__dirname + "/pegs-" + todayString + ".txt");
 		}
 
-		var results = tableHelper.mapResults(data);
-		var columnWidths = tableHelper.getColumnWidths(results);
+		var results = TableHelper.mapResults(data);
+		var columnWidths = TableHelper.getColumnWidths(results);
 
 		// define table heading
-		var resultsTable = tableHelper.padString("Receiver", columnWidths.receiver) + " | " + tableHelper.padString("Sender", columnWidths.sender) + " | Comments" + lineEnding;
+		var resultsTable = TableHelper.padString("Receiver", columnWidths.receiver) + " | " + TableHelper.padString("Sender", columnWidths.sender) + " | Comments" + lineEnding;
 		resultsTable += "Total".padEnd(columnWidths.receiver) + " | " + " ".padEnd(columnWidths.sender) + " | " + lineEnding;
 		resultsTable += "".padEnd(columnWidths.receiver, "-") + "-+-" + "".padEnd(columnWidths.sender, "-") + "-+-" + "".padEnd(columnWidths.comment, "-") + lineEnding;
 
@@ -96,8 +110,8 @@ ${pegsReceived[receiver]}
 
 		var html = this.generateHtml(results, todayString);
 
-		fs.writeFileSync(__base + "pegs-" + todayString + ".txt", resultsTable);
-		fs.writeFileSync(__base + "pegs-" + todayString + ".html", html);
+		fs.writeFileSync(__dirname + "/pegs-" + todayString + ".txt", resultsTable);
+		fs.writeFileSync(__dirname + "/pegs-" + todayString + ".html", html);
 
 		return {
 			markdown: markdown,

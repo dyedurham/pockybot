@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	pegSuccess: 0,
 	pegAllSpent: 1,
 	pegError: 2,

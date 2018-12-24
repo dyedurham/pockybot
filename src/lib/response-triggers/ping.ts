@@ -1,19 +1,18 @@
-const constants = require(__base + `constants`);
+import constants from '../../../constants';
+import Trigger from './trigger';
 
 const commandText = 'ping';
 const pingCommand = `(?: )*${commandText}(?: )*`;
 
-module.exports = {
-	name: "ping",
-
-	isToTriggerOn: function(message) {
+export default class Ping extends Trigger {
+	isToTriggerOn(message : any) {
 		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + pingCommand, 'ui');
 		return pattern.test(message.html);
-	},
+	}
 
-	isToTriggerOnPM: function(message) {
+	isToTriggerOnPM(message : any) {
 		return message.text.toLowerCase().trim() === commandText;
-	},
+	}
 
 	async createMessage() {
 		return {

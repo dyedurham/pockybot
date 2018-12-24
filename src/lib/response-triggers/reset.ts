@@ -1,9 +1,18 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import constants from '../../../constants';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+import __logger from '../logger';
 
 const resetCommand = '(?: )*reset(?: )*';
 
-module.exports = class reset {
+export default class Reset extends Trigger {
+	database : PockyDB;
+	config : Config;
+
 	constructor(databaseService, config) {
+		super();
+
 		this.database = databaseService
 		this.config = config;
 	}

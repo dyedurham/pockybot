@@ -1,9 +1,22 @@
-const constants = require(__base + `constants`);
-const dbConstants = require('../../database/db-constants');
-const xmlMessageParser = require('../parsers/xmlMessageParser');
+import Trigger from './trigger';
+import constants from '../../../constants';
+import dbConstants from '../../database/db-constants';
+import xmlMessageParser from '../parsers/xmlMessageParser';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+import __logger from '../logger';
 
-module.exports = class peg {
-	constructor(sparkService, databaseService, config) {
+export default class Peg extends Trigger {
+	readonly pegCommand : string;
+	readonly pegComment : string;
+
+	spark : any;
+	database : PockyDB;
+	config : Config;
+
+	constructor(sparkService, databaseService : PockyDB, config : Config) {
+		super();
+
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;

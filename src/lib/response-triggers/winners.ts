@@ -1,13 +1,24 @@
-const constants = require(__base + `constants`);
-const tableHelper = require('../parsers/tableHelper');
+import Trigger from './trigger';
+import constants from '../../../constants';
+import TableHelper from '../parsers/tableHelper';
+import TableSizeParser from '../TableSizeParser';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+import __logger from '../logger';
 
 const resultsCommand = '(?: )*winners(?: )*';
 
-module.exports = class results {
+export default class Results extends Trigger {
+	readonly cannotDisplayResults : string = "Error encountered; cannot display winners.";
+	tableSizer : TableSizeParser;
+	database : PockyDB;
+	config : Config;
+
 	constructor(databaseService, tableSizer, config) {
+		super();
+
 		this.tableSizer = tableSizer;
 		this.database = databaseService;
-		this.cannotDisplayResults = "Error encountered; cannot display winners.";
 		this.config = config;
 	}
 
@@ -42,11 +53,11 @@ module.exports = class results {
 	}
 
 	async createResponse(data) {
-		let winners = tableHelper.mapResults(data);
-		let columnWidths = tableHelper.getColumnWidths(winners);
+		let winners = TableHelper.mapResults(data);
+		let columnWidths = TableHelper.getColumnWidths(winners);
 
 		// define table heading
-		var winnersTable = tableHelper.padString("Receiver", columnWidths.receiver) + " | " + tableHelper.padString("Sender", columnWidths.sender) + " | Comments\n";
+		var winnersTable = TableHelper.padString("Receiver", columnWidths.receiver) + " | " + TableHelper.padString("Sender", columnWidths.sender) + " | Comments\n";
 		winnersTable += "Total".padEnd(columnWidths.receiver) + " | " + " ".padEnd(columnWidths.sender) + " | \n";
 		winnersTable += "".padEnd(columnWidths.receiver, "-") + "-+-" + "".padEnd(columnWidths.sender, "-") + "-+-" + "".padEnd(columnWidths.comment, "-") + "\n";
 
@@ -66,6 +77,7 @@ module.exports = class results {
 				}
 			});
 		});
+
 		__logger.information(`########### Winners table:\n\n${winnersTable}`);
 		return "```\n" + winnersTable + "```";
 	}

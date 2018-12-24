@@ -1,8 +1,9 @@
-const spark = require(`ciscospark/env`);
-const constants = require(__base + `constants`);
-const responseFactory = require(__base + 'src/lib/response-triggers/pm-index');
+import spark from 'ciscospark/env';
+import constants from '../../constants';
+import responseFactory from './response-triggers/pm-index';
+import __logger from './logger';
 
-exports.respond = function(messageEvent) {
+function respond(messageEvent : any) {
 	try {
 		spark.messages.get(messageEvent.data.id)
 		.then(function(message) {
@@ -34,3 +35,7 @@ exports.respond = function(messageEvent) {
 		__logger.error(`Uncaught error in direct responder:\n${e.message}`);
 	}
 };
+
+export {
+	respond
+}

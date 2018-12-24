@@ -1,4 +1,4 @@
-module.exports = class Utilities {
+export default class Utilities {
 	sleep(seconds) {
 		return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 	}

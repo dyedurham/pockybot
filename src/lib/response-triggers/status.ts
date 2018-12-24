@@ -1,9 +1,19 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import constants from '../../../constants';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+
 const commandText = 'status';
 const statusCommand = `(?: )*${commandText}(?: )*`;
 
-module.exports = class Status {
+export default class Status extends Trigger {
+	spark : any;
+	database : PockyDB;
+	config : Config;
+
 	constructor(sparkService, databaseService, config) {
+		super();
+
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;
@@ -51,9 +61,9 @@ ${mapped.list}`,
 		var remaining = '';
 
 		if (this.config.checkRole(fromPerson,'unmetered')) {
-			remaining ='unlimited'
+			remaining ='unlimited';
 		} else {
-			remaining = this.config.getConfig('limit') - data.length
+			remaining = (this.config.getConfig('limit') - data.length).toString();
 		}
 
 		return {

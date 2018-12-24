@@ -1,11 +1,17 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import Config from '../config';
+import constants from '../../../constants';
 
-module.exports = class help {
+export default class Help extends Trigger {
+	readonly commandText : string = 'help';
+	readonly helpCommand : string = `(?: )*${this.commandText}(?: )*`;
+
+	config : Config;
+
 	constructor(config) {
-		this.config = config;
+		super();
 
-		this.commandText = 'help';
-		this.helpCommand = `(?: )*${this.commandText}(?: )*`;
+		this.config = config;
 	}
 
 	isToTriggerOn(message) {

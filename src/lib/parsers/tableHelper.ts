@@ -1,6 +1,7 @@
-const stringWidth = require('string-width');
+import stringWidth from 'string-width';
+import __logger from '../logger';
 
-module.exports = {
+export default {
 	mapResults(data) {
 		var results = [];
 		__logger.debug('Mapping winners response');

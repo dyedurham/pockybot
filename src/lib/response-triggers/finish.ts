@@ -1,9 +1,22 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import Winners from './winners';
+import Results from './results';
+import Reset from './reset';
+import Config from '../config';
+import constants from '../../../constants';
+import __logger from '../logger';
 
 const finishCommand = '(?: )*finish(?: )*';
 
-module.exports = class finish {
+export default class Finish extends Trigger {
+	winners : Winners;
+	results : Results;
+	reset : Reset;
+	config : Config;
+
 	constructor(winnersService, resultsService, resetService, config) {
+		super();
+
 		this.winners = winnersService;
 		this.results = resultsService;
 		this.reset = resetService;

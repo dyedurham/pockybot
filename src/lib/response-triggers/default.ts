@@ -1,15 +1,14 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import constants from '../../../constants';
 
-module.exports = {
-	name: "default",
-
-	isToTriggerOn: function(message) {
+export default class Default extends Trigger {
+	isToTriggerOn(message) {
 		return true;
-	},
+	}
 
-	isToTriggerOnPM: function(message) {
+	isToTriggerOnPM(message) {
 		return true;
-	},
+	}
 
 	async createMessage() {
 		return {

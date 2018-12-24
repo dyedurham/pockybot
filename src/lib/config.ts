@@ -1,4 +1,12 @@
-module.exports = class config {
+import PockyDB from '../database/PockyDB';
+import __logger from './logger';
+
+export default class Config {
+	database : PockyDB;
+	users : any[];
+	config : any[];
+	stringConfig : any[];
+
 	constructor(database) {
 		this.database = database;
 		this.users = [];
@@ -7,7 +15,7 @@ module.exports = class config {
 	}
 
 	getRoles(userid) {
-		if (this.users == '') {
+		if (this.users.length === 0) {
 			return [];
 		}
 
@@ -16,7 +24,7 @@ module.exports = class config {
 	}
 
 	getConfig(config) {
-		if (this.config == '') {
+		if (this.config.length === 0) {
 			return null;
 		}
 
@@ -72,7 +80,7 @@ module.exports = class config {
 	}
 
 	async setRole(userid, role) {
-		await this.database.setRole(userid, role.toUpperCase());
+		await this.database.setRoles(userid, role.toUpperCase());
 		await this.updateRoles();
 	}
 

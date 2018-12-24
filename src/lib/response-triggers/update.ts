@@ -1,8 +1,19 @@
-const constants = require(__base + `constants`);
+import Trigger from './trigger';
+import constants from '../../../constants';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+import __logger from '../logger';
+
 const updateCommand = '(?: )*update(?: )*';
 
-module.exports = class update {
+export default class Update extends Trigger {
+	spark : any;
+	database : PockyDB;
+	config : Config;
+
 	constructor(sparkService, databaseService, config) {
+		super();
+
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;

@@ -1,7 +1,6 @@
-module.exports = class TableSizeParser {
-	constructor() {
-	}
+import stringWidth from 'string-width';
 
+export default class TableSizeParser {
 	padString(str, length) {
 		var a = (length / 2) - (str.length / 2);
 		return str.padStart(a + str.length).padEnd(length);
@@ -42,6 +41,7 @@ module.exports = class TableSizeParser {
 		};
 	}
 }
+
 exports.padString = function(str, length) {
 	var a = (length / 2) - (str.length / 2);
 	return str.padStart(a + str.length).padEnd(length);

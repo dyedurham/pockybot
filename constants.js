@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	//environment constants
 	botId: process.env.BOT_ID,
 	botName: process.env.BOT_NAME,

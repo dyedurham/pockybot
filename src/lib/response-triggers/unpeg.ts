@@ -1,9 +1,23 @@
-const constants = require(__base + `constants`);
-const xmlMessageParser = require('../parsers/xmlMessageParser');
+import Trigger from './trigger';
+import constants from '../../../constants';
+import XmlMessageParser from '../parsers/xmlMessageParser';
+import PockyDB from '../../database/PockyDB';
+import Config from '../config';
+import Utilities from '../utilities';
+import __logger from '../logger';
 
 // A joke option. Tells users pegs have been removed, but no pegs will actually be taken.
-module.exports = class unpeg {
+export default class  Unpeg extends Trigger {
+	readonly unpegCommand : string;
+
+	spark : any;
+	database : PockyDB;
+	config : Config;
+	utilities : Utilities;
+
 	constructor(sparkService, databaseService, config, utilities) {
+		super();
+
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;
@@ -15,7 +29,7 @@ module.exports = class unpeg {
 
 	isToTriggerOn(message) {
 		__logger.debug('entering the unpeg isToTriggerOn');
-		let parsedMessage = xmlMessageParser.parseMessage(message);
+		let parsedMessage = XmlMessageParser.parseMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
 
@@ -61,13 +75,13 @@ module.exports = class unpeg {
 
 	validateMessage(message) {
 		try {
-			let parsedMessage = xmlMessageParser.getMessageXml(message);
+			let parsedMessage = XmlMessageParser.getMessageXml(message);
 			if (message.mentionedPeople.length !== 2 || message.mentionedPeople[0] !== constants.botId) {
 				__logger.warn('Unpeg candidate message does not contain 2 people or 1st person is not bot');
 				return false;
 			}
 
-			let children = parsedMessage.root().childNodes();
+			let children = parsedMessage.childNodes();
 			if (children.length < 3) {
 				__logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
 				return false;

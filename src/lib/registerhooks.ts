@@ -1,10 +1,11 @@
-const spark = require(`ciscospark/env`);
-const constants = require(__base + `constants`);
+import spark from 'ciscospark/env';
+import constants from '../../constants';
+import __logger from './logger';
 
 try {
 	spark.webhooks.list()
 		.then(function(webhooks) {
-			myhooks = webhooks.items.filter(function(w) {
+			let myhooks = webhooks.items.filter(function(w) {
 				return w.name === constants.botName + ' webhook' || w.name === constants.botName + ' direct webhook';
 			});
 			myhooks.forEach((hook) => {
