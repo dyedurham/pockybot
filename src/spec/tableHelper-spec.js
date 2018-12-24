@@ -1,4 +1,4 @@
-var tableHelper = require(__base + "lib/parsers/tableHelper");
+var tableHelper = require(__base + "src/lib/parsers/tableHelper");
 
 describe("padding strings", function() {
 	it("should pad an even string", function () {

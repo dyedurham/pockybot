@@ -1,4 +1,4 @@
-var resultsService = require(__base + "lib/response-triggers/results");
+var resultsService = require(__base + "src/lib/response-triggers/results");
 const constants = require(__base + `constants`);
 
 const config = {

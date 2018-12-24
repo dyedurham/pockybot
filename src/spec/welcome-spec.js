@@ -1,4 +1,4 @@
-var welcomeService = require(__base + "lib/response-triggers/welcome");
+var welcomeService = require(__base + "src/lib/response-triggers/welcome");
 const constants = require(__base + `constants`);
 
 const config = {

@@ -1,4 +1,4 @@
-var helpService = require(__base + "lib/response-triggers/help");
+var helpService = require(__base + "src/lib/response-triggers/help");
 const constants = require(__base + `constants`);
 
 const config = {

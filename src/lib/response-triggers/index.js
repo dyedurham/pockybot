@@ -5,27 +5,27 @@
 */
 
 // Triggers
-const resultsService = require(__base + 'lib/response-triggers/results');
-const winnersService = require(__base + 'lib/response-triggers/winners');
-const resetService = require(__base + 'lib/response-triggers/reset');
-const pegService = require(__base + 'lib/response-triggers/peg');
-const unpegService = require(__base + 'lib/response-triggers/unpeg');
-const statusService = require(__base + 'lib/response-triggers/status');
-const updateService = require(__base + 'lib/response-triggers/update');
-const finishService = require(__base + 'lib/response-triggers/finish');
-const welcomeService = require(__base + 'lib/response-triggers/welcome');
-const helpService = require(__base + 'lib/response-triggers/help');
-const ping = require(__base + 'lib/response-triggers/ping');
-const keywordsService = require(__base + 'lib/response-triggers/keywords');
+const resultsService = require(__base + 'src/lib/response-triggers/results');
+const winnersService = require(__base + 'src/lib/response-triggers/winners');
+const resetService = require(__base + 'src/lib/response-triggers/reset');
+const pegService = require(__base + 'src/lib/response-triggers/peg');
+const unpegService = require(__base + 'src/lib/response-triggers/unpeg');
+const statusService = require(__base + 'src/lib/response-triggers/status');
+const updateService = require(__base + 'src/lib/response-triggers/update');
+const finishService = require(__base + 'src/lib/response-triggers/finish');
+const welcomeService = require(__base + 'src/lib/response-triggers/welcome');
+const helpService = require(__base + 'src/lib/response-triggers/help');
+const ping = require(__base + 'src/lib/response-triggers/ping');
+const keywordsService = require(__base + 'src/lib/response-triggers/keywords');
 
 // Services
-const tableSizerService = require(__base + 'lib/TableSizeParser');
+const tableSizerService = require(__base + 'src/lib/TableSizeParser');
 const spark = require(`ciscospark/env`);
 const { Client } = require('pg');
-const utilitiesService = require(__base + 'lib/utilities');
-const configService = require(__base + 'lib/config');
+const utilitiesService = require(__base + 'src/lib/utilities');
+const configService = require(__base + 'src/lib/config');
 
-const databaseService = require(__base + 'database/PockyDB');
+const databaseService = require(__base + 'src/database/PockyDB');
 
 // Service instantiation
 const utilities = new utilitiesService();
@@ -62,7 +62,7 @@ const triggers = [
 	finish,
 	unpeg,
 	keywords,
-	require(__base + 'lib/response-triggers/default'),
+	require(__base + 'src/lib/response-triggers/default'),
 ];
 
 /**

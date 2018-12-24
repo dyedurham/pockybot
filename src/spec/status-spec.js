@@ -1,4 +1,4 @@
-var statusService = require(__base + "lib/response-triggers/status");
+var statusService = require(__base + "src/lib/response-triggers/status");
 const constants = require(__base + `constants`);
 
 const config = {

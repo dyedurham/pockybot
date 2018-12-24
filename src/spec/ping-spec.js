@@ -1,4 +1,4 @@
-var pingService = require(__base + "lib/response-triggers/ping");
+var pingService = require(__base + "src/lib/response-triggers/ping");
 const constants = require(__base + `constants`);
 
 function createMessage(htmlMessage) {

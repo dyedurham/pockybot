@@ -1,5 +1,5 @@
 const spark = require(`ciscospark/env`);
-const responseFactory = require(__base + 'lib/response-triggers/index');
+const responseFactory = require(__base + 'src/lib/response-triggers/index');
 
 exports.respond = function(messageEvent) {
 	try {

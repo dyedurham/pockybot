@@ -1,8 +1,5 @@
-
 module.exports = class TableSizeParser {
-
 	constructor() {
-
 	}
 
 	padString(str, length) {

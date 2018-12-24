@@ -1,4 +1,4 @@
-var unpegService = require(__base + "lib/response-triggers/unpeg");
+var unpegService = require(__base + "src/lib/response-triggers/unpeg");
 const constants = require(__base + `constants`);
 
 function createMessage(htmlMessage, person) {

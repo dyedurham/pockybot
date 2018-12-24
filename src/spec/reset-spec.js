@@ -1,4 +1,4 @@
-var resetService = require(__base + "lib/response-triggers/reset");
+var resetService = require(__base + "src/lib/response-triggers/reset");
 const constants = require(__base + `constants`);
 
 const config = {

@@ -5,18 +5,18 @@
 */
 
 // Triggers
-const statusService = require(__base + 'lib/response-triggers/status');
-const welcomeService = require(__base + 'lib/response-triggers/welcome');
-const helpService = require(__base + 'lib/response-triggers/help');
-const ping = require(__base + 'lib/response-triggers/ping');
-const keywordsService = require(__base + 'lib/response-triggers/keywords');
+const statusService = require(__base + 'src/lib/response-triggers/status');
+const welcomeService = require(__base + 'src/lib/response-triggers/welcome');
+const helpService = require(__base + 'src/lib/response-triggers/help');
+const ping = require(__base + 'src/lib/response-triggers/ping');
+const keywordsService = require(__base + 'src/lib/response-triggers/keywords');
 
 // Services
 const spark = require(`ciscospark/env`);
 const { Client } = require('pg');
-const configService = require(__base + 'lib/config');
+const configService = require(__base + 'src/lib/config');
 
-const databaseService = require(__base + 'database/PockyDB');
+const databaseService = require(__base + 'src/database/PockyDB');
 
 // Service instantiation
 const database = new databaseService(new Client(), spark);
@@ -37,7 +37,7 @@ const triggers = [
 	ping,
 	status,
 	keywords,
-	require(__base + 'lib/response-triggers/default'),
+	require(__base + 'src/lib/response-triggers/default'),
 ];
 
 /**

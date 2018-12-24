@@ -1,6 +1,6 @@
 const spark = require(`ciscospark/env`);
 const constants = require(__base + `constants`);
-const responseFactory = require(__base + 'lib/response-triggers/pm-index');
+const responseFactory = require(__base + 'src/lib/response-triggers/pm-index');
 
 exports.respond = function(messageEvent) {
 	try {

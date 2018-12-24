@@ -1,4 +1,4 @@
-var keywordsService = require(__base + "lib/response-triggers/keywords");
+var keywordsService = require(__base + "src/lib/response-triggers/keywords");
 const constants = require(__base + `constants`);
 
 const config = {

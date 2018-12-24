@@ -1,4 +1,4 @@
-const databaseService = require(__base + 'database/PockyDB');
+const databaseService = require(__base + 'src/database/PockyDB');
 
 const config = {
 

@@ -1,4 +1,4 @@
-var pegService = require(__base + "lib/response-triggers/peg");
+var pegService = require(__base + "src/lib/response-triggers/peg");
 const constants = require(__base + `constants`);
 
 const config = {

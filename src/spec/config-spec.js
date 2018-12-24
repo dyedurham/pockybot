@@ -1,4 +1,4 @@
-var configService = require(__base + "lib/config");
+var configService = require(__base + "src/lib/config");
 
 function createDatabase(success) {
 	return {
