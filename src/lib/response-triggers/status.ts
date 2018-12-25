@@ -1,6 +1,6 @@
 import Trigger from './trigger';
-import constants from '../../../constants';
-import PockyDB from '../../database/PockyDB';
+import constants from '../../constants';
+import PockyDB from '../PockyDB';
 import Config from '../config';
 
 const commandText = 'status';

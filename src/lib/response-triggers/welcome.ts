@@ -1,5 +1,5 @@
 import Trigger from './trigger';
-import constants from '../../../constants';
+import constants from '../../constants';
 import Config from '../config';
 
 export default class Welcome extends Trigger {

@@ -1,32 +1,33 @@
 import dbConstants from './db-constants';
 import { Client } from 'pg';
-import Config from '../lib/config';
-import __logger from '../lib/logger';
+import Config from './config';
+import __logger from './logger';
+import * as path from 'path';
 
 export default class PockyDB {
-	readonly sqlCreateUser : string;
-	readonly sqlExists : string;
-	readonly sqlGivePegWithComment : string;
-	readonly sqlPegsGiven : string;
-	readonly sqlReset : string;
-	readonly sqlReturnResults : string;
-	readonly sqlReturnWinners : string;
-	readonly sqlReturnGives : string;
-	readonly sqlUpdate : string;
-	readonly sqlGetUsers : string;
-	readonly sqlGetUser : string;
+	private readonly sqlCreateUser : string;
+	private readonly sqlExists : string;
+	private readonly sqlGivePegWithComment : string;
+	private readonly sqlPegsGiven : string;
+	private readonly sqlReset : string;
+	private readonly sqlReturnResults : string;
+	private readonly sqlReturnWinners : string;
+	private readonly sqlReturnGives : string;
+	private readonly sqlUpdate : string;
+	private readonly sqlGetUsers : string;
+	private readonly sqlGetUser : string;
 
-	readonly sqlGetConfig : string;
-	readonly sqlGetStringConfig : string;
-	readonly sqlGetRoles : string;
-	readonly sqlSetConfig : string;
-	readonly sqlSetStringConfig : string;
-	readonly sqlSetRoles : string;
+	private readonly sqlGetConfig : string;
+	private readonly sqlGetStringConfig : string;
+	private readonly sqlGetRoles : string;
+	private readonly sqlSetConfig : string;
+	private readonly sqlSetStringConfig : string;
+	private readonly sqlSetRoles : string;
 
-	client : Client;
-	spark : any;
-	fs : any;
-	config : Config;
+	private client : Client;
+	private spark : any;
+	private fs : any;
+	private config : Config;
 
 	constructor(Client, sparkService) {
 		this.client = Client;
@@ -38,24 +39,24 @@ export default class PockyDB {
 			__logger.error(`Error connecting to database:\n${e.message}`);
 		});
 
-		this.sqlCreateUser = this._readFile('./database/create_pocky_user.sql');
-		this.sqlExists = this._readFile('./database/exists.sql');
-		this.sqlGivePegWithComment = this._readFile('./database/give_peg_with_comment.sql');
-		this.sqlPegsGiven = this._readFile('./database/pegs_given.sql');
-		this.sqlReset = this._readFile('./database/reset.sql');
-		this.sqlReturnResults = this._readFile('./database/return_results.sql');
-		this.sqlReturnWinners = this._readFile('./database/return_winners.sql');
-		this.sqlReturnGives = this._readFile('./database/return_gives.sql');
-		this.sqlUpdate = this._readFile('./database/update_pocky_user.sql');
-		this.sqlGetUsers = this._readFile('./database/select_all_users.sql');
-		this.sqlGetUser = this._readFile('./database/select_user.sql');
+		this.sqlCreateUser = this._readFile('../../database/queries/create_pocky_user.sql');
+		this.sqlExists = this._readFile('../../database/queries/exists.sql');
+		this.sqlGivePegWithComment = this._readFile('../../database/queries/give_peg_with_comment.sql');
+		this.sqlPegsGiven = this._readFile('../../database/queries/pegs_given.sql');
+		this.sqlReset = this._readFile('../../database/queries/reset.sql');
+		this.sqlReturnResults = this._readFile('../../database/queries/return_results.sql');
+		this.sqlReturnWinners = this._readFile('../../database/queries/return_winners.sql');
+		this.sqlReturnGives = this._readFile('../../database/queries/return_gives.sql');
+		this.sqlUpdate = this._readFile('../../database/queries/update_pocky_user.sql');
+		this.sqlGetUsers = this._readFile('../../database/queries/select_all_users.sql');
+		this.sqlGetUser = this._readFile('../../database/queries/select_user.sql');
 
-		this.sqlGetConfig = this._readFile('./database/get_config.sql');
-		this.sqlGetStringConfig = this._readFile('./database/get_string_config.sql');
-		this.sqlGetRoles = this._readFile('./database/get_roles.sql');
-		this.sqlSetConfig = this._readFile('./database/set_config.sql');
-		this.sqlSetStringConfig = this._readFile('./database/set_string_config.sql');
-		this.sqlSetRoles = this._readFile('./database/set_roles.sql');
+		this.sqlGetConfig = this._readFile('../../database/queries/get_config.sql');
+		this.sqlGetStringConfig = this._readFile('../../database/queries/get_string_config.sql');
+		this.sqlGetRoles = this._readFile('../../database/queries/get_roles.sql');
+		this.sqlSetConfig = this._readFile('../../database/queries/set_config.sql');
+		this.sqlSetStringConfig = this._readFile('../../database/queries/set_string_config.sql');
+		this.sqlSetRoles = this._readFile('../../database/queries/set_roles.sql');
 	}
 
 	loadConfig(config) {
@@ -348,11 +349,12 @@ export default class PockyDB {
 		await this.executeNonQuery(query);
 	}
 
-	_readFile(filename) {
-		return this.fs.readFileSync(filename, 'utf8');
+	private _readFile(filename) {
+		let filePath = path.resolve(__dirname, filename);
+		return this.fs.readFileSync(filePath, 'utf8');
 	}
 
-	async executeQuery(query) {
+	private async executeQuery(query) {
 		try {
 			let data = await this.client.query(query);
 			return data['rows'];
@@ -362,7 +364,7 @@ export default class PockyDB {
 		}
 	}
 
-	async executeNonQuery(query) {
+	private async executeNonQuery(query) {
 		try {
 			return await this.client.query(query);
 		} catch (error) {

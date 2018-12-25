@@ -1,5 +1,5 @@
-var winnersService = require(__base + "src/lib/response-triggers/winners");
-const constants = require(__base + `constants`);
+import winnersService from '../lib/response-triggers/winners';
+import constants from '../constants';
 
 const config = {
 

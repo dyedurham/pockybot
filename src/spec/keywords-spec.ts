@@ -1,5 +1,5 @@
-var keywordsService = require(__base + "src/lib/response-triggers/keywords");
-const constants = require(__base + `constants`);
+import Keywords from '../lib/response-triggers/keywords';
+import constants from '../constants';
 
 const config = {
 	getStringConfig(config) {
@@ -24,7 +24,7 @@ function createPrivateMessage(message) {
 }
 
 describe("ponging the ping", function() {
-	const keywords = new keywordsService(config);
+	const keywords = new Keywords(config);
 
 	it("should pong", function (done) {
 		keywords.createMessage()
@@ -36,7 +36,7 @@ describe("ponging the ping", function() {
 });
 
 describe("testing triggers", function() {
-	const keywords = new keywordsService(config);
+	const keywords = new Keywords(config);
 
 	it("should accept trigger", function () {
 		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords`);
@@ -70,7 +70,7 @@ describe("testing triggers", function() {
 });
 
 describe("testing PM triggers", function() {
-	const keywords = new keywordsService(config);
+	const keywords = new Keywords(config);
 
 	it("should accept trigger", function () {
 		var message = createPrivateMessage('keywords');

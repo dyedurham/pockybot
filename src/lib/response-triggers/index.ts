@@ -29,7 +29,7 @@ import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
 
-import PockyDB from '../../database/PockyDB';
+import PockyDB from '../PockyDB';
 
 // Service instantiation
 const utilities = new Utilities();

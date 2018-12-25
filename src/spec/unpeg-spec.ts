@@ -1,5 +1,5 @@
-var unpegService = require(__base + "src/lib/response-triggers/unpeg");
-const constants = require(__base + `constants`);
+import Unpeg from '../lib/response-triggers/unpeg';
+import constants from '../constants';
 
 function createMessage(htmlMessage, person) {
 	return {
@@ -79,7 +79,7 @@ function testRandomResponses(num, firstResponse, result, spark) {
 	let config = createConfigMock(true);
 	let utilities = createUtilities(num);
 
-	let unpeg = new unpegService(spark, database, config, utilities);
+	let unpeg = new Unpeg(spark, database, config, utilities);
 
 	spyOn(spark.messages, 'create');
 
@@ -107,7 +107,7 @@ describe("triggers", () => {
 		let config = createConfigMock(true);
 		let utilities = createUtilities(1);
 
-		let unpeg = new unpegService(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, config, utilities);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
 			'mockID');
@@ -127,7 +127,7 @@ describe("triggers", () => {
 		let config = createConfigMock(true);
 		let utilities = createUtilities(1);
 
-		let unpeg = new unpegService(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, config, utilities);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
 			'mockID');
@@ -149,9 +149,9 @@ describe("creating Message", function() {
 		let spark = createSparkMock();
 		let utilities = createUtilities(0);
 
-		spyOn(spark.messages, 'create').andCallThrough();
+		spyOn(spark.messages, 'create').and.callThrough();
 
-		let unpeg = new unpegService(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, config, utilities);
 
 
 		let firstResponse = "Peg removed from mock name.";
@@ -182,7 +182,7 @@ describe("creating Message", function() {
 		let config = createConfigMock(true);
 		let utilities = createUtilities(1);
 
-		let unpeg = new unpegService(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, config, utilities);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
 			'mockID');
@@ -199,9 +199,9 @@ describe("creating Message", function() {
 		let spark = createSparkMock();
 		let utilities = createUtilities(2);
 
-		spyOn(spark.messages, 'create').andCallThrough();
+		spyOn(spark.messages, 'create').and.callThrough();
 
-		let unpeg = new unpegService(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, config, utilities);
 
 		let firstResponse = "mock name's peg has been removed...";
 		let result = "But mock name stole it back!";
@@ -212,17 +212,17 @@ describe("creating Message", function() {
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
 			'mockID');
 		unpeg.createMessage(sentMessage, room)
-			.then((message) => {
-				expect(spark.messages.create).toHaveBeenCalledWith({
-					markdown: firstResponse,
-					roomId: room
-				});
-				expect(message.markdown).toBe(result);
-			}).catch((error) => {
+		.then((message) => {
+			expect(spark.messages.create).toHaveBeenCalledWith({
+				markdown: firstResponse,
+				roomId: room
+			});
+			expect(message.markdown).toBe(result);
+			done();
+		}).catch((error) => {
 			console.log(error);
 			expect(false).toBe(true);
-		}).finally(() => {
 			done();
-		})
+		});
 	});
 });

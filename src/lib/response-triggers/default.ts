@@ -1,5 +1,5 @@
 import Trigger from './trigger';
-import constants from '../../../constants';
+import constants from '../../constants';
 
 export default class Default extends Trigger {
 	isToTriggerOn(message) {

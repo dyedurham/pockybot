@@ -1,8 +1,8 @@
 import Trigger from './trigger';
-import constants from '../../../constants';
-import dbConstants from '../../database/db-constants';
+import constants from '../../constants';
+import dbConstants from '../db-constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
-import PockyDB from '../../database/PockyDB';
+import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
 

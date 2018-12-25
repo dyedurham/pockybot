@@ -20,7 +20,7 @@ import spark from 'ciscospark/env';
 import { Client } from 'pg';
 import configService from '../config';
 
-import PockyDB from '../../database/PockyDB';
+import PockyDB from '../PockyDB';
 
 // Service instantiation
 const database = new PockyDB(new Client(), spark);

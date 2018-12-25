@@ -1,6 +1,6 @@
 import Trigger from './trigger';
 import Config from '../config';
-import constants from '../../../constants';
+import constants from '../../constants';
 
 export default class Keywords extends Trigger {
 	readonly commandText : string = 'keywords';

@@ -1,5 +1,5 @@
-var helpService = require(__base + "src/lib/response-triggers/help");
-const constants = require(__base + `constants`);
+import Help from '../lib/response-triggers/help';
+import constants from '../constants';
 
 const config = {
 	getConfig(config) {
@@ -24,7 +24,7 @@ function createPrivateMessage(message) {
 }
 
 describe("ponging the ping", function() {
-	const help = new helpService(config);
+	const help = new Help(config);
 
 	it("should pong", function (done) {
 		help.createMessage()
@@ -36,7 +36,7 @@ describe("ponging the ping", function() {
 });
 
 describe("testing triggers", function() {
-	const help = new helpService(config);
+	const help = new Help(config);
 
 	it("should accept trigger", function () {
 		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help`);
@@ -70,7 +70,7 @@ describe("testing triggers", function() {
 });
 
 describe("testing PM triggers", function() {
-	const help = new helpService(config);
+	const help = new Help(config);
 
 	it("should accept trigger", function () {
 		var message = createPrivateMessage('help');

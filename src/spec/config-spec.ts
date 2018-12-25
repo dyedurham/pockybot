@@ -1,8 +1,8 @@
-var configService = require(__base + "src/lib/config");
+import 'jasmine-node';
+import configService from '../lib/config';
 
 function createDatabase(success) {
 	return {
-
 		configValue: 1,
 		configString: 'string',
 		userValue: 'VALUE',

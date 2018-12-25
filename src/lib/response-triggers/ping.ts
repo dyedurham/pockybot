@@ -1,4 +1,4 @@
-import constants from '../../../constants';
+import constants from '../../constants';
 import Trigger from './trigger';
 
 const commandText = 'ping';

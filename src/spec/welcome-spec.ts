@@ -1,5 +1,5 @@
-var welcomeService = require(__base + "src/lib/response-triggers/welcome");
-const constants = require(__base + `constants`);
+import Welcome from '../lib/response-triggers/welcome';
+import constants from '../constants';
 
 const config = {
 	getStringConfig(config) {
@@ -32,7 +32,7 @@ function createPrivateMessage(message) {
 }
 
 describe("ponging the ping", function() {
-	const welcome = new welcomeService(config);
+	const welcome = new Welcome(config as any);
 
 	it("should pong", function (done) {
 		welcome.createMessage()
@@ -44,7 +44,7 @@ describe("ponging the ping", function() {
 });
 
 describe("testing triggers", function() {
-	const welcome = new welcomeService(config);
+	const welcome = new Welcome(config as any);
 
 	it("should accept trigger", function () {
 		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome');
@@ -78,7 +78,7 @@ describe("testing triggers", function() {
 });
 
 describe("testing PM triggers", function() {
-	const welcome = new welcomeService(config);
+	const welcome = new Welcome(config as any);
 
 	it("should accept trigger", function () {
 		var message = createPrivateMessage('welcome');

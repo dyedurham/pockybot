@@ -1,8 +1,8 @@
 import Trigger from './trigger';
-import constants from '../../../constants';
+import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import * as fs from 'fs';
-import PockyDB from '../../database/PockyDB';
+import PockyDB from '../PockyDB';
 import TableSizeParser from '../TableSizeParser';
 import Config from '../config';
 import __logger from '../logger';

@@ -1,11 +1,11 @@
 'use strict';
 global.__base = __dirname + '/';
-global.__logger = require('built/lib/logger');
+const __logger = require('./built/lib/logger');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const responder = require('built/lib/responder');
-const pmResponder = require('built/lib/pm-responder');
+const responder = require('./built/lib/responder');
+const pmResponder = require('./built/lib/pm-responder');
 const url = require('url');
 const fs = require('fs');
 
@@ -14,7 +14,7 @@ const PORT = 80;
 const HOST = '0.0.0.0';
 
 //Startup
-require('built/lib/registerhooks');
+require('./built/lib/registerhooks');
 
 // App
 const app = express();

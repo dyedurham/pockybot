@@ -3,7 +3,7 @@ import Winners from './winners';
 import Results from './results';
 import Reset from './reset';
 import Config from '../config';
-import constants from '../../../constants';
+import constants from '../../constants';
 import __logger from '../logger';
 
 const finishCommand = '(?: )*finish(?: )*';

@@ -1,8 +1,7 @@
-var resultsService = require(__base + "src/lib/response-triggers/results");
-const constants = require(__base + `constants`);
+import Results from '../lib/response-triggers/results';
+import constants from '../constants';
 
 const config = {
-
 	checkRole(userid, value) {
 		if (userid == 'mockAdminID' && value.toUpperCase() == 'ADMIN') {
 			return true;
@@ -80,7 +79,7 @@ describe("creating responses", function() {
 	var todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 	var data = createData();
 	var spark = createSparkMock();
-	var results = new resultsService(spark, null, null, config);
+	var results = new Results(spark, null, null, config);
 	it("should parse a proper message", function (done) {
 		results.createResponse(data)
 		.then((message) => {
@@ -98,7 +97,7 @@ describe("creating a message", function() {
 	var data = createData();
 	var database = createDatabase(true, data);
 	var spark = createSparkMock();
-	var results = new resultsService(spark, database, null, config);
+	var results = new Results(spark, database, null, config);
 	it("should create a proper message", function (done) {
 		results.createMessage()
 		.then((message) => {
@@ -113,7 +112,7 @@ describe("creating a message", function() {
 describe("failing at creating a message", function() {
 	var database = createDatabase(false, null);
 
-	var results = new resultsService(null, database, null, config);
+	var results = new Results(null, database, null, config);
 	it("should create a proper message on fail", function (done) {
 		results.createMessage().then((data) => {
 			fail("should have thrown an error");
@@ -125,7 +124,7 @@ describe("failing at creating a message", function() {
 });
 
 describe("testing triggers", function() {
-	var results = new resultsService(null, null, null, config);
+	var results = new Results(null, null, null, config);
 	it("should accept trigger", function () {
 		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockAdminID');

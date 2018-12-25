@@ -1,7 +1,6 @@
-const databaseService = require(__base + 'src/database/PockyDB');
+import PockyDB from '../lib/PockyDB';
 
 const config = {
-
 	checkRole(userid, value) {
 		if (userid == 'mockunmeteredID' && value.toUpperCase() == 'UNMETEREDUSERS') {
 			return true;
@@ -108,7 +107,7 @@ describe("return results", function() {
 	var pgClientMock = createPgClient(true, null, null);
 
 	it("should return the results from database as is", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.returnResults()
 		.then((results) => {
@@ -122,7 +121,7 @@ describe("return winners", function() {
 	var pgClientMock = createPgClient(true, null, null);
 
 	it("should return the results from database as is", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.returnWinners()
 		.then((results) => {
@@ -136,7 +135,7 @@ describe("reset", function() {
 	var pgClientMock = createPgClient(true, null, null);
 
 	it("should call query and return the raw output", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.reset()
 		.then((results) => {
@@ -151,7 +150,7 @@ describe("create user", function() {
 	var sparkMock = createSparkMock();
 
 	it("should call query and return the raw output", function (done) {
-		const database = new databaseService(pgClientMock, sparkMock);
+		const database = new PockyDB(pgClientMock, sparkMock);
 		database.loadConfig(config);
 		database.createUser("some_sender")
 		.then((results) => {
@@ -165,7 +164,7 @@ describe("has spare pegs", function() {
 	var pgClientMock = createPgClient(true, null, 99);
 
 	it("should return true for default_user", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.hasSparePegs("default_user")
 		.then((result) => {
@@ -175,7 +174,7 @@ describe("has spare pegs", function() {
 	});
 
 	it("should return true for mockunmeteredID", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.hasSparePegs("mockunmeteredID")
 		.then((result) => {
@@ -193,7 +192,7 @@ describe("has spare pegs", function() {
 			})
 		}
 
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.hasSparePegs("some_sender")
 		.then((result) => {
@@ -211,7 +210,7 @@ describe("has spare pegs", function() {
 			})
 		}
 
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.hasSparePegs("some_sender")
 		.then((result) => {
@@ -225,7 +224,7 @@ describe("count pegs", function() {
 	var pgClientMock = createPgClient(true, null, 125689);
 
 	it("should return count of pegs", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.countPegsGiven("some_sender")
 		.then((result) => {
@@ -239,7 +238,7 @@ describe("exists", function() {
 	it("should make return true if the user already exists", function (done) {
 		var pgClientMock = createPgClient(true, null, null);
 
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.existsOrCanBeCreated("some_sender")
 		.then((result) => {
@@ -251,7 +250,7 @@ describe("exists", function() {
 	 it("should make create a user and return true", function (done) {
 		var pgClientMock = createPgClient(true, null, null);
 
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.existsOrCanBeCreated("some_sender")
 		.then((result) => {
@@ -265,7 +264,7 @@ describe("give peg with comment", function() {
 	var pgClientMock = createPgClient(true, null, null);
 
 	it("should return 0", function (done) {
-		const database = new databaseService(pgClientMock);
+		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
 		database.givePegWithComment("some comment here", "some_receiver", "some_sender")
 		.then((result) => {

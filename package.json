@@ -25,15 +25,18 @@
 	"dependencies": {
 		"ciscospark": "^1.32.23",
 		"express": "^4.16.4",
-		"jasmine-node": "^1.16.2",
 		"libxmljs": "^0.19.5",
 		"pg": "^7.7.1",
+		"rewiremock": "^3.12.3",
 		"string-width": "^2.1.1",
 		"tableify": "^1.1.0",
 		"unescape": "^1.0.1"
 	},
 	"devDependencies": {
+		"@types/jasmine-node": "^1.14.34",
 		"@types/libxmljs": "^0.18.2",
-		"@types/pg": "^7.4.11"
+		"@types/pg": "^7.4.11",
+		"jasmine-node": "^1.16.2",
+		"typescript": "^2.9.2"
 	}
 }

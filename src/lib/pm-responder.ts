@@ -1,5 +1,5 @@
 import spark from 'ciscospark/env';
-import constants from '../../constants';
+import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
 

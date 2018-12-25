@@ -1,4 +1,4 @@
-import PockyDB from '../database/PockyDB';
+import PockyDB from './PockyDB';
 import __logger from './logger';
 
 export default class Config {

@@ -1,5 +1,5 @@
-var statusService = require(__base + "src/lib/response-triggers/status");
-const constants = require(__base + `constants`);
+import Status from '../lib/response-triggers/status';
+import constants from '../constants';
 
 const config = {
 
@@ -82,7 +82,7 @@ describe("creating Message", function() {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new statusService(createSparkMock(), database, config);
+        var status = new Status(createSparkMock(), database, config);
         var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
         status.createMessage(sentMessage)
@@ -100,7 +100,7 @@ describe("creating Message", function() {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new statusService(createSparkMock(), database, config);
+        var status = new Status(createSparkMock(), database, config);
         var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'mockunlimitedID');
         status.createMessage(sentMessage)
@@ -118,7 +118,7 @@ describe("creating Message", function() {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new statusService(createSparkMock(), database, config);
+        var status = new Status(createSparkMock(), database, config);
         var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
         status.createMessage(sentMessage)
@@ -136,7 +136,7 @@ describe("creating Message", function() {
 				{receiver: 'test3', comment: 'dtsdsrtdrsdpf'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		var status = new statusService(createSparkMock(), database, config);
+		var status = new Status(createSparkMock(), database, config);
 		var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
 		status.createMessage(sentMessage)
@@ -148,7 +148,7 @@ describe("creating Message", function() {
 });
 
 describe("testing triggers", function() {
-	const status = new statusService(createSparkMock(), null, config);
+	const status = new Status(createSparkMock(), null, config);
 
 	const TriggerTestCases = [
 		{ text: `${constants.mentionMe} status`, expectedTriggered: true },
@@ -158,14 +158,14 @@ describe("testing triggers", function() {
 		{ text: `${constants.mentionMe} status me`, expectedTriggered: false }];
 	TriggerTestCases.forEach(spec => {
 		it(`should${spec.expectedTriggered ? '':' not'} trigger when ${spec.text}`, () => {
-			const result = status.isToTriggerOn(createMessage(spec.text));
+			const result = status.isToTriggerOn(createMessage(spec.text, 'person'));
 			expect(result).toEqual(spec.expectedTriggered);
 		});
 	});
 });
 
 describe("testing PM triggers", function() {
-	const status = new statusService(createSparkMock(), null, config);
+	const status = new Status(createSparkMock(), null, config);
 	it("should accept trigger", function () {
 		var message = createPrivateMessage('status');
 		var results = status.isToTriggerOnPM(message)

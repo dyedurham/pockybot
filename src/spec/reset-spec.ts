@@ -1,5 +1,5 @@
-var resetService = require(__base + "src/lib/response-triggers/reset");
-const constants = require(__base + `constants`);
+import Reset from '../lib/response-triggers/reset';
+import constants from '../constants';
 
 const config = {
 
@@ -60,7 +60,7 @@ function createDatabase(success) {
 
 describe("testing response", function() {
 	var database = createDatabase(true);
-	var reset = new resetService(database, config);
+	var reset = new Reset(database, config);
 
 	it("should reset", function (done) {
 		reset.createMessage()
@@ -73,7 +73,7 @@ describe("testing response", function() {
 
 describe("testing failed response", function() {
 	var database = createDatabase(false);
-	var reset = new resetService(database, config);
+	var reset = new Reset(database, config);
 
 	it("should display an error message", function (done) {
 		reset.createMessage()
@@ -85,7 +85,7 @@ describe("testing failed response", function() {
 });
 
 describe("testing triggers", function() {
-	var reset = new resetService(null, config);
+	var reset = new Reset(null, config);
 	it("should accept trigger", function () {
 		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockadminID');
