@@ -1,4 +1,4 @@
-import 'jasmine-node';
+import 'jasmine-ts';
 import configService from '../lib/config';
 
 function createDatabase(success) {

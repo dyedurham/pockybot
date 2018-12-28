@@ -101,5 +101,4 @@ Here's a few links:
 ## Testing
 
 1. `npm install`
-1. `tsc`
-1. `node_modules/.bin/jasmine-node .`
+1. `npm test`
