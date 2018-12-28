@@ -1,6 +1,7 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import Config from '../config';
 import constants from '../../constants';
+import { MessageObject } from 'ciscospark/env';
 
 export default class Help extends Trigger {
 	readonly commandText : string = 'help';
@@ -14,27 +15,27 @@ export default class Help extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.helpCommand, 'ui');
 		return pattern.test(message.html);
 	}
 
-	isToTriggerOnPM(message) {
+	isToTriggerOnPM(message : MessageObject) : boolean {
 		return message.text.toLowerCase().trim() === this.commandText;
 	}
 
-	async createMessage() {
+	async createMessage() : Promise<MessageObject> {
 		let keywordsRequired = this.config.getConfig('requireValues');
-		let message = `## What I can do
+		let newMessage = `## What I can do
 
 * Give a peg 🎁!
 	1. To give someone a peg type: \`@${constants.botName} peg @bob {comment}\`.\n`;
 
 		if (keywordsRequired) {
-			message += "		* Note that your comment MUST include a keyword.\n"
+			newMessage += "		* Note that your comment MUST include a keyword.\n"
 		}
 
-		message += `* Check your status 📈!
+		newMessage += `* Check your status 📈!
 	1. To get a PM type: \`@${constants.botName} status\` OR direct message me with \`status\`.
 	1. I will PM you number of pegs you have left and who you gave it to.
 * Check the available keywords 🔑!
@@ -50,7 +51,7 @@ export default class Help extends Trigger {
 I am still being worked on, so [more features to come : )] (${constants.todoUrl})`;
 
 		return {
-				markdown: message
+				markdown: newMessage
 		}
 	}
 }

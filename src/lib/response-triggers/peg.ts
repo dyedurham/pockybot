@@ -1,10 +1,11 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import dbConstants from '../db-constants';
-import xmlMessageParser from '../parsers/xmlMessageParser';
+import xmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
+import { MessageObject } from 'ciscospark/env';
 
 export default class Peg extends Trigger {
 	readonly pegCommand : string;
@@ -28,17 +29,17 @@ export default class Peg extends Trigger {
 		this.pegComment = '( (?!<spark-mention)(?:(?!<\/p>).)' + (config.getConfig('commentsRequired') ? '+){1}' : '*)?');
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		__logger.debug('entering the peg isToTriggerOn');
-		let parsedMessage = xmlMessageParser.parseMessage(message);
+		let parsedMessage : ParsedMessage = xmlMessageParser.parseMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
 
 	// <spark-mention data-object-type="person" data-object-id="aoeu">BotName</spark-mention>
 	//  peg <spark-mention data-object-type="person" data-object-id="aoei">PersonName</spark-mention>
 	//  for some reasons
-	async createMessage(message) {
-		let parsedMessage = xmlMessageParser.parseMessage(message);
+	async createMessage(message : MessageObject) : Promise<MessageObject> {
+		let parsedMessage : ParsedMessage = xmlMessageParser.parseMessage(message);
 
 		if (!this.validateMessage(parsedMessage)) {
 			return {
@@ -59,7 +60,7 @@ export default class Peg extends Trigger {
 		return await this.givePegWithComment(parsedMessage.comment, parsedMessage.toPersonId, parsedMessage.fromPerson);
 	}
 
-	validateTrigger(message) {
+	validateTrigger(message : ParsedMessage) : boolean {
 		if (message.toPersonId == null || message.botId !== constants.botId) {
 			return false;
 		}
@@ -68,7 +69,7 @@ export default class Peg extends Trigger {
 		return pattern.test(message.children[1].text());
 	}
 
-	validateValues(message) {
+	validateValues(message : ParsedMessage) : boolean {
 		let keywords = this.config.getStringConfig('keyword');
 		for (let i = 0; i < keywords.length; i++) {
 			if (message.comment.includes(keywords[i])) {
@@ -78,7 +79,7 @@ export default class Peg extends Trigger {
 		return false
 	}
 
-	validateMessage(message) {
+	validateMessage(message : ParsedMessage) : boolean {
 		try {
 			if (message.children.length < 4) {
 				return false;
@@ -101,7 +102,7 @@ export default class Peg extends Trigger {
 		}
 	}
 
-	async givePegWithComment(comment, toPersonId, fromPerson) {
+	async givePegWithComment(comment : string, toPersonId : string, fromPerson : string) : Promise<MessageObject> {
 		let result;
 		try {
 			result = await this.database.givePegWithComment(comment, toPersonId, fromPerson);
@@ -131,7 +132,7 @@ export default class Peg extends Trigger {
 		}
 	}
 
-	async pmSender(toPersonId, fromPerson){
+	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject>{
 		let count;
 
 		try {
@@ -164,7 +165,7 @@ export default class Peg extends Trigger {
 		};
 	}
 
-	async pmReceiver(comment, toPersonId, fromPerson) {
+	async pmReceiver(comment : string, toPersonId : string, fromPerson : string) : Promise<void> {
 		let data;
 		try {
 			data = await this.database.getUser(fromPerson);

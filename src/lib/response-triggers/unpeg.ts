@@ -1,16 +1,17 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
-import XmlMessageParser from '../parsers/xmlMessageParser';
+import XmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import Utilities from '../utilities';
 import __logger from '../logger';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 
 // A joke option. Tells users pegs have been removed, but no pegs will actually be taken.
 export default class  Unpeg extends Trigger {
 	readonly unpegCommand : string;
 
-	spark : any;
+	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
 	utilities : Utilities;
@@ -27,13 +28,13 @@ export default class  Unpeg extends Trigger {
 		this.unpegCommand = `^${s}unpeg${s}$`;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		__logger.debug('entering the unpeg isToTriggerOn');
-		let parsedMessage = XmlMessageParser.parseMessage(message);
+		let parsedMessage : ParsedMessage = XmlMessageParser.parseMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
 
-	async createMessage(message, room) {
+	async createMessage(message : MessageObject, room : string) : Promise<MessageObject> {
 		if (!this.validateMessage(message)) {
 			return {
 				markdown:
@@ -64,7 +65,7 @@ export default class  Unpeg extends Trigger {
 		}
 	}
 
-	validateTrigger(message) {
+	validateTrigger(message : ParsedMessage) : boolean {
 		if (message.toPersonId == null || message.botId !== constants.botId) {
 			return false;
 		}
@@ -73,7 +74,7 @@ export default class  Unpeg extends Trigger {
 		return pattern.test(message.children[1].text());
 	}
 
-	validateMessage(message) {
+	validateMessage(message : MessageObject) : boolean {
 		try {
 			let parsedMessage = XmlMessageParser.getMessageXml(message);
 			if (message.mentionedPeople.length !== 2 || message.mentionedPeople[0] !== constants.botId) {
@@ -105,19 +106,19 @@ export default class  Unpeg extends Trigger {
 		}
 	}
 
-	async returnRandomResponse(toUser, fromUser, room) {
+	async returnRandomResponse(toUser : string, fromUser : string, room : string) : Promise<MessageObject> {
 		let num = this.utilities.getRandomInt(7);
 		toUser = (toUser || "someone");
 		fromUser = (fromUser || "Dave");
 		switch(num) {
 			case 0:
-				return await this.sendRandomResponse(`Peg removed from ${toUser}.`, "Kidding!", room);
+				return await this.sendFollowUpResponse(`Peg removed from ${toUser}.`, "Kidding!", room);
 			case 1:
 				return this.sendResponse(`It looks like ${toUser} has hidden their pegs too well for me to find them!`);
 			case 2:
-				return await this.sendRandomResponse(`${toUser}'s peg has been removed...`, `But ${toUser} stole it back!`, room);
+				return await this.sendFollowUpResponse(`${toUser}'s peg has been removed...`, `But ${toUser} stole it back!`, room);
 			case 3:
-				return await this.sendRandomResponse(`peg given to ${toUser}`, `But ${toUser} didn't want it!`, room);
+				return await this.sendFollowUpResponse(`peg given to ${toUser}`, `But ${toUser} didn't want it!`, room);
 			case 4:
 				return this.sendResponse(`I'm sorry ${fromUser}, I'm afraid I can't do that.`);
 			case 5:
@@ -141,13 +142,13 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 		}
 	}
 
-	sendResponse(response) {
+	private sendResponse(response) : MessageObject {
 		return {
 			markdown: response
 		}
 	}
 
-	async sendRandomResponse(initialResponse, followUp, room) {
+	private async sendFollowUpResponse(initialResponse : string, followUp : string, room : string) : Promise<MessageObject> {
 		this.spark.messages.create({
 			markdown: initialResponse,
 			roomId: room

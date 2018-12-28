@@ -1,13 +1,14 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 
 const updateCommand = '(?: )*update(?: )*';
 
 export default class Update extends Trigger {
-	spark : any;
+	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
 
@@ -19,7 +20,7 @@ export default class Update extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'update'))) {
 			return false;
 		}
@@ -28,7 +29,7 @@ export default class Update extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage(message) {
+	async createMessage() : Promise<MessageObject> {
 		let users;
 		try {
 			users = await this.database.getUsers();
@@ -64,7 +65,7 @@ export default class Update extends Trigger {
 		}
 	}
 
-	getUsername(personId) {
+	private getUsername(personId) : Promise<string> {
 		return this.spark.people.get(personId)
 		.then((data) => {
 			return data.displayName;

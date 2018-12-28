@@ -1,22 +1,33 @@
 import * as xml from 'libxmljs';
 import unescape from 'unescape';
 import __logger from '../logger';
+import { MessageObject } from 'ciscospark/env';
 
-function parseMessage(message) {
+interface ParsedMessage {
+	fromPerson : string;
+	toPersonId : string;
+	botId : string;
+	children : xml.Element[];
+	comment : string;
+}
+
+function parseMessage(message : MessageObject) : ParsedMessage {
 	try {
-		let parsedMessage : any = {};
-		let xmlMessage = this.getMessageXml(message);
-		parsedMessage.fromPerson = message.personId;
-		parsedMessage.toPersonId = message.mentionedPeople[1];
-		parsedMessage.botId = message.mentionedPeople[0];
-		parsedMessage.children = xmlMessage.root().childNodes();
-		parsedMessage.comment = parsedMessage.children.reduce((a, child, index) => {
-			// first three children should be mentions or command words
-			if (child.name() !== 'spark-mention' && index > 2) {
-				return a + child.text();
-			}
-			return a;
-		}, '').trim();
+		let xmlMessage : xml.Document = this.getMessageXml(message);
+		let children : xml.Element[] = xmlMessage.childNodes();
+		let parsedMessage : ParsedMessage = {
+			fromPerson: message.personId,
+			toPersonId: message.mentionedPeople[1],
+			botId: message.mentionedPeople[0],
+			children: children,
+			comment: children.reduce((a, child, index) => {
+				// first three children should be mentions or command words
+				if (child.name() !== 'spark-mention' && index > 2) {
+					return a + child.text();
+				}
+				return a;
+			}, '').trim()
+		}
 
 		return parsedMessage;
 	} catch (e) {
@@ -42,5 +53,9 @@ function getMessageXml(message) : xml.Document {
 
 export default {
 	parseMessage,
-	getMessageXml
+	getMessageXml,
+}
+
+export {
+	ParsedMessage
 }

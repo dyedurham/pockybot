@@ -1,4 +1,4 @@
-import spark from 'ciscospark/env';
+import spark, { MessageObject } from 'ciscospark/env';
 import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
@@ -6,13 +6,13 @@ import __logger from './logger';
 function respond(messageEvent : any) {
 	try {
 		spark.messages.get(messageEvent.data.id)
-		.then(function(message) {
+		.then((message : MessageObject) => {
 			__logger.debug("processing message: " + JSON.stringify(message));
 			let room = message.roomId;
 
 			if(message.personId !== constants.botId){
 				return responseFactory(message, room)
-				.then((responseMessage) => {
+				.then((responseMessage : MessageObject) => {
 					__logger.information(responseMessage);
 					return spark.messages.create(
 						{

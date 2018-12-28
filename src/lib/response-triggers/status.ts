@@ -1,13 +1,14 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 
 const commandText = 'status';
 const statusCommand = `(?: )*${commandText}(?: )*`;
 
 export default class Status extends Trigger {
-	spark : any;
+	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
 
@@ -19,16 +20,16 @@ export default class Status extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + statusCommand + constants.optionalMarkdownEnding + '$', 'ui');
 		return pattern.test(message.html);
 	}
 
-	isToTriggerOnPM(message) {
+	isToTriggerOnPM(message : MessageObject) : boolean {
 		return message.text.toLowerCase().trim() === commandText;
 	}
 
-	async createMessage(message) {
+	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let fromPerson = message.personId;
 
 		let pegs = await this.database.getPegsGiven(fromPerson);

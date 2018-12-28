@@ -1,10 +1,11 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import TableSizeParser from '../TableSizeParser';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
+import { MessageObject } from 'ciscospark/env';
 
 const resultsCommand = '(?: )*winners(?: )*';
 
@@ -22,7 +23,7 @@ export default class Results extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'winners'))) {
 			return false;
 		}
@@ -30,7 +31,7 @@ export default class Results extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() {
+	async createMessage() : Promise<MessageObject> {
 		let winners;
 		try {
 			winners = await this.database.returnWinners();
@@ -52,7 +53,7 @@ export default class Results extends Trigger {
 		}
 	}
 
-	async createResponse(data) {
+	async createResponse(data) : Promise<string> {
 		let winners = TableHelper.mapResults(data);
 		let columnWidths = TableHelper.getColumnWidths(winners);
 

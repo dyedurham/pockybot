@@ -1,15 +1,15 @@
-import spark from 'ciscospark/env';
+import spark, { MessageObject } from 'ciscospark/env';
 import responseFactory from './response-triggers/index';
 import __logger from './logger';
 
 exports.respond = function(messageEvent) {
 	try {
 		spark.messages.get(messageEvent.data.id)
-		.then(function(message) {
+		.then((message : MessageObject) => {
 			__logger.debug("processing message: " + JSON.stringify(message));
 			let room = message.roomId;
 			return responseFactory(message, room)
-			.then((responseMessage) => {
+			.then((responseMessage : MessageObject) => {
 				__logger.information(responseMessage);
 				return spark.messages.create(
 					{

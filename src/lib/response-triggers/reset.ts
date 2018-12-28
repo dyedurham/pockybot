@@ -1,8 +1,9 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
+import { MessageObject } from 'ciscospark/env';
 
 const resetCommand = '(?: )*reset(?: )*';
 
@@ -17,7 +18,7 @@ export default class Reset extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'reset'))) {
 			return false;
 		}
@@ -26,7 +27,7 @@ export default class Reset extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() {
+	async createMessage() : Promise<MessageObject> {
 		let data;
 		try {
 			data = await this.database.returnResults();

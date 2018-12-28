@@ -1,10 +1,11 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import Winners from './winners';
 import Results from './results';
 import Reset from './reset';
 import Config from '../config';
 import constants from '../../constants';
 import __logger from '../logger';
+import { MessageObject } from 'ciscospark/env';
 
 const finishCommand = '(?: )*finish(?: )*';
 
@@ -23,7 +24,7 @@ export default class Finish extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'finish'))) {
 			return false;
 		}
@@ -32,13 +33,13 @@ export default class Finish extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() {
+	async createMessage() : Promise<MessageObject> {
 		var winnersPromise = this.winners.createMessage();
 		var resultsPromise = this.results.createMessage();
 		__logger.debug("Finish promises created");
 
 		return Promise.all([winnersPromise, resultsPromise])
-		.then((values) => {
+		.then((values : MessageObject[]) => {
 			__logger.information("Winners and Results promises executed");
 			return this.reset.createMessage()
 			.then((data) => {

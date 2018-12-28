@@ -3,6 +3,7 @@ import { Client } from 'pg';
 import Config from './config';
 import __logger from './logger';
 import * as path from 'path';
+import { CiscoSpark } from 'ciscospark/env';
 
 export default class PockyDB {
 	private readonly sqlCreateUser : string;
@@ -25,7 +26,7 @@ export default class PockyDB {
 	private readonly sqlSetRoles : string;
 
 	private client : Client;
-	private spark : any;
+	private spark : CiscoSpark;
 	private fs : any;
 	private config : Config;
 

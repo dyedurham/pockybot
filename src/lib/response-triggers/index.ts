@@ -7,7 +7,7 @@
 import __logger from '../logger';
 
 // Triggers
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import Results from './results';
 import Winners from './winners';
 import Reset from './reset';
@@ -24,7 +24,7 @@ import Default from './default';
 
 // Services
 import TableSizeParser from '../TableSizeParser';
-import spark from 'ciscospark/env';
+import spark, { MessageObject } from 'ciscospark/env';
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
@@ -78,9 +78,9 @@ const triggers : Trigger[] = [
  * @return {SparkMessage} sparkMessage - use in conjunction with messages.create
  *                                       contains text or markdown field.
  */
-export default async (message, room) => {
+export default async (message : MessageObject, room : string) => {
 	try {
-		const responder = triggers.find(x => x.isToTriggerOn(message));
+		const responder : Trigger = triggers.find(x => x.isToTriggerOn(message));
 		__logger.information(`Found a trigger: ${responder.constructor.name}`);
 		return await responder.createMessage(message, room);
 	} catch (e) {

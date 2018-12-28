@@ -1,4 +1,4 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import * as fs from 'fs';
@@ -6,6 +6,7 @@ import PockyDB from '../PockyDB';
 import TableSizeParser from '../TableSizeParser';
 import Config from '../config';
 import __logger from '../logger';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 
 const lineEnding = '\r\n';
 const resultsCommand = '(?: )*results(?: )*';
@@ -13,7 +14,7 @@ const resultsCommand = '(?: )*results(?: )*';
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = "Error encountered; cannot display results.";
 
-	spark : any;
+	spark : CiscoSpark;
 	database : PockyDB;
 	tableSizer : TableSizeParser;
 	config : Config;
@@ -28,7 +29,7 @@ export default class Results extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'results'))) {
 			return false;
 		}
@@ -36,7 +37,7 @@ export default class Results extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() {
+	async createMessage() : Promise<MessageObject> {
 		let data;
 		try {
 			data = await this.database.returnResults();

@@ -20,10 +20,14 @@ declare module 'ciscospark/env' {
 		id ?: string;
 		personId ?: string;
 		personEmail ?: string;
+		toPersonId ?: string;
 		roomId ?: string;
+		roomType ?: string;
 		text ?: string;
 		markdown ?: string;
 		files ?: string[];
+		html ?: string;
+		mentionedPeople ?: string[];
 		created ?: Date;
 	}
 
@@ -86,6 +90,7 @@ declare module 'ciscospark/env' {
 		RoomObject,
 		MessageObject,
 		Page,
-		PersonObject
+		PersonObject,
+		CiscoSpark
 	}
 }

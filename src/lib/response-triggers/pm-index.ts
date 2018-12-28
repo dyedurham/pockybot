@@ -7,7 +7,7 @@
 import __logger from '../logger';
 
 // Triggers
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import Status from './status';
 import Welcome from './welcome';
 import Help from './help';
@@ -16,7 +16,7 @@ import Keywords from './keywords';
 import Default from './default';
 
 // Services
-import spark from 'ciscospark/env';
+import spark, { MessageObject } from 'ciscospark/env';
 import { Client } from 'pg';
 import configService from '../config';
 
@@ -53,9 +53,9 @@ const triggers : Trigger[] = [
  * @return {SparkMessage} sparkMessage - use in conjunction with messages.create
  *                                       contains text or markdown field.
  */
-export default async (message, room) => {
+export default async (message : MessageObject, room : string) => {
 	try {
-		const responder = triggers.find(x => x.isToTriggerOnPM(message));
+		const responder : Trigger = triggers.find(x => x.isToTriggerOnPM(message));
 		__logger.information(`Found a direct trigger: ${responder.constructor.name}`);
 		return await responder.createMessage(message, room);
 	} catch (e) {

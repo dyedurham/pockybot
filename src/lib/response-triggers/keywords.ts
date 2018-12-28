@@ -1,6 +1,7 @@
-import Trigger from './trigger';
+import Trigger from '../types/trigger';
 import Config from '../config';
 import constants from '../../constants';
+import { MessageObject } from 'ciscospark/env';
 
 export default class Keywords extends Trigger {
 	readonly commandText : string = 'keywords';
@@ -14,24 +15,24 @@ export default class Keywords extends Trigger {
 		this.config = config;
 	}
 
-	isToTriggerOn(message) {
+	isToTriggerOn(message : MessageObject) : boolean {
 		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
 		return pattern.test(message.html);
 	}
 
-	isToTriggerOnPM(message) {
+	isToTriggerOnPM(message : MessageObject) : boolean {
 		return message.text.toLowerCase().trim() === this.commandText;
 	}
 
-	async createMessage() {
-		let message = '## Here is the list of possible keywords to include in your message\n\n';
+	async createMessage() : Promise<MessageObject> {
+		let newMessage = '## Here is the list of possible keywords to include in your message\n\n';
 
 		this.config.getStringConfig('keyword').forEach(item => {
-			message += `* ${item}\n`;
+			newMessage += `* ${item}\n`;
 		});
 
 		return {
-				markdown: message
+				markdown: newMessage
 		};
 	}
 }
