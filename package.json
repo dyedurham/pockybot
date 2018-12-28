@@ -35,6 +35,7 @@
 	"devDependencies": {
 		"@types/jasmine-node": "^1.14.34",
 		"@types/libxmljs": "^0.18.2",
+		"@types/node": "^10.12.18",
 		"@types/pg": "^7.4.11",
 		"jasmine-node": "^1.16.2",
 		"typescript": "^2.9.2"

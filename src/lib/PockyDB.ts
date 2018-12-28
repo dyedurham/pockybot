@@ -4,6 +4,7 @@ import Config from './config';
 import __logger from './logger';
 import * as path from 'path';
 import { CiscoSpark } from 'ciscospark/env';
+import * as fs from 'fs';
 
 export default class PockyDB {
 	private readonly sqlCreateUser : string;
@@ -27,13 +28,11 @@ export default class PockyDB {
 
 	private client : Client;
 	private spark : CiscoSpark;
-	private fs : any;
 	private config : Config;
 
 	constructor(Client, sparkService) {
 		this.client = Client;
 		this.spark = sparkService;
-		this.fs = require('fs');
 
 		this.client.connect()
 		.catch(function(e) {
@@ -352,7 +351,7 @@ export default class PockyDB {
 
 	private _readFile(filename) {
 		let filePath = path.resolve(__dirname, filename);
-		return this.fs.readFileSync(filePath, 'utf8');
+		return fs.readFileSync(filePath, 'utf8');
 	}
 
 	private async executeQuery(query) {
