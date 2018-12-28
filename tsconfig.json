@@ -4,7 +4,8 @@
         "allowJs": true,
 		"target": "es2017",
 		"module": "commonjs",
-		"moduleResolution": "node"
+		"moduleResolution": "node",
+		"typeRoots": ["node_modules/@types", "@types"]
     },
     "include": [
         "./src/**/*"
