@@ -1,7 +1,7 @@
 'use strict';
 import __logger from './lib/logger';
-import express from 'express';
-import bodyParser from 'body-parser';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
 import responder from './lib/responder';
 import pmResponder from './lib/pm-responder';
 import * as url from 'url';
