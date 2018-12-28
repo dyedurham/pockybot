@@ -101,20 +101,6 @@ describe("setting config", function() {
 			done();
 		});
 	});
-
-	it("should not accept strings", function (done) {
-		config.updateAll()
-		.then(() => {
-			expect(config.getConfig('config')).toBe(2);
-			config.setConfig('config', 'test')
-			.then((data) => {
-				fail("should have thrown an error");
-			}).catch((error) => {
-				expect(error.message).toBe('error: config must be an integer');
-			});
-			done();
-		});
-	});
 });
 
 describe("setting role", function() {

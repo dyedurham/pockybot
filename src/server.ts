@@ -1,20 +1,18 @@
 'use strict';
-global.__base = __dirname + '/';
-const __logger = require('./built/lib/logger');
-
-const express = require('express');
-const bodyParser = require('body-parser');
-const responder = require('./built/lib/responder');
-const pmResponder = require('./built/lib/pm-responder');
-const url = require('url');
-const fs = require('fs');
+import __logger from './lib/logger';
+import express from 'express';
+import bodyParser from 'body-parser';
+import responder from './lib/responder';
+import pmResponder from './lib/pm-responder';
+import * as url from 'url';
+import * as fs from 'fs';
 
 // Constants
 const PORT = 80;
 const HOST = '0.0.0.0';
 
 //Startup
-require('./built/lib/registerhooks');
+import './lib/registerhooks';
 
 // App
 const app = express();
@@ -36,7 +34,7 @@ app.get('/results', function (req, res) {
 	try {
 		var url_parts = url.parse(req.url, true);
 		var query = url_parts.query;
-		res.download(__base + query.filename);
+		res.download(__dirname + '/' + query.filename);
 	} catch (e) {
 		__logger.error(`Error in server /results:\n${e.message}`);
 		res.status(404).end();
@@ -46,7 +44,7 @@ app.get('/results', function (req, res) {
 app.get('/test', function (req, res) {
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
-	fs.readFile(__base + query.filename, 'utf8', function(err, data) {
+	fs.readFile(__dirname + '/' + query.filename, 'utf8', function(err, data) {
         if (err) {
 			throw err;
 		}

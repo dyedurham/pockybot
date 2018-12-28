@@ -139,7 +139,7 @@ describe("reset", function() {
 		database.loadConfig(config);
 		database.reset()
 		.then((results) => {
-			expect(results).toBe("reset return");
+			expect(results as any).toBe("reset return");
 			done();
 		});
 	});
@@ -154,7 +154,7 @@ describe("create user", function() {
 		database.loadConfig(config);
 		database.createUser("some_sender")
 		.then((results) => {
-			expect(results).toBe("create return");
+			expect(results as any).toBe("create return");
 			done();
 		});
 	});

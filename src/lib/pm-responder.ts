@@ -36,6 +36,6 @@ function respond(messageEvent : any) {
 	}
 };
 
-export {
+export default {
 	respond
 }

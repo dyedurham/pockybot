@@ -2,7 +2,7 @@ import spark, { MessageObject } from 'ciscospark/env';
 import responseFactory from './response-triggers/index';
 import __logger from './logger';
 
-exports.respond = function(messageEvent) {
+function respond(messageEvent) {
 	try {
 		spark.messages.get(messageEvent.data.id)
 		.then((message : MessageObject) => {
@@ -31,3 +31,7 @@ exports.respond = function(messageEvent) {
 		__logger.error(`Uncaught error in responder:\n${e.message}`);
 	}
 };
+
+export default {
+	respond
+}
