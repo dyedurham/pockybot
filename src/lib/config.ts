@@ -84,7 +84,7 @@ export default class Config {
 		await this.updateRoles();
 	}
 
-	async setConfig(config, value) {
+	async setConfig(config : string, value : number) {
 		if (isNaN(value)) {
 			throw new Error('error: config must be an integer');
 		}

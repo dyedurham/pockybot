@@ -1,9 +1,9 @@
 import dbConstants from './db-constants';
-import { Client } from 'pg';
+import { Client, QueryResult, QueryConfig } from 'pg';
 import Config from './config';
 import __logger from './logger';
 import * as path from 'path';
-import { CiscoSpark } from 'ciscospark/env';
+import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import * as fs from 'fs';
 
 export default class PockyDB {
@@ -68,7 +68,7 @@ export default class PockyDB {
 	 *         1 on "you have no more pegs left to give" failure
 	 *         2 on error
 	 */
-	async givePegWithComment(comment, receiver, sender = "default_user") {
+	async givePegWithComment(comment : string, receiver : string, sender = "default_user") {
 		try {
 			await Promise.all([this.existsOrCanBeCreated(sender), this.existsOrCanBeCreated(receiver)]);
 		} catch (error) {
@@ -76,7 +76,7 @@ export default class PockyDB {
 			return dbConstants.pegError;
 		}
 
-		let senderHasPegs;
+		let senderHasPegs : boolean;
 		try {
 			senderHasPegs = await this.hasSparePegs(sender);
 		} catch (error) {
@@ -89,7 +89,7 @@ export default class PockyDB {
 			return dbConstants.pegAllSpent;
 		}
 
-		var query = {
+		var query : QueryConfig = {
 			name: 'givePegWithCommentQuery',
 			text: this.sqlGivePegWithComment,
 			values: [sender, receiver, comment]
@@ -104,8 +104,8 @@ export default class PockyDB {
 		}
 	}
 
-	async createUser(userid) {
-		let user;
+	async createUser(userid : string) : Promise<QueryResult> {
+		let user : PersonObject;
 		try {
 			user = await this.spark.people.get(userid);
 		} catch (error) {
@@ -114,7 +114,7 @@ export default class PockyDB {
 		}
 
 		__logger.information(`Creating a new user with userid ${userid} and username ${user.displayName}`);
-		var query = {
+		var query : QueryConfig = {
 			name: 'createUserQuery',
 			text: this.sqlCreateUser,
 			values: [userid, user.displayName]
@@ -128,7 +128,7 @@ export default class PockyDB {
 		}
 	}
 
-	async updateUser(username, userid) {
+	async updateUser(username : string, userid : string) : Promise<number> {
 		__logger.information(`Updating user ${userid} with username ${username}`);
 
 		try {
@@ -138,7 +138,7 @@ export default class PockyDB {
 			return dbConstants.updateUserError;
 		}
 
-		var query = {
+		var query : QueryConfig = {
 			name: 'updateUserQuery',
 			text: this.sqlUpdate,
 			values: [username, userid]
@@ -153,7 +153,7 @@ export default class PockyDB {
 		}
 	}
 
-	async getUsers() {
+	async getUsers() : Promise<any[]> {
 		var query = {
 			name: 'getUsersQuery',
 			text: this.sqlGetUsers
@@ -162,8 +162,8 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getUser(userid) {
-		var query = {
+	async getUser(userid : string) : Promise<any> {
+		var query : QueryConfig = {
 			name: 'getUserQuery',
 			text: this.sqlGetUser,
 			values: [userid]
@@ -183,14 +183,14 @@ export default class PockyDB {
 		}
 	}
 
-	async existsOrCanBeCreated(userid) {
-		let exists = await this.exists(userid);
+	async existsOrCanBeCreated(userid : string) : Promise<boolean> {
+		let exists : boolean = await this.exists(userid);
 		if (exists) {
 			__logger.debug(`User ${userid} already exists`);
 			return true;
 		}
 
-		let newUser;
+		let newUser : any;
 		try {
 			newUser = await this.createUser(userid);
 		} catch (error) {
@@ -203,8 +203,8 @@ export default class PockyDB {
 		return true;
 	}
 
-	async exists(userid) {
-		var query = {
+	async exists(userid : string) : Promise<boolean> {
+		var query : QueryConfig = {
 			name: 'existsQuery',
 			text: this.sqlExists,
 			values: [userid]
@@ -215,31 +215,31 @@ export default class PockyDB {
 		return existingUser[0]['exists'];
 	}
 
-	async countPegsGiven(user) {
-		var query = {
+	async countPegsGiven(user : string) : Promise<number> {
+		var query : QueryConfig = {
 			name: 'pegsGiven',
 			text: this.sqlPegsGiven,
 			values: [user]
 		};
 
-		let data = await this.executeQuery(query);
+		let data : any = await this.executeQuery(query);
 		return data[0]['count'];
 	}
 
-	async hasSparePegs(user) {
+	async hasSparePegs(user : string) : Promise<boolean> {
 		__logger.debug(`Checking if user ${user} has spare pegs`);
-		if (user === 'default_user' || this.config.checkRole(user,'unmeteredUsers')) {
+		if (user === 'default_user' || this.config.checkRole(user, 'unmeteredUsers')) {
 			return true;
 		}
 
-		var query = {
+		var query : QueryConfig = {
 			name: 'pegsGiven',
 			text: this.sqlPegsGiven,
 			values: [user]
 		};
 
-		let data = await this.executeQuery(query);
-		let count = data[0]['count'];
+		let data : any = await this.executeQuery(query);
+		let count : number = data[0]['count'];
 		if (count < this.config.getConfig('limit')) {
 			return true;
 		}
@@ -247,7 +247,7 @@ export default class PockyDB {
 		return false;
 	}
 
-	async reset() {
+	async reset() : Promise<QueryResult> {
 		var query = {
 			name: 'resetQuery',
 			text: this.sqlReset
@@ -256,31 +256,31 @@ export default class PockyDB {
 		return await this.executeNonQuery(query);
 	}
 
-	async returnResults() {
+	async returnResults() : Promise<any> {
 		var query = {
 			name: 'returnResultsQuery',
 			text: this.sqlReturnResults,
 		};
 
-		let results = await this.executeQuery(query);
+		let results : any = await this.executeQuery(query);
 		__logger.debug("returning results: " + JSON.stringify(results));
 		return results;
 	}
 
-	async returnWinners() {
-		var query = {
+	async returnWinners() : Promise<any> {
+		var query : QueryConfig = {
 			name: 'returnWinnersQuery',
 			text: this.sqlReturnWinners,
 			values: [this.config.getConfig('minimum'), this.config.getConfig('winners')]
 		};
 
-		let winners = await this.executeQuery(query);
+		let winners : any = await this.executeQuery(query);
 		__logger.debug("returning winners: " + JSON.stringify(winners));
 		return winners;
 	}
 
-	async getPegsGiven(user) {
-		var query = {
+	async getPegsGiven(user) : Promise<any> {
+		var query : QueryConfig = {
 			name: 'returnGivesQuery',
 			text: this.sqlReturnGives,
 			values: [user]
@@ -289,8 +289,8 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getRoles() {
-		var query = {
+	async getRoles() : Promise<any> {
+		var query : QueryConfig = {
 			name: 'returnRolesQuery',
 			text: this.sqlGetRoles,
 			values: []
@@ -299,8 +299,8 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getConfig() {
-		var query = {
+	async getConfig() : Promise<any> {
+		var query : QueryConfig = {
 			name: 'returnConfigQuery',
 			text: this.sqlGetConfig,
 			values: []
@@ -309,8 +309,8 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getStringConfig() {
-		var query = {
+	async getStringConfig() : Promise<any> {
+		var query : QueryConfig = {
 			name: 'returnStringConfigQuery',
 			text: this.sqlGetStringConfig,
 			values: []
@@ -319,8 +319,8 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async setRoles(userid, role) {
-		var query = {
+	async setRoles(userid : string, role : string) : Promise<void> {
+		var query : QueryConfig = {
 			name: 'setRolesQuery',
 			text: this.sqlSetRoles,
 			values: [userid, role]
@@ -329,8 +329,8 @@ export default class PockyDB {
 		await this.executeNonQuery(query);
 	}
 
-	async setConfig(config, value) {
-		var query = {
+	async setConfig(config : string, value : number) : Promise<void> {
+		var query : QueryConfig = {
 			name: 'setConfigQuery',
 			text: this.sqlSetConfig,
 			values: [config, value]
@@ -339,8 +339,8 @@ export default class PockyDB {
 		await this.executeNonQuery(query);
 	}
 
-	async setStringConfig(config, value) {
-		var query = {
+	async setStringConfig(config : string, value : string) : Promise<void> {
+		var query : QueryConfig = {
 			name: 'setStringConfigQuery',
 			text: this.sqlSetStringConfig,
 			values: [config, value]
@@ -349,12 +349,12 @@ export default class PockyDB {
 		await this.executeNonQuery(query);
 	}
 
-	private _readFile(filename) {
-		let filePath = path.resolve(__dirname, filename);
+	private _readFile(filename : string) : string {
+		let filePath : string = path.resolve(__dirname, filename);
 		return fs.readFileSync(filePath, 'utf8');
 	}
 
-	private async executeQuery(query) {
+	private async executeQuery(query : QueryConfig) : Promise<any> {
 		try {
 			let data = await this.client.query(query);
 			return data['rows'];
@@ -364,7 +364,7 @@ export default class PockyDB {
 		}
 	}
 
-	private async executeNonQuery(query) {
+	private async executeNonQuery(query : QueryConfig) : Promise<QueryResult> {
 		try {
 			return await this.client.query(query);
 		} catch (error) {

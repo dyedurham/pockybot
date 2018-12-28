@@ -36,7 +36,7 @@ function parseMessage(message : MessageObject) : ParsedMessage {
 	}
 }
 
-function getMessageXml(message) : xml.Document {
+function getMessageXml(message : MessageObject) : xml.Document {
 	// Sometimes html is sent as html entities e.g. '&lt;' instead of '<'.
 	// Ensure it is encoded correctly
 	unescape.chars['&amp;'] = '&amp;';
