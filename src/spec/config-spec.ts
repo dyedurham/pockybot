@@ -48,7 +48,7 @@ function createDatabase(success) {
 			});
 		},
 
-		setRole: function (user, value) {
+		setRoles: function (user, value) {
 			return new Promise((resolve, reject) => {
 				if (success) {
 					this.userValue = value
