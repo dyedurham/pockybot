@@ -1,12 +1,12 @@
-import stringWidth from 'string-width';
+import stringWidth = require('string-width');
 
 export default class TableSizeParser {
-	padString(str, length) {
+	padString(str : string, length : number) {
 		var a = (length / 2) - (str.length / 2);
 		return str.padStart(a + str.length).padEnd(length);
 	}
 
-	stringLength(str) {
+	stringLength(str : string) {
 		// todo: get correct width of emojis
 		return stringWidth(str);
 	}
@@ -42,12 +42,12 @@ export default class TableSizeParser {
 	}
 }
 
-exports.padString = function(str, length) {
+exports.padString = function(str : string, length : number) {
 	var a = (length / 2) - (str.length / 2);
 	return str.padStart(a + str.length).padEnd(length);
 }
 
-exports.stringLength = function(str) {
+exports.stringLength = function(str : string) {
 	// todo: get correct width of emojis
 	return stringWidth(str);
 }

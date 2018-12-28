@@ -1,4 +1,4 @@
-import stringWidth from 'string-width';
+import stringWidth = require('string-width');
 import __logger from '../logger';
 
 function mapResults(data : any) : any {

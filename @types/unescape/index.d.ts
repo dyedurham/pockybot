@@ -5,5 +5,5 @@ declare module 'unescape'{
 		export var extras: {[key: string] : string};
 	}
 
-	export default unescape;
+	export = unescape;
 }

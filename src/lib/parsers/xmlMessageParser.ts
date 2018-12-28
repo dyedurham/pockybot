@@ -1,5 +1,5 @@
 import * as xml from 'libxmljs';
-import unescape from 'unescape';
+import unescape = require('unescape');
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 
@@ -14,7 +14,7 @@ interface ParsedMessage {
 function parseMessage(message : MessageObject) : ParsedMessage {
 	try {
 		let xmlMessage : xml.Document = this.getMessageXml(message);
-		let children : xml.Element[] = xmlMessage.childNodes();
+		let children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
 			toPersonId: message.mentionedPeople[1],
