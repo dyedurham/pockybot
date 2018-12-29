@@ -2,6 +2,8 @@ import PockyDB from '../lib/PockyDB';
 import Config from '../lib/config';
 import { QueryConfig, Client } from 'pg';
 import { Role } from '../models/database';
+import { CiscoSpark } from 'ciscospark/env';
+import MockCiscoSpark from './mocks/mock-spark';
 
 const config = new Config(null);
 beforeAll(() => {
@@ -88,18 +90,18 @@ function createPgClient(connectSuccess : boolean, pegCount : number) : Client {
 	return client;
 }
 
-function createSparkMock() {
-	return {
-		people: {
-			get: function(userid : string) {
-				return new Promise((resolve, reject) => {
-					resolve({
-						displayName: userid + 'display'
-					});
-				});
-			}
-		}
-	};
+function createSparkMock() : CiscoSpark {
+	let spark = new MockCiscoSpark();
+
+	spyOn(spark.people, 'get').and.callFake((userid : string) => {
+		return new Promise((resolve, reject) => {
+			resolve({
+				displayName: userid + 'display'
+			});
+		});
+	});
+
+	return spark;
 }
 
 describe('return results', function() {
@@ -158,7 +160,7 @@ describe('reset', function() {
 
 describe('create user', function() {
 	let pgClientMock : Client;
-	let sparkMock : any;
+	let sparkMock : CiscoSpark;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);

@@ -9,7 +9,7 @@ export default class Trigger {
 		return false;
 	}
 
-	async createMessage(message ?: MessageObject, room ?: any) : Promise<MessageObject> {
+	async createMessage(message ?: MessageObject, room ?: string) : Promise<MessageObject> {
 		return {
 			markdown: ""
 		}
