@@ -7,14 +7,14 @@ export default class Config {
 	config : any[];
 	stringConfig : any[];
 
-	constructor(database) {
+	constructor(database : PockyDB) {
 		this.database = database;
 		this.users = [];
 		this.config = [];
 		this.stringConfig = [];
 	}
 
-	getRoles(userid) {
+	getRoles(userid : string) {
 		if (this.users.length === 0) {
 			return [];
 		}
@@ -23,7 +23,7 @@ export default class Config {
 		return userRoles.map(x => x.role);
 	}
 
-	getConfig(config) {
+	getConfig(config : string) {
 		if (this.config.length === 0) {
 			return null;
 		}
@@ -31,7 +31,7 @@ export default class Config {
 		return this.config.find(x => x.name.toUpperCase() === config.toUpperCase()).value;
 	}
 
-	getStringConfig(config) {
+	getStringConfig(config : string) {
 		return this.stringConfig.filter(x => x.name.toUpperCase() === config.toUpperCase())
 			.map(function (x) {
 				return x.value;
@@ -39,7 +39,7 @@ export default class Config {
 		);
 	}
 
-	checkRole(userid, role) {
+	checkRole(userid : string, role : string) {
 		if(!this.users) return false;
 		return this.users.some(x =>
 			x.userid === userid &&
@@ -79,7 +79,7 @@ export default class Config {
 		__logger.debug(this.stringConfig);
 	}
 
-	async setRole(userid, role) {
+	async setRole(userid : string, role : string) {
 		await this.database.setRoles(userid, role.toUpperCase());
 		await this.updateRoles();
 	}
@@ -93,7 +93,7 @@ export default class Config {
 		await this.updateConfig();
 	}
 
-	async setStringConfig(config, value) {
+	async setStringConfig(config : string, value : string) {
 		await this.database.setStringConfig(config, value);
 		await this.updateStringConfig();
 	}

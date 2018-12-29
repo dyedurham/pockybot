@@ -1,7 +1,9 @@
 import 'jasmine-ts';
 import configService from '../lib/config';
+import PockyDB from '../lib/PockyDB';
+import Config from '../lib/config';
 
-function createDatabase(success) {
+function createDatabase(success : boolean) {
 	return {
 		configValue: 1,
 		configString: 'string',
@@ -37,7 +39,7 @@ function createDatabase(success) {
 			});
 		},
 
-		setConfig: function (config, value) {
+		setConfig: function (config : string, value : number) {
 			return new Promise((resolve, reject) => {
 				if (success) {
 					this.configValue = value
@@ -48,7 +50,7 @@ function createDatabase(success) {
 			});
 		},
 
-		setRoles: function (user, value) {
+		setRoles: function (user : string, value : string) {
 			return new Promise((resolve, reject) => {
 				if (success) {
 					this.userValue = value
@@ -62,13 +64,19 @@ function createDatabase(success) {
 }
 
 describe("creating config", function() {
-	var database = createDatabase(true);
-	var config = new configService(database);
+	var database : PockyDB;
+	var config : Config;
+
+	beforeEach(() => {
+		database = createDatabase(true) as any;
+		config = new configService(database);
+	});
 
 	it("should have no users users", function (done) {
 		expect(config.getRoles('user').length).toBe(0);
 		done();
 	});
+
 	it("should have no users users", function (done) {
 		expect(config.getRoles('config').length).toBe(0);
 		done();
@@ -87,8 +95,13 @@ describe("creating config", function() {
 });
 
 describe("setting config", function() {
-	var database = createDatabase(true);
-	var config = new configService(database);
+	var database : PockyDB;
+	var config : Config;
+
+	beforeEach(() => {
+		database = createDatabase(true) as any;
+		config = new configService(database);
+	});
 
 	it("should update config", function (done) {
 		config.updateAll()
@@ -104,8 +117,13 @@ describe("setting config", function() {
 });
 
 describe("setting role", function() {
-	var database = createDatabase(true);
-	var config = new configService(database);
+	var database : PockyDB;
+	var config : Config;
+
+	beforeEach(() => {
+		database = createDatabase(true) as any;
+		config = new configService(database);
+	});
 
 	it("should update role", function (done) {
 		config.updateAll()
@@ -124,8 +142,8 @@ describe("setting role", function() {
 	it("should uppercase any lowercase", function (done) {
 		config.updateAll()
 		.then(() => {
-			expect(config.getRoles('user')[0]).toBe('VALUE2');
-			expect(config.checkRole('user', 'VALUE2')).toBe(true);
+			expect(config.getRoles('user')[0]).toBe('VALUE');
+			expect(config.checkRole('user', 'VALUE')).toBe(true);
 			config.setRole('user', 'vaLuE3')
 			.then((data) => {
 				expect(config.getRoles('user')[0]).toBe('VALUE3');
@@ -137,8 +155,13 @@ describe("setting role", function() {
 });
 
 describe("get all roles", function() {
-	var database = createDatabase(true);
-	var config = new configService(database);
+	var database : PockyDB;
+	var config : Config;
+
+	beforeEach(() => {
+		database = createDatabase(true) as any;
+		config = new configService(database);
+	});
 
 	it("should update role", function (done) {
 		config.updateAll()
@@ -150,8 +173,13 @@ describe("get all roles", function() {
 });
 
 describe("get all config", function() {
-	var database = createDatabase(true);
-	var config = new configService(database);
+	var database : PockyDB;
+	var config : Config;
+
+	beforeEach(() => {
+		database = createDatabase(true) as any;
+		config = new configService(database);
+	});
 
 	it("should update role", function (done) {
 		config.updateAll()
