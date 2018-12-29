@@ -2,7 +2,6 @@ import Trigger from '../types/trigger';
 import constants from '../../constants';
 import XmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
 import PockyDB from '../PockyDB';
-import Config from '../config';
 import Utilities from '../utilities';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
@@ -13,15 +12,13 @@ export default class  Unpeg extends Trigger {
 
 	spark : CiscoSpark;
 	database : PockyDB;
-	config : Config;
 	utilities : Utilities;
 
-	constructor(sparkService, databaseService, config, utilities) {
+	constructor(spark : CiscoSpark, database : PockyDB, utilities : Utilities) {
 		super();
 
-		this.spark = sparkService;
-		this.database = databaseService;
-		this.config = config;
+		this.spark = spark;
+		this.database = database;
 		this.utilities = utilities;
 
 		let s = constants.optionalSpace;
@@ -118,7 +115,7 @@ export default class  Unpeg extends Trigger {
 			case 2:
 				return await this.sendFollowUpResponse(`${toUser}'s peg has been removed...`, `But ${toUser} stole it back!`, room);
 			case 3:
-				return await this.sendFollowUpResponse(`peg given to ${toUser}`, `But ${toUser} didn't want it!`, room);
+				return await this.sendFollowUpResponse(`Peg given to ${toUser}`, `But ${toUser} didn't want it!`, room);
 			case 4:
 				return this.sendResponse(`I'm sorry ${fromUser}, I'm afraid I can't do that.`);
 			case 5:

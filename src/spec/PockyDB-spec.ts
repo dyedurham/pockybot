@@ -102,7 +102,7 @@ function createSparkMock() {
 }
 
 describe("return results", function() {
-	var pgClientMock : Client;
+	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
@@ -120,7 +120,7 @@ describe("return results", function() {
 });
 
 describe("return winners", function() {
-	var pgClientMock : Client;
+	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
@@ -138,7 +138,7 @@ describe("return winners", function() {
 });
 
 describe("reset", function() {
-	var pgClientMock : Client;
+	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
@@ -156,8 +156,8 @@ describe("reset", function() {
 });
 
 describe("create user", function() {
-	var pgClientMock : Client;
-	var sparkMock : any;
+	let pgClientMock : Client;
+	let sparkMock : any;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
@@ -176,7 +176,7 @@ describe("create user", function() {
 });
 
 describe("has spare pegs", function() {
-	var pgClientMock : Client;
+	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, 99);
@@ -203,7 +203,8 @@ describe("has spare pegs", function() {
 	});
 
 	it("should return false for other users", function (done) {
-		spyOn(pgClientMock, 'query').and.returnValue(new Promise((resolve, reject) =>
+
+		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) =>
 			resolve({
 				rows: [{count:100}]
 			}
@@ -219,7 +220,7 @@ describe("has spare pegs", function() {
 	});
 
 	it("should return true for no pegs spent", function (done) {
-		spyOn(pgClientMock, 'query').and.returnValue(new Promise((resolve, reject) => {
+		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) => {
 			resolve({
 				rows: [{count:0}]
 			})
@@ -236,7 +237,7 @@ describe("has spare pegs", function() {
 });
 
 describe("count pegs", function() {
-	var pgClientMock : Client;
+	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, 125689);
@@ -255,7 +256,7 @@ describe("count pegs", function() {
 
 describe("exists", function() {
 	it("should make return true if the user already exists", function (done) {
-		var pgClientMock = createPgClient(true, null);
+		let pgClientMock = createPgClient(true, null);
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
@@ -267,7 +268,7 @@ describe("exists", function() {
 	});
 
 	 it("should make create a user and return true", function (done) {
-		var pgClientMock = createPgClient(true, null);
+		let pgClientMock = createPgClient(true, null);
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
@@ -280,7 +281,11 @@ describe("exists", function() {
 });
 
 describe("give peg with comment", function() {
-	var pgClientMock = createPgClient(true, null);
+	let pgClientMock : Client;
+
+	beforeEach(() => {
+		pgClientMock = createPgClient(true, null);
+	})
 
 	it("should return 0", function (done) {
 		const database = new PockyDB(pgClientMock, null);

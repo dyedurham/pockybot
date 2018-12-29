@@ -23,7 +23,7 @@ export default class Reset extends Trigger {
 			return false;
 		}
 
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resetCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resetCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

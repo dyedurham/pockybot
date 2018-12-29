@@ -2,6 +2,9 @@ import Peg from '../lib/response-triggers/peg';
 import constants from '../constants';
 import Config from '../lib/config';
 import PockyDB from '../lib/PockyDB';
+import MockCiscoSpark from './mocks/mock-spark';
+import { Client } from 'pg';
+import { MessageObject } from 'ciscospark/env';
 
 const config = new Config(null);
 beforeAll(() => {
@@ -37,8 +40,10 @@ beforeAll(() => {
 	});
 })
 
+const spark = new MockCiscoSpark();
+
 function createMessage(htmlMessage : string, person : string,
-		mentionedFirst = constants.botId, mentionedSecond = 'aoeuidhtns') {
+		mentionedFirst = constants.botId, mentionedSecond = 'aoeuidhtns') : MessageObject {
 	return {
 		html: htmlMessage,
 		personId: person,
@@ -46,20 +51,10 @@ function createMessage(htmlMessage : string, person : string,
 	};
 }
 
-function createSparkMock() {
-	return {
-		messages: {
-			create: function() {
-				return new Promise((resolve, reject) => {
-					resolve();
-				})
-			}
-		}
-	};
-}
-
 function createDatabase(givePegSuccess : boolean, givePegResponse : number, countSuccess : boolean, countResponse : number) : PockyDB {
-	let db = new PockyDB(null, null);
+	let client = new Client();
+	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	let db = new PockyDB(client, null);
 
 	if (givePegSuccess) {
 		spyOn(db, 'givePegWithComment').and.returnValue(new Promise((resolve, reject) => resolve(givePegResponse)));
@@ -81,7 +76,6 @@ function createDatabase(givePegSuccess : boolean, givePegResponse : number, coun
 describe("creating Message", function() {
 	it("should create a proper message - 1 peg", function (done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
@@ -98,7 +92,6 @@ describe("creating Message", function() {
 
 	it("should create a proper message - 2 pegs", function (done) {
 		let database = createDatabase(true, 0, true, 2);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
@@ -183,7 +176,6 @@ describe("creating Message", function() {
 
 	it("should give peg with 'to' keyword", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> to <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
@@ -200,7 +192,6 @@ describe("creating Message", function() {
 
 	it("should work with multiple keywords", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg to <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
@@ -253,7 +244,6 @@ describe("creating Message", function() {
 
 	it("should work with two spaces", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>  peg  <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
@@ -270,7 +260,6 @@ describe("creating Message", function() {
 
 	it("should work with three spaces", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>   peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
@@ -286,7 +275,6 @@ describe("creating Message", function() {
 
 	it("should work with iPhone format", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons',
 			'mockfromID');
@@ -302,7 +290,6 @@ describe("creating Message", function() {
 
 	it("should work with ampersand", function(done) {
 		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons &amp; stuff',
 			'mockfromID');

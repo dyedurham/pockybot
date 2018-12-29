@@ -15,7 +15,7 @@ export default class Welcome extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.welcomeCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.welcomeCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

@@ -25,7 +25,7 @@ export default class Update extends Trigger {
 			return false;
 		}
 
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + updateCommand + constants.optionalMarkdownEnding + '$', 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + updateCommand + constants.optionalMarkdownEnding + '$', 'ui');
 		return pattern.test(message.html);
 	}
 

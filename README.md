@@ -30,7 +30,7 @@ My name is:
 ## Setup
 
 1. `npm install`
-1. `tsc`
+1. `tsc -p tsconfig.build.json`
 1. `npm start`
 
 ## Usage

@@ -2,7 +2,7 @@ import stringWidth = require('string-width');
 import __logger from '../logger';
 
 function mapResults(data : any) : any {
-	var results = [];
+	let results = [];
 	__logger.debug('Mapping winners response');
 	data.forEach((row) => {
 		if (!results.map(person => person.id).includes(row.receiverid)) {
@@ -23,9 +23,9 @@ function mapResults(data : any) : any {
 }
 
 function getColumnWidths(results : any) : { receiver : number, sender : number, comment : number } {
-	var longestReceiver = this.stringLength("receiver");
-	var longestSender = this.stringLength("sender");
-	var longestComment = this.stringLength("comments");
+	let longestReceiver = this.stringLength("receiver");
+	let longestSender = this.stringLength("sender");
+	let longestComment = this.stringLength("comments");
 	results.forEach((winner : any) => {
 		if (this.stringLength(winner.person) > longestReceiver) {
 			longestReceiver = this.stringLength(winner.person);
@@ -49,7 +49,7 @@ function getColumnWidths(results : any) : { receiver : number, sender : number, 
 }
 
 function padString(str : string, length : number) : string {
-	var a : number = (length / 2) - (this.stringLength(str) / 2);
+	let a : number = (length / 2) - (this.stringLength(str) / 2);
 	return str.padStart(a + this.stringLength(str)).padEnd(length);
 }
 

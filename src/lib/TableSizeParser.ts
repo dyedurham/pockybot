@@ -2,7 +2,7 @@ import stringWidth = require('string-width');
 
 export default class TableSizeParser {
 	padString(str : string, length : number) {
-		var a = (length / 2) - (str.length / 2);
+		let a = (length / 2) - (str.length / 2);
 		return str.padStart(a + str.length).padEnd(length);
 	}
 
@@ -12,9 +12,9 @@ export default class TableSizeParser {
 	}
 
 	tableHeading(people) {
-		var longestReceiver = this.stringLength("receiver");
-		var longestSender = this.stringLength("sender");
-		var longestComment = this.stringLength("comments");
+		let longestReceiver = this.stringLength("receiver");
+		let longestSender = this.stringLength("sender");
+		let longestComment = this.stringLength("comments");
 		people.forEach((person) => {
 			if (this.stringLength(person.person) > longestReceiver) {
 				longestReceiver = this.stringLength(person.person);
@@ -30,7 +30,7 @@ export default class TableSizeParser {
 		});
 
 		// define table heading
-		var tableHeading = this.padString("Receiver", longestReceiver) + " | " + this.padString("Sender", longestSender) + " | Comments\n";
+		let tableHeading = this.padString("Receiver", longestReceiver) + " | " + this.padString("Sender", longestSender) + " | Comments\n";
 		tableHeading += "Total".padEnd(longestReceiver) + " | " + " ".padEnd(longestSender) + " | \n";
 		tableHeading += "".padEnd(longestReceiver, "-") + "-+-" + "".padEnd(longestSender, "-") + "-+-" + "".padEnd(longestComment, "-") + "\n";
 		return {
@@ -43,7 +43,7 @@ export default class TableSizeParser {
 }
 
 exports.padString = function(str : string, length : number) {
-	var a = (length / 2) - (str.length / 2);
+	let a = (length / 2) - (str.length / 2);
 	return str.padStart(a + str.length).padEnd(length);
 }
 
@@ -54,9 +54,9 @@ exports.stringLength = function(str : string) {
 
 exports.tableHeading = function(people) {
 	// define table column widths
-	var longestReceiver = this.stringLength("receiver");
-	var longestSender = this.stringLength("sender");
-	var longestComment = this.stringLength("comments");
+	let longestReceiver = this.stringLength("receiver");
+	let longestSender = this.stringLength("sender");
+	let longestComment = this.stringLength("comments");
 	people.forEach((person) => {
 		if (this.stringLength(person.person) > longestReceiver) {
 			longestReceiver = this.stringLength(person.person);
@@ -72,7 +72,7 @@ exports.tableHeading = function(people) {
 	});
 
 	// define table heading
-	var tableHeading = this.padString("Receiver", longestReceiver) + " | " + this.padString("Sender", longestSender) + " | Comments\n";
+	let tableHeading = this.padString("Receiver", longestReceiver) + " | " + this.padString("Sender", longestSender) + " | Comments\n";
 	tableHeading += "Total".padEnd(longestReceiver) + " | " + " ".padEnd(longestSender) + " | \n";
 	tableHeading += "".padEnd(longestReceiver, "-") + "-+-" + "".padEnd(longestSender, "-") + "-+-" + "".padEnd(longestComment, "-") + "\n";
 }

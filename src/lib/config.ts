@@ -19,7 +19,7 @@ export default class Config {
 			return [];
 		}
 
-		var userRoles = this.users.filter(x => x.userid === userid);
+		let userRoles = this.users.filter(x => x.userid === userid);
 		return userRoles.map(x => x.role);
 	}
 

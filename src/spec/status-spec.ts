@@ -1,89 +1,86 @@
 import Status from '../lib/response-triggers/status';
 import constants from '../constants';
+import Config from '../lib/config';
+import PockyDB from '../lib/PockyDB';
+import { Client } from 'pg';
+import MockCiscoSpark from './mocks/mock-spark';
+import { MessageObject } from 'ciscospark/env';
 
-const config = {
+const config = new Config(null);
+const spark = new MockCiscoSpark();
 
-	checkRole(userid, value) {
+beforeAll(() => {
+	spyOn(config, 'checkRole').and.callFake((userid : string, value : string) => {
 		if (userid == 'mockunlimitedID' && value == 'unmetered') {
 			return true;
 		} else {
 			return false;
 		}
-	},
+	});
 
-	getConfig(config) {
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
 		if (config == 'limit') {
 			return 10;
-		}
-		else if (config == 'minimum') {
+		} else if (config == 'minimum') {
 			return 5;
-		}
-		else if (config == 'winners') {
+		} else if (config == 'winners') {
 			return 3;
-		}
-		else if (config == 'commentsRequired') {
+		} else if (config == 'commentsRequired') {
 			return 1;
-		}
-		else if (config == 'pegWithoutKeyword') {
+		} else if (config == 'pegWithoutKeyword') {
 			return 0;
 		}
-		throw new Error("bad config");
-	}
-}
 
-function createMessage(htmlMessage, person) {
+		throw new Error("bad config");
+	});
+
+	spyOn(spark.people, 'get').and.callFake((name : string) => {
+		return new Promise((resolve, reject) => {
+			resolve({
+				displayName: name + 'display'
+			});
+		})
+	});
+});
+
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
 		personId: person
 	}
 }
 
-function createPrivateMessage(message) {
+function createPrivateMessage(message : string) : MessageObject {
 	return {
 		text: message
 	}
 }
 
-function createDatabase(statusSuccess, statusResponse) {
-	return {
-		getPegsGiven: function (_person) {
-			return new Promise((resolve, reject) => {
-				if (statusSuccess) {
-					resolve(statusResponse);
-				} else {
-					reject();
-				}
-			});
-		}
-	}
-}
+function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
+	let client = new Client();
+	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	let db = new PockyDB(client, null);
 
-function createSparkMock() {
-	return {
-		people: {
-			get: function(name) {
-				return new Promise((resolve, reject) => {
-					resolve({
-						displayName: name+'display'
-					})
-				})
-			}
-		}
+	if (statusSuccess) {
+		spyOn(db, 'getPegsGiven').and.returnValue(new Promise((resolve, reject) => resolve(statusResponse)));
+	} else {
+		spyOn(db, 'getPegsGiven').and.returnValue(new Promise((resolve, reject) => reject()));
 	}
+
+	return db;
 }
 
 describe("creating Message", function() {
-
     it("should show the remaining pegs", function (done) {
         const expectedCount = config.getConfig('limit') - 3;
-		var database = createDatabase(true,
+		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new Status(createSparkMock(), database, config);
-        var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+        let status = new Status(spark, database, config);
+        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
         status.createMessage(sentMessage)
         .then((message) => {
@@ -94,14 +91,14 @@ describe("creating Message", function() {
 
     it("should show the remaining pegs", function (done) {
         const expectedCount = config.getConfig('limit') - 3;
-		var database = createDatabase(true,
+		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new Status(createSparkMock(), database, config);
-        var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+        let status = new Status(spark, database, config);
+        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'mockunlimitedID');
         status.createMessage(sentMessage)
         .then((message) => {
@@ -112,14 +109,14 @@ describe("creating Message", function() {
 
 	it("should send the message to the the sender", function (done) {
         const expectedCount = config.getConfig('limit') - 3;
-		var database = createDatabase(true,
+		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        var status = new Status(createSparkMock(), database, config);
-        var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+        let status = new Status(spark, database, config);
+        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
         status.createMessage(sentMessage)
         .then((message) => {
@@ -130,14 +127,14 @@ describe("creating Message", function() {
 
 	it("should have the items in the message", function (done) {
 		const expectedCount = config.getConfig('limit') - 3;
-		var database = createDatabase(true,
+		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'dtsdsrtdrsdpf'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		var status = new Status(createSparkMock(), database, config);
-		var sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+		let status = new Status(spark, database, config);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
 		status.createMessage(sentMessage)
 		.then((message) => {
@@ -148,7 +145,7 @@ describe("creating Message", function() {
 });
 
 describe("testing triggers", function() {
-	const status = new Status(createSparkMock(), null, config);
+	const status = new Status(spark, null, config);
 
 	const TriggerTestCases = [
 		{ text: `${constants.mentionMe} status`, expectedTriggered: true },
@@ -165,28 +162,28 @@ describe("testing triggers", function() {
 });
 
 describe("testing PM triggers", function() {
-	const status = new Status(createSparkMock(), null, config);
+	const status = new Status(spark, null, config);
 	it("should accept trigger", function () {
-		var message = createPrivateMessage('status');
-		var results = status.isToTriggerOnPM(message)
+		let message = createPrivateMessage('status');
+		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createPrivateMessage('sssting');
-		var results = status.isToTriggerOnPM(message)
+		let message = createPrivateMessage('sssting');
+		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept whitespace around", function () {
-		var message = createPrivateMessage(' status ');
-		var results = status.isToTriggerOnPM(message)
+		let message = createPrivateMessage(' status ');
+		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept capitalised command", function () {
-		var message = createPrivateMessage('Status');
-		var results = status.isToTriggerOnPM(message)
+		let message = createPrivateMessage('Status');
+		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 });

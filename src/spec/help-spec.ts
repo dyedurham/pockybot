@@ -43,32 +43,32 @@ describe("testing triggers", function() {
 	const help = new Help(config);
 
 	it("should accept trigger", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help`);
-		var results = help.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help`);
+		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfhelp`);
-		var results = help.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfhelp`);
+		let results = help.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should reject wrong id", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> help`);
-		var results = help.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> help`);
+		let results = help.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept no space", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>help`);
-		var results = help.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>help`);
+		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept trailing space", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help `);
-		var results = help.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help `);
+		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
@@ -77,26 +77,26 @@ describe("testing PM triggers", function() {
 	const help = new Help(config);
 
 	it("should accept trigger", function () {
-		var message = createPrivateMessage('help');
-		var results = help.isToTriggerOnPM(message)
+		let message = createPrivateMessage('help');
+		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createPrivateMessage('helooo');
-		var results = help.isToTriggerOnPM(message)
+		let message = createPrivateMessage('helooo');
+		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept whitespace around", function () {
-		var message = createPrivateMessage(' help ');
-		var results = help.isToTriggerOnPM(message)
+		let message = createPrivateMessage(' help ');
+		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept capitalised command", function () {
-		var message = createPrivateMessage('Help');
-		var results = help.isToTriggerOnPM(message)
+		let message = createPrivateMessage('Help');
+		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 });

@@ -42,7 +42,7 @@ config.updateAll();
 
 // Trigger instantiation
 const peg = new Peg(spark, database, config);
-const unpeg = new Unpeg(spark, database, config, utilities);
+const unpeg = new Unpeg(spark, database, utilities);
 const reset = new Reset(database, config);
 const winners = new Winners(database, tableSizer, config);
 const results = new Results(spark, database, tableSizer, config);

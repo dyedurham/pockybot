@@ -1,116 +1,54 @@
 import Unpeg from '../lib/response-triggers/unpeg';
 import constants from '../constants';
+import PockyDB from '../lib/PockyDB';
+import Utilities from '../lib/utilities';
+import { Client } from 'pg';
+import MockCiscoSpark from './mocks/mock-spark';
+import { MessageObject } from 'ciscospark/env';
 
-function createMessage(htmlMessage, person) {
+const spark = new MockCiscoSpark();
+
+function createMessage(htmlMessage : string, personId = 'MockSender', receiver = 'MockReceiver') : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [constants.botId, 'aoeuidhtns']
+		personId: personId,
+		mentionedPeople: [constants.botId, receiver]
 	};
 }
 
-function createSparkMock() {
-	return {
-		messages: {
-			create: function () {
-				return new Promise((resolve, reject) => {
-					resolve();
-				});
-			}
-		}
-	}
-}
+function createDatabase() : PockyDB {
+	let client = new Client();
+	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	let db = new PockyDB(client, null);
 
-function createConfigMock(permitted) {
-	return {
-		checkRole: function() {
-			return permitted;
-		}
-	};
-}
-
-function createDatabase(givePegSuccess, givePegResponse, countSuccess, countResponse) {
-	return {
-		givePegWithComment: function () {
-			return new Promise((resolve, reject) => {
-				if (givePegSuccess) {
-					resolve(givePegResponse);
-				} else {
-					reject();
-				}
+	spyOn(db, 'getUser').and.callFake((userid : string) => {
+		return new Promise((resolve, reject) => {
+			resolve({
+				username: userid + ' Name',
+				userid: userid
 			});
-		},
+		})
+	});
 
-		countPegsGiven: function () {
-			return new Promise((resolve, reject) => {
-				if (countSuccess) {
-					resolve(countResponse);
-				} else {
-					reject();
-				}
-			});
-		},
-
-		getUser: function() {
-			return new Promise((resolve, reject) => {
-				resolve({
-					username: 'mock name',
-					userid: 'mockID'
-				});
-			});
-		}
-	}
+	return db;
 }
 
-function createUtilities(numToReturn) {
-	return {
-		sleep: function() {
-			return new Promise(resolve => setTimeout(resolve, 500));
-		},
+function createUtilities(numToReturn : number) : Utilities {
+	let utilities = new Utilities();
 
-		getRandomInt: function() {
-			return numToReturn;
-		}
-	}
-}
+	spyOn(utilities, 'sleep').and.returnValue(new Promise((resolve, reject) => resolve()));
+	spyOn(utilities, 'getRandomInt').and.returnValue(numToReturn);
 
-function testRandomResponses(num, firstResponse, result, spark) {
-	let database = createDatabase(true, 0, true, 1);
-	let config = createConfigMock(true);
-	let utilities = createUtilities(num);
-
-	let unpeg = new Unpeg(spark, database, config, utilities);
-
-	spyOn(spark.messages, 'create');
-
-	let room = "abc";
-
-	let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-		'mockID');
-	unpeg.createMessage(sentMessage, room)
-	.then((message) => {
-		expect(spark.messages.create).toHaveBeenCalledWith({
-			markdown: firstResponse,
-			roomId: room
-		});
-		expect(message.markdown).toBe(result);
-	}).catch((error) => {
-		console.log(error);
-		expect(false).toBe(true);
-	})
+	return utilities;
 }
 
 describe("triggers", () => {
 	it('should accept an unpeg command', () => {
-		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
-		let config = createConfigMock(true);
+		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, config, utilities);
-
-		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-			'mockID');
+		let unpeg = new Unpeg(spark, database, utilities);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
 
 		try {
 			let message = unpeg.isToTriggerOn(sentMessage);
@@ -122,15 +60,12 @@ describe("triggers", () => {
 	});
 
 	it('should reject peg command', () => {
-		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
-		let config = createConfigMock(true);
+		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, config, utilities);
+		let unpeg = new Unpeg(spark, database, utilities);
 
-		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-			'mockID');
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
 
 		try {
 			let message = unpeg.isToTriggerOn(sentMessage);
@@ -142,87 +77,90 @@ describe("triggers", () => {
 	});
 });
 
-describe("creating Message", function() {
-	it("should fake unpeg in case 0", async function(done) {
-		let database = createDatabase(true, 0, true, 1);
-		let config = createConfigMock(true);
-		let spark = createSparkMock();
-		let utilities = createUtilities(0);
+describe('unpeg messages', () => {
+	type UnpegTestData = {
+		case : number,
+		twoStage : boolean,
+		firstResponse ?: string,
+		response : string
+	}
 
-		spyOn(spark.messages, 'create').and.callThrough();
-
-		let unpeg = new Unpeg(spark, database, config, utilities);
-
-
-		let firstResponse = "Peg removed from mock name.";
-		let result = "Kidding!";
-
-		let room = "abc";
-
-		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-			'mockID');
-
-		try {
-			let message = await unpeg.createMessage(sentMessage, room);
-			expect(spark.messages.create).toHaveBeenCalledWith({
-				markdown: firstResponse,
-				roomId: room
-			});
-			expect(message.markdown).toBe(result);
-		} catch (error) {
-			console.log(error);
-			expect(false).toBe(true);
+	const testCases : UnpegTestData[] = [
+		{
+			case: 0,
+			twoStage: true,
+			firstResponse: 'Peg removed from MockReceiver Name.',
+			response: 'Kidding!'
+		},
+		{
+			case: 1,
+			twoStage: false,
+			response: 'It looks like MockReceiver Name has hidden their pegs too well for me to find them!'
+		},
+		{
+			case: 2,
+			twoStage: true,
+			firstResponse: 'MockReceiver Name\'s peg has been removed...',
+			response: 'But MockReceiver Name stole it back!'
+		},
+		{
+			case: 3,
+			twoStage: true,
+			firstResponse: 'Peg given to MockReceiver Name',
+			response: 'But MockReceiver Name didn\'t want it!'
+		},
+		{
+			case: 4,
+			twoStage: false,
+			response: 'I\'m sorry MockSender Name, I\'m afraid I can\'t do that.'
+		},
+		{
+			case: 5,
+			twoStage: false,
+			response:
+`### HTTP Status Code 418: I'm a teapot.
+Unable to brew coffee. Or pegs.`
+		},
+		{
+			case: 6,
+			twoStage: false,
+			response:
+`\`\`\`
+Error: Access Denied user MockSender Name does not have the correct privileges
+	at UnPeg (unpeg.js:126)
+	at EveryoneButMockSenderName (unpeg.js:4253)
+	at ExecuteBadCode (pockybot.js:1467)
+	at DecrementPegs (pockybot.js:1535)
+\`\`\``
 		}
-		done();
-	});
+	]
 
-	it("should fake unpeg in case 1", function(done) {
-		let database = createDatabase(true, 0, true, 1);
-		let spark = createSparkMock();
-		let config = createConfigMock(true);
-		let utilities = createUtilities(1);
+	testCases.forEach((test : UnpegTestData) => {
+		it(`should fake unpeg in case ${test.case}`, async (done : DoneFn) => {
+			let database = createDatabase();
+			let utilities = createUtilities(test.case);
 
-		let unpeg = new Unpeg(spark, database, config, utilities);
+			let unpeg = new Unpeg(spark, database, utilities);
 
-		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-			'mockID');
-		unpeg.createMessage(sentMessage, "abc")
-			.then((message) => {
-				expect(message.markdown).toBe("It looks like mock name has hidden their pegs too well for me to find them!");
-				done();
+			spyOn(spark.messages, 'create').and.callThrough();
+
+			let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
+			let roomId = 'abc';
+
+			let result = await unpeg.createMessage(message, roomId);
+
+			if (test.twoStage) {
+				expect(spark.messages.create).toHaveBeenCalledWith({
+					markdown: test.firstResponse,
+					roomId: roomId
+				});
+			}
+
+			expect(result).toEqual({
+				markdown: test.response
 			});
-	});
 
-	it("should fake unpeg in case 2", function(done) {
-		let database = createDatabase(true, 0, true, 1);
-		let config = createConfigMock(true);
-		let spark = createSparkMock();
-		let utilities = createUtilities(2);
-
-		spyOn(spark.messages, 'create').and.callThrough();
-
-		let unpeg = new Unpeg(spark, database, config, utilities);
-
-		let firstResponse = "mock name's peg has been removed...";
-		let result = "But mock name stole it back!";
-
-
-		let room = "abc";
-
-		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with a comment</p>',
-			'mockID');
-		unpeg.createMessage(sentMessage, room)
-		.then((message) => {
-			expect(spark.messages.create).toHaveBeenCalledWith({
-				markdown: firstResponse,
-				roomId: room
-			});
-			expect(message.markdown).toBe(result);
 			done();
-		}).catch((error) => {
-			console.log(error);
-			expect(false).toBe(true);
-			done();
-		});
+		})
 	});
 });

@@ -1,6 +1,7 @@
 import Keywords from '../lib/response-triggers/keywords';
 import constants from '../constants';
 import Config from '../lib/config';
+import { MessageObject } from 'ciscospark/env';
 
 const config = new Config(null);
 beforeAll(() => {
@@ -13,13 +14,13 @@ beforeAll(() => {
 	});
 })
 
-function createMessage(htmlMessage : string) {
+function createMessage(htmlMessage : string) : MessageObject {
 	return {
 		html: htmlMessage
 	}
 }
 
-function createPrivateMessage(message : string) {
+function createPrivateMessage(message : string) : MessageObject {
 	return {
 		text: message
 	}
@@ -41,32 +42,32 @@ describe("testing triggers", function() {
 	const keywords = new Keywords(config);
 
 	it("should accept trigger", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords`);
-		var results = keywords.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords`);
+		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfkeywords`);
-		var results = keywords.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfkeywords`);
+		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should reject wrong id", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="notabotID">${constants.botName}</spark-mention> keywords`);
-		var results = keywords.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="notabotID">${constants.botName}</spark-mention> keywords`);
+		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept no space", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>keywords`);
-		var results = keywords.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>keywords`);
+		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept trailing space", function () {
-		var message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords `);
-		var results = keywords.isToTriggerOn(message)
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords `);
+		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
@@ -75,26 +76,26 @@ describe("testing PM triggers", function() {
 	const keywords = new Keywords(config);
 
 	it("should accept trigger", function () {
-		var message = createPrivateMessage('keywords');
-		var results = keywords.isToTriggerOnPM(message)
+		let message = createPrivateMessage('keywords');
+		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createPrivateMessage('keyyywrods');
-		var results = keywords.isToTriggerOnPM(message)
+		let message = createPrivateMessage('keyyywrods');
+		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept whitespace around", function () {
-		var message = createPrivateMessage(' keywords ');
-		var results = keywords.isToTriggerOnPM(message)
+		let message = createPrivateMessage(' keywords ');
+		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept capitalised command", function () {
-		var message = createPrivateMessage('Keywords');
-		var results = keywords.isToTriggerOnPM(message)
+		let message = createPrivateMessage('Keywords');
+		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 });

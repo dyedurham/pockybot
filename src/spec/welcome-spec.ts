@@ -1,38 +1,42 @@
 import Welcome from '../lib/response-triggers/welcome';
 import constants from '../constants';
+import { MessageObject } from 'ciscospark/env';
+import Config from '../lib/config';
 
-const config = {
-	getStringConfig(config) {
+const config = new Config(null);
+
+beforeAll(() => {
+	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
 		if (config == 'keyword') {
 			return ["customer", "brave", "awesome", "collaborative", "real"];
 		}
 
 		throw new Error("bad config");
-	},
+	});
 
-	getConfig(config) {
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
 		if (config == 'requireValues') {
 			return 1;
 		}
 
 		throw new Error("bad config");
-	}
-}
+	});
+});
 
-function createMessage(htmlMessage) {
+function createMessage(htmlMessage : string) : MessageObject {
 	return {
 		html: htmlMessage
 	}
 }
 
-function createPrivateMessage(message) {
+function createPrivateMessage(message : string) : MessageObject {
 	return {
 		text: message
 	}
 }
 
 describe("ponging the ping", function() {
-	const welcome = new Welcome(config as any);
+	const welcome = new Welcome(config);
 
 	it("should pong", function (done) {
 		welcome.createMessage()
@@ -44,63 +48,63 @@ describe("ponging the ping", function() {
 });
 
 describe("testing triggers", function() {
-	const welcome = new Welcome(config as any);
+	const welcome = new Welcome(config);
 
 	it("should accept trigger", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome');
-		var results = welcome.isToTriggerOn(message)
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome');
+		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfwelcome');
-		var results = welcome.isToTriggerOn(message)
+		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfwelcome');
+		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should reject wrong id", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> welcome');
-		var results = welcome.isToTriggerOn(message)
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> welcome');
+		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept no space", function () {
-		var message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>welcome');
-		var results = welcome.isToTriggerOn(message)
+		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>welcome');
+		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept trailing space", function () {
-		var message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome ');
-		var results = welcome.isToTriggerOn(message)
+		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome ');
+		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
 
 describe("testing PM triggers", function() {
-	const welcome = new Welcome(config as any);
+	const welcome = new Welcome(config);
 
 	it("should accept trigger", function () {
-		var message = createPrivateMessage('welcome');
-		var results = welcome.isToTriggerOnPM(message)
+		let message = createPrivateMessage('welcome');
+		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createPrivateMessage('welccccc');
-		var results = welcome.isToTriggerOnPM(message)
+		let message = createPrivateMessage('welccccc');
+		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
 	it("should accept whitespace around", function () {
-		var message = createPrivateMessage(' welcome ');
-		var results = welcome.isToTriggerOnPM(message)
+		let message = createPrivateMessage(' welcome ');
+		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it("should accept capitalised command", function () {
-		var message = createPrivateMessage('Welcome');
-		var results = welcome.isToTriggerOnPM(message)
+		let message = createPrivateMessage('Welcome');
+		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 });

@@ -7,7 +7,7 @@ const pingCommand = `(?: )*${commandText}(?: )*`;
 
 export default class Ping extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + pingCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + pingCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

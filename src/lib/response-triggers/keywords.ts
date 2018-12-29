@@ -16,7 +16,7 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

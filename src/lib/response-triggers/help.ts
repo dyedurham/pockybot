@@ -16,7 +16,7 @@ export default class Help extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.helpCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.helpCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

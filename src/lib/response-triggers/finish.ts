@@ -29,13 +29,13 @@ export default class Finish extends Trigger {
 			return false;
 		}
 
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + finishCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + finishCommand, 'ui');
 		return pattern.test(message.html);
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		var winnersPromise = this.winners.createMessage();
-		var resultsPromise = this.results.createMessage();
+		let winnersPromise = this.winners.createMessage();
+		let resultsPromise = this.results.createMessage();
 		__logger.debug("Finish promises created");
 
 		return Promise.all([winnersPromise, resultsPromise])
@@ -44,7 +44,7 @@ export default class Finish extends Trigger {
 			return this.reset.createMessage()
 			.then((data) => {
 				__logger.information("Reset promise executed");
-				var message = `## Winners\n\n` + values[0].markdown + '\n\n';
+				let message = `## Winners\n\n` + values[0].markdown + '\n\n';
 				message += 'All pegs given out this fortnight can be found in the attached file.';
 				message += '\n\n' + data.markdown;
 				return {

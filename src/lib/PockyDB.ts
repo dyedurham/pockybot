@@ -89,7 +89,7 @@ export default class PockyDB {
 			return dbConstants.pegAllSpent;
 		}
 
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'givePegWithCommentQuery',
 			text: this.sqlGivePegWithComment,
 			values: [sender, receiver, comment]
@@ -114,7 +114,7 @@ export default class PockyDB {
 		}
 
 		__logger.information(`Creating a new user with userid ${userid} and username ${user.displayName}`);
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'createUserQuery',
 			text: this.sqlCreateUser,
 			values: [userid, user.displayName]
@@ -138,7 +138,7 @@ export default class PockyDB {
 			return dbConstants.updateUserError;
 		}
 
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'updateUserQuery',
 			text: this.sqlUpdate,
 			values: [username, userid]
@@ -154,7 +154,7 @@ export default class PockyDB {
 	}
 
 	async getUsers() : Promise<any[]> {
-		var query = {
+		let query = {
 			name: 'getUsersQuery',
 			text: this.sqlGetUsers
 		};
@@ -163,7 +163,7 @@ export default class PockyDB {
 	}
 
 	async getUser(userid : string) : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'getUserQuery',
 			text: this.sqlGetUser,
 			values: [userid]
@@ -204,7 +204,7 @@ export default class PockyDB {
 	}
 
 	async exists(userid : string) : Promise<boolean> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'existsQuery',
 			text: this.sqlExists,
 			values: [userid]
@@ -216,7 +216,7 @@ export default class PockyDB {
 	}
 
 	async countPegsGiven(user : string) : Promise<number> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'pegsGiven',
 			text: this.sqlPegsGiven,
 			values: [user]
@@ -232,7 +232,7 @@ export default class PockyDB {
 			return true;
 		}
 
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'pegsGiven',
 			text: this.sqlPegsGiven,
 			values: [user]
@@ -248,7 +248,7 @@ export default class PockyDB {
 	}
 
 	async reset() : Promise<QueryResult> {
-		var query = {
+		let query = {
 			name: 'resetQuery',
 			text: this.sqlReset
 		};
@@ -257,7 +257,7 @@ export default class PockyDB {
 	}
 
 	async returnResults() : Promise<any> {
-		var query = {
+		let query = {
 			name: 'returnResultsQuery',
 			text: this.sqlReturnResults,
 		};
@@ -268,7 +268,7 @@ export default class PockyDB {
 	}
 
 	async returnWinners() : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'returnWinnersQuery',
 			text: this.sqlReturnWinners,
 			values: [this.config.getConfig('minimum'), this.config.getConfig('winners')]
@@ -280,7 +280,7 @@ export default class PockyDB {
 	}
 
 	async getPegsGiven(user) : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'returnGivesQuery',
 			text: this.sqlReturnGives,
 			values: [user]
@@ -290,7 +290,7 @@ export default class PockyDB {
 	}
 
 	async getRoles() : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'returnRolesQuery',
 			text: this.sqlGetRoles,
 			values: []
@@ -300,7 +300,7 @@ export default class PockyDB {
 	}
 
 	async getConfig() : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'returnConfigQuery',
 			text: this.sqlGetConfig,
 			values: []
@@ -310,7 +310,7 @@ export default class PockyDB {
 	}
 
 	async getStringConfig() : Promise<any> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'returnStringConfigQuery',
 			text: this.sqlGetStringConfig,
 			values: []
@@ -320,7 +320,7 @@ export default class PockyDB {
 	}
 
 	async setRoles(userid : string, role : string) : Promise<void> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'setRolesQuery',
 			text: this.sqlSetRoles,
 			values: [userid, role]
@@ -330,7 +330,7 @@ export default class PockyDB {
 	}
 
 	async setConfig(config : string, value : number) : Promise<void> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'setConfigQuery',
 			text: this.sqlSetConfig,
 			values: [config, value]
@@ -340,7 +340,7 @@ export default class PockyDB {
 	}
 
 	async setStringConfig(config : string, value : string) : Promise<void> {
-		var query : QueryConfig = {
+		let query : QueryConfig = {
 			name: 'setStringConfigQuery',
 			text: this.sqlSetStringConfig,
 			values: [config, value]

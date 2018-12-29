@@ -32,8 +32,8 @@ app.post('/pm', function (req, res) {
 
 app.get('/results', function (req, res) {
 	try {
-		var url_parts = url.parse(req.url, true);
-		var query = url_parts.query;
+		let url_parts = url.parse(req.url, true);
+		let query = url_parts.query;
 		res.download(__dirname + '/' + query.filename);
 	} catch (e) {
 		__logger.error(`Error in server /results:\n${e.message}`);
@@ -42,8 +42,8 @@ app.get('/results', function (req, res) {
 });
 
 app.get('/test', function (req, res) {
-	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;
+	let url_parts = url.parse(req.url, true);
+	let query = url_parts.query;
 	fs.readFile(__dirname + '/' + query.filename, 'utf8', function(err, data) {
         if (err) {
 			throw err;

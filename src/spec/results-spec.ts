@@ -1,52 +1,45 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
+import Config from '../lib/config';
+import PockyDB from '../lib/PockyDB';
+import { Client } from 'pg';
+import MockCiscoSpark from './mocks/mock-spark';
+import { MessageObject } from 'ciscospark/env';
 
-const config = {
-	checkRole(userid, value) {
+const config = new Config(null);
+const spark = new MockCiscoSpark();
+
+beforeAll(() => {
+	spyOn(config, 'checkRole').and.callFake((userid : string, value : string) => {
 		if (userid == 'mockAdminID' && value.toUpperCase() == 'ADMIN') {
 			return true;
 		}
 		else {
 			return false;
 		}
-	},
+	});
 
-	getConfig(config) {
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
 		if (config == 'limit') {
 			return 10;
-		}
-		else if (config == 'minimum') {
+		} else if (config == 'minimum') {
 			return 5;
-		}
-		else if (config == 'winners') {
+		} else if (config == 'winners') {
 			return 3;
-		}
-		else if (config == 'commentsRequired') {
+		} else if (config == 'commentsRequired') {
 			return 1;
-		}
-		else if (config == 'pegWithoutKeyword') {
+		} else if (config == 'pegWithoutKeyword') {
 			return 0;
 		}
-		throw new Error("bad config");
-	}
-}
 
-function createMessage(htmlMessage, person) {
+		throw new Error("bad config");
+	});
+});
+
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
 		personId: person
-	}
-}
-
-function createSparkMock() {
-	return {
-		messages: {
-			create: function() {
-				return new Promise((resolve, reject) => {
-					resolve();
-				})
-			}
-		}
 	}
 }
 
@@ -60,26 +53,25 @@ function createData() {
 	}];
 }
 
-function createDatabase(success, data) {
-	return {
-		returnResults: function () {
-			return new Promise((resolve, reject) => {
-				if (success) {
-					resolve(data);
-				} else {
-					reject(new Error('Rejected!'));
-				}
-			});
-		}
+function createDatabase(success : boolean, data) : PockyDB {
+	let client = new Client();
+	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	let db = new PockyDB(client, null);
+
+	if (success) {
+		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve(data)));
+	} else {
+		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => reject('Rejected!')));
 	}
+
+	return db;
 }
 
 describe("creating responses", function() {
-	var today = new Date();
-	var todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-	var data = createData();
-	var spark = createSparkMock();
-	var results = new Results(spark, null, null, config);
+	let today = new Date();
+	let todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+	let data = createData();
+	let results = new Results(spark, null, null, config);
 	it("should parse a proper message", function (done) {
 		results.createResponse(data)
 		.then((message) => {
@@ -92,12 +84,20 @@ describe("creating responses", function() {
 });
 
 describe("creating a message", function() {
-	var today = new Date();
-	var todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-	var data = createData();
-	var database = createDatabase(true, data);
-	var spark = createSparkMock();
-	var results = new Results(spark, database, null, config);
+	let today : Date;
+	let todayString : string;
+	let data;
+	let database : PockyDB;
+	let results : Results;
+
+	beforeEach(() => {
+		today = new Date();
+		todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+		data = createData();
+		database = createDatabase(true, data);
+		results = new Results(spark, database, null, config);
+	});
+
 	it("should create a proper message", function (done) {
 		results.createMessage()
 		.then((message) => {
@@ -110,9 +110,14 @@ describe("creating a message", function() {
 });
 
 describe("failing at creating a message", function() {
-	var database = createDatabase(false, null);
+	let database : PockyDB;
+	let results : Results;
 
-	var results = new Results(null, database, null, config);
+	beforeEach(() => {
+		database = createDatabase(false, null);
+		results = new Results(null, database, null, config);
+	});
+
 	it("should create a proper message on fail", function (done) {
 		results.createMessage().then((data) => {
 			fail("should have thrown an error");
@@ -124,46 +129,51 @@ describe("failing at creating a message", function() {
 });
 
 describe("testing triggers", function() {
-	var results = new Results(null, null, null, config);
+	let results : Results;
+
+	beforeEach(() => {
+		results = new Results(null, null, null, config);
+	});
+
 	it("should accept trigger", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockAdminID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
 	it("should reject wrong command", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfresults',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfresults',
 			'mockAdminID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
 	it("should reject wrong id", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="badID">' + constants.botName + '</spark-mention> results',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="badID">' + constants.botName + '</spark-mention> results',
 			'mockAdminID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
 	it("should accept no space", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>results',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>results',
 			'mockAdminID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
 	it("should accept trailing space", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results ',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results ',
 			'mockAdminID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
 	it("should fail with non admin", function () {
-		var message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockID');
-		var triggered = results.isToTriggerOn(message)
+		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 });

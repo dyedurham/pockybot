@@ -53,7 +53,7 @@ declare module 'ciscospark/env' {
 		[Symbol.iterator] : () => Iterator<T>;
 	}
 
-	class CiscoSpark {
+	interface CiscoSpark {
 		ciscospark : boolean;
 		version : string;
 		webhooks : {

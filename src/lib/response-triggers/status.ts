@@ -12,7 +12,7 @@ export default class Status extends Trigger {
 	database : PockyDB;
 	config : Config;
 
-	constructor(sparkService, databaseService, config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
 		super();
 
 		this.spark = sparkService;
@@ -21,7 +21,7 @@ export default class Status extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		var pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + statusCommand + constants.optionalMarkdownEnding + '$', 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + statusCommand + constants.optionalMarkdownEnding + '$', 'ui');
 		return pattern.test(message.html);
 	}
 
@@ -58,8 +58,8 @@ ${mapped.list}`,
 		return Promise.all(mapToDisplayNameAsync);
 	}
 
-	mapData(data, fromPerson) {
-		var remaining = '';
+	mapData(data, fromPerson : string) {
+		let remaining = '';
 
 		if (this.config.checkRole(fromPerson,'unmetered')) {
 			remaining ='unlimited';
