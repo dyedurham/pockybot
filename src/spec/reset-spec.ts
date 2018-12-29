@@ -4,12 +4,13 @@ import Config from '../lib/config';
 import PockyDB from '../lib/PockyDB';
 import { Client } from 'pg';
 import { MessageObject } from 'ciscospark/env';
+import { Role } from '../models/database';
 
 const config = new Config(null);
 
 beforeAll(() => {
-	spyOn(config, 'checkRole').and.callFake((userid : string, value : string) => {
-		if (userid == 'mockadminID' && value.toUpperCase() == 'ADMIN') {
+	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
+		if (userid === 'mockadminID' && value === Role.Admin) {
 			return true;
 		}
 		else {
@@ -18,19 +19,19 @@ beforeAll(() => {
 	});
 
 	spyOn(config, 'getConfig').and.callFake((config : string) => {
-		if (config == 'limit') {
+		if (config === 'limit') {
 			return 10;
-		} else if (config == 'minimum') {
+		} else if (config === 'minimum') {
 			return 5;
-		} else if (config == 'winners') {
+		} else if (config === 'winners') {
 			return 3;
-		} else if (config == 'commentsRequired') {
+		} else if (config === 'commentsRequired') {
 			return 1;
-		} else if (config == 'pegWithoutKeyword') {
+		} else if (config === 'pegWithoutKeyword') {
 			return 0;
 		}
 
-		throw new Error("bad config");
+		throw new Error('bad config');
 	});
 })
 
@@ -57,7 +58,7 @@ function createDatabase(success : boolean) : PockyDB {
 	return db;
 }
 
-describe("testing response", function() {
+describe('testing response', function() {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -66,16 +67,16 @@ describe("testing response", function() {
 		reset = new Reset(database, config);
 	});
 
-	it("should reset", function (done) {
+	it('should reset', function (done) {
 		reset.createMessage()
 		.then((response) => {
-			expect(response.markdown).toBe("Pegs cleared");
+			expect(response.markdown).toBe('Pegs cleared');
 			done();
 		});
 	});
 });
 
-describe("testing failed response", function() {
+describe('testing failed response', function() {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -84,58 +85,58 @@ describe("testing failed response", function() {
 		reset = new Reset(database, config);
 	})
 
-	it("should display an error message", function (done) {
+	it('should display an error message', function (done) {
 		reset.createMessage()
 		.then((response) => {
-			expect(response.markdown).toBe("Error clearing pegs");
+			expect(response.markdown).toBe('Error clearing pegs');
 			done();
 		});
 	});
 });
 
-describe("testing triggers", function() {
+describe('testing triggers', function() {
 	let reset : Reset;
 
 	beforeEach(() => {
 		reset = new Reset(null, config);
 	})
 
-	it("should accept trigger", function () {
+	it('should accept trigger', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it("should reject wrong command", function () {
+	it('should reject wrong command', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfreset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it("should reject wrong id", function () {
+	it('should reject wrong id', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMGFiNWE5ZS05MjliLTQ3N2EtOTk0MC00ZGJlN2QY2MzNzU">' + constants.botName + '</spark-mention> reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it("should accept no space", function () {
+	it('should accept no space', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it("should accept trailing space", function () {
+	it('should accept trailing space', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset ',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it("should fail with non admin", function () {
+	it('should fail with non admin', function () {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockID');
 		let results = reset.isToTriggerOn(message)

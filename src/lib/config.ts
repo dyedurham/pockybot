@@ -1,25 +1,26 @@
 import PockyDB from './PockyDB';
 import __logger from './logger';
+import { ConfigRow, StringConfigRow, RolesRow, Role } from '../models/database';
 
 export default class Config {
 	database : PockyDB;
-	users : any[];
-	config : any[];
-	stringConfig : any[];
+	roles : RolesRow[];
+	config : ConfigRow[];
+	stringConfig : StringConfigRow[];
 
 	constructor(database : PockyDB) {
 		this.database = database;
-		this.users = [];
+		this.roles = [];
 		this.config = [];
 		this.stringConfig = [];
 	}
 
-	getRoles(userid : string) : string[] {
-		if (this.users.length === 0) {
+	getRoles(userid : string) : Role[] {
+		if (this.roles.length === 0) {
 			return [];
 		}
 
-		let userRoles = this.users.filter(x => x.userid === userid);
+		let userRoles = this.roles.filter(x => x.userid === userid);
 		return userRoles.map(x => x.role);
 	}
 
@@ -39,15 +40,15 @@ export default class Config {
 		);
 	}
 
-	checkRole(userid : string, role : string) : boolean {
-		if(!this.users) return false;
-		return this.users.some(x =>
+	checkRole(userid : string, role : Role) : boolean {
+		if(!this.roles) return false;
+		return this.roles.some(x =>
 			x.userid === userid &&
-			x.role.toUpperCase() === role.toUpperCase());
+			x.role === role);
 	}
 
 	getAllRoles() {
-		return this.users;
+		return this.roles;
 	}
 
 	getAllConfig() {
@@ -61,8 +62,8 @@ export default class Config {
 	async updateRoles() : Promise<void> {
 		let data = await this.database.getRoles();
 
-		this.users = data;
-		__logger.debug(this.users);
+		this.roles = data;
+		__logger.debug(this.roles);
 	}
 
 	async updateConfig() : Promise<void> {
@@ -79,8 +80,8 @@ export default class Config {
 		__logger.debug(this.stringConfig);
 	}
 
-	async setRole(userid : string, role : string) : Promise<void> {
-		await this.database.setRoles(userid, role.toUpperCase());
+	async setRole(userid : string, role : Role) : Promise<void> {
+		await this.database.setRoles(userid, role);
 		await this.updateRoles();
 	}
 

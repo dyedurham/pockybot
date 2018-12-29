@@ -7,7 +7,7 @@ function respond(messageEvent : any) {
 	try {
 		spark.messages.get(messageEvent.data.id)
 		.then((message : MessageObject) => {
-			__logger.debug("processing message: " + JSON.stringify(message));
+			__logger.debug('processing message: ' + JSON.stringify(message));
 			let room = message.roomId;
 
 			if(message.personId !== constants.botId){

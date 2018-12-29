@@ -1,4 +1,4 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import dbConstants from '../db-constants';
 import xmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
@@ -6,6 +6,7 @@ import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { UserRow } from '../../models/database';
 
 export default class Peg extends Trigger {
 	readonly pegCommand : string;
@@ -91,14 +92,14 @@ export default class Peg extends Trigger {
 				return false;
 			}
 
-			if (message.children[message.children.length - 1].text().trim() === "") {
+			if (message.children[message.children.length - 1].text().trim() === '') {
 				return false;
 			}
 
 			return this.validateTrigger(message);
 		} catch (e) {
 			__logger.error(`Error in validateMessage peg:\n${e.message}`);
-			throw new Error("Error in validateMessage peg");
+			throw new Error('Error in validateMessage peg');
 		}
 	}
 
@@ -133,18 +134,18 @@ export default class Peg extends Trigger {
 	}
 
 	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject>{
-		let count;
+		let count : number;
 
 		try {
 			count = await this.database.countPegsGiven(fromPerson);
 		} catch (error) {
 			__logger.error(`Error counting pegsGiven from ${fromPerson}:\n${error.message}`);
 			return {
-				markdown: "Giving user's count of previously given pegs could not be found. Peg not given."
+				markdown: 'Giving user\'s count of previously given pegs could not be found. Peg not given.'
 			};
 		}
 
-		let data;
+		let data : UserRow;
 		try {
 			data = await this.database.getUser(toPersonId);
 		} catch (error) {
@@ -155,28 +156,28 @@ export default class Peg extends Trigger {
 		}
 
 		if (!data.userid) {
-			throw new Error("No person was obtained");
+			throw new Error('No person was obtained');
 		}
 
 		return {
-			markdown: 'Peg given to ' + (data.username || "someone") + '. You have given ' + count + ' ' + (count == 1 ? 'peg' : 'pegs') + ' this fortnight.',
+			markdown: 'Peg given to ' + (data.username || 'someone') + '. You have given ' + count + ' ' + (count === 1 ? 'peg' : 'pegs') + ' this fortnight.',
 			toPersonId: fromPerson,
 			roomId: null
 		};
 	}
 
 	async pmReceiver(comment : string, toPersonId : string, fromPerson : string) : Promise<void> {
-		let data;
+		let data : UserRow;
 		try {
 			data = await this.database.getUser(fromPerson);
 		} catch (error) {
 			__logger.error(`Error in creating PM notifying user ${toPersonId} of peg from ${fromPerson}:\n${error.message}`);
 		}
 
-		__logger.debug("sending pm to: " + toPersonId);
+		__logger.debug('sending pm to: ' + toPersonId);
 
-		let msg;
-		if (comment.startsWith("for ")) {
+		let msg : string;
+		if (comment.startsWith('for ')) {
 			msg = `You have received a new peg from ${data.username}: "${comment}"`;
 		} else {
 			msg = `You have received a new peg from ${data.username} for: "${comment}"`;

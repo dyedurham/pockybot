@@ -1,8 +1,10 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { PegGiven, Role } from '../../models/database';
+import { PegGivenData } from '../../models/peg-given-data';
 
 const commandText = 'status';
 const statusCommand = `(?: )*${commandText}(?: )*`;
@@ -32,8 +34,8 @@ export default class Status extends Trigger {
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let fromPerson = message.personId;
 
-		let pegs = await this.database.getPegsGiven(fromPerson);
-		let map = await this.mapIdToName(pegs);
+		let pegs : PegGiven[] = await this.database.getPegsGiven(fromPerson);
+		let map : PegGivenData[] = await this.mapIdToName(pegs);
 		let mapped = await this.mapData(map, fromPerson);
 
 		return {
@@ -47,8 +49,8 @@ ${mapped.list}`,
 		};
 	}
 
-	mapIdToName(data) {
-		const mapToDisplayNameAsync = data.reduce((promises, item) => {
+	mapIdToName(data : PegGiven[]) : Promise<PegGivenData[]> {
+		const mapToDisplayNameAsync = data.reduce((promises : Promise<PegGivenData>[], item : PegGiven) => {
 			return [...promises,
 				Promise.all([
 					this.spark.people.get(item.receiver),
@@ -58,10 +60,10 @@ ${mapped.list}`,
 		return Promise.all(mapToDisplayNameAsync);
 	}
 
-	mapData(data, fromPerson : string) {
+	mapData(data : PegGivenData[], fromPerson : string) : {list : string, remaining : string} {
 		let remaining = '';
 
-		if (this.config.checkRole(fromPerson,'unmetered')) {
+		if (this.config.checkRole(fromPerson, Role.Unmetered)) {
 			remaining ='unlimited';
 		} else {
 			remaining = (this.config.getConfig('limit') - data.length).toString();

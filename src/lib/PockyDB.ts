@@ -5,6 +5,7 @@ import __logger from './logger';
 import * as path from 'path';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import * as fs from 'fs';
+import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../models/database';
 
 export default class PockyDB {
 	private readonly sqlCreateUser : string;
@@ -65,10 +66,10 @@ export default class PockyDB {
 
 	/**
 	 * Returns 0 on success,
-	 *         1 on "you have no more pegs left to give" failure
+	 *         1 on 'you have no more pegs left to give' failure
 	 *         2 on error
 	 */
-	async givePegWithComment(comment : string, receiver : string, sender = "default_user") {
+	async givePegWithComment(comment : string, receiver : string, sender = 'default_user') {
 		try {
 			await Promise.all([this.existsOrCanBeCreated(sender), this.existsOrCanBeCreated(receiver)]);
 		} catch (error) {
@@ -153,7 +154,7 @@ export default class PockyDB {
 		}
 	}
 
-	async getUsers() : Promise<any[]> {
+	async getUsers() : Promise<UserRow[]> {
 		let query = {
 			name: 'getUsersQuery',
 			text: this.sqlGetUsers
@@ -162,18 +163,18 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getUser(userid : string) : Promise<any> {
+	async getUser(userid : string) : Promise<UserRow> {
 		let query : QueryConfig = {
 			name: 'getUserQuery',
 			text: this.sqlGetUser,
 			values: [userid]
 		};
 
-		let user = await this.executeQuery(query);
+		let user : UserRow[] = await this.executeQuery(query);
 
-		if (user.rowCount === 1) {
+		if (user.length === 1) {
 			return user[0];
-		} else if (user.rowCount === 0) {
+		} else if (user.length === 0) {
 			// should not occur in normal circumstances
 			throw new Error(`No user entities returned by getUser ${userid}`);
 		} else {
@@ -190,12 +191,12 @@ export default class PockyDB {
 			return true;
 		}
 
-		let newUser : any;
+		let newUser : QueryResult;
 		try {
 			newUser = await this.createUser(userid);
 		} catch (error) {
 			__logger.error(`Error caught from createUser for user ${userid}:\n${error.message}`);
-			throw new Error("Error caught from createUser");
+			throw new Error('Error caught from createUser');
 		}
 
 		__logger.information(`User ${userid} created`);
@@ -222,13 +223,13 @@ export default class PockyDB {
 			values: [user]
 		};
 
-		let data : any = await this.executeQuery(query);
+		let data = await this.executeQuery(query);
 		return data[0]['count'];
 	}
 
 	async hasSparePegs(user : string) : Promise<boolean> {
 		__logger.debug(`Checking if user ${user} has spare pegs`);
-		if (user === 'default_user' || this.config.checkRole(user, 'unmeteredUsers')) {
+		if (user === 'default_user' || this.config.checkRole(user, Role.Unmetered)) {
 			return true;
 		}
 
@@ -238,7 +239,7 @@ export default class PockyDB {
 			values: [user]
 		};
 
-		let data : any = await this.executeQuery(query);
+		let data = await this.executeQuery(query);
 		let count : number = data[0]['count'];
 		if (count < this.config.getConfig('limit')) {
 			return true;
@@ -256,30 +257,30 @@ export default class PockyDB {
 		return await this.executeNonQuery(query);
 	}
 
-	async returnResults() : Promise<any> {
+	async returnResults() : Promise<ResultRow[]> {
 		let query = {
 			name: 'returnResultsQuery',
 			text: this.sqlReturnResults,
 		};
 
-		let results : any = await this.executeQuery(query);
-		__logger.debug("returning results: " + JSON.stringify(results));
+		let results : ResultRow[] = await this.executeQuery(query);
+		__logger.debug('returning results: ' + JSON.stringify(results));
 		return results;
 	}
 
-	async returnWinners() : Promise<any> {
+	async returnWinners() : Promise<ResultRow[]> {
 		let query : QueryConfig = {
 			name: 'returnWinnersQuery',
 			text: this.sqlReturnWinners,
 			values: [this.config.getConfig('minimum'), this.config.getConfig('winners')]
 		};
 
-		let winners : any = await this.executeQuery(query);
-		__logger.debug("returning winners: " + JSON.stringify(winners));
+		let winners : ResultRow[] = await this.executeQuery(query);
+		__logger.debug('returning winners: ' + JSON.stringify(winners));
 		return winners;
 	}
 
-	async getPegsGiven(user) : Promise<any> {
+	async getPegsGiven(user : string) : Promise<PegGiven[]> {
 		let query : QueryConfig = {
 			name: 'returnGivesQuery',
 			text: this.sqlReturnGives,
@@ -289,7 +290,7 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getRoles() : Promise<any> {
+	async getRoles() : Promise<RolesRow[]> {
 		let query : QueryConfig = {
 			name: 'returnRolesQuery',
 			text: this.sqlGetRoles,
@@ -299,7 +300,7 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getConfig() : Promise<any> {
+	async getConfig() : Promise<ConfigRow[]> {
 		let query : QueryConfig = {
 			name: 'returnConfigQuery',
 			text: this.sqlGetConfig,
@@ -309,7 +310,7 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async getStringConfig() : Promise<any> {
+	async getStringConfig() : Promise<StringConfigRow[]> {
 		let query : QueryConfig = {
 			name: 'returnStringConfigQuery',
 			text: this.sqlGetStringConfig,
@@ -319,7 +320,7 @@ export default class PockyDB {
 		return await this.executeQuery(query);
 	}
 
-	async setRoles(userid : string, role : string) : Promise<void> {
+	async setRoles(userid : string, role : Role) : Promise<void> {
 		let query : QueryConfig = {
 			name: 'setRolesQuery',
 			text: this.sqlSetRoles,
@@ -360,7 +361,7 @@ export default class PockyDB {
 			return data['rows'];
 		} catch (error) {
 			__logger.error(`Error executing query ${query.name}:\n${error.message}`);
-			throw new Error("Error executing query");
+			throw new Error('Error executing query');
 		}
 	}
 
@@ -369,7 +370,7 @@ export default class PockyDB {
 			return await this.client.query(query);
 		} catch (error) {
 			__logger.error(`Error executing non query ${query.name}:\n${error.message}`);
-			throw new Error("Error executing non query");
+			throw new Error('Error executing non query');
 		}
 	}
 }

@@ -42,7 +42,7 @@ function createUtilities(numToReturn : number) : Utilities {
 	return utilities;
 }
 
-describe("triggers", () => {
+describe('triggers', () => {
 	it('should accept an unpeg command', () => {
 		let database = createDatabase();
 		let utilities = createUtilities(1);

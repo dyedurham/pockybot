@@ -32,7 +32,7 @@ function parseMessage(message : MessageObject) : ParsedMessage {
 		return parsedMessage;
 	} catch (e) {
 		__logger.error(`Error in parseMessage:\n${e.message}`);
-		throw new Error("Error in parseMessage");
+		throw new Error('Error in parseMessage');
 	}
 }
 

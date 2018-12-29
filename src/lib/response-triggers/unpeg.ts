@@ -1,10 +1,11 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import XmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
 import PockyDB from '../PockyDB';
 import Utilities from '../utilities';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { UserRow } from '../../models/database';
 
 // A joke option. Tells users pegs have been removed, but no pegs will actually be taken.
 export default class  Unpeg extends Trigger {
@@ -44,14 +45,14 @@ export default class  Unpeg extends Trigger {
 		let fromPersonId = message.personId;
 
 		try {
-			let data = await this.database.getUser(toPersonId);
+			let data : UserRow = await this.database.getUser(toPersonId);
 			if (!data.userid) {
-				throw new Error("No to person was obtained");
+				throw new Error('No to person was obtained');
 			}
 
-			let fromData = await this.database.getUser(fromPersonId);
+			let fromData : UserRow = await this.database.getUser(fromPersonId);
 			if (!fromData.userid) {
-				throw new Error("No from person was obtained");
+				throw new Error('No from person was obtained');
 			}
 
 			return await this.returnRandomResponse(data.username, fromData.username, room);
@@ -99,17 +100,17 @@ export default class  Unpeg extends Trigger {
 			}
 		} catch (e) {
 			__logger.error(`Error in unpeg validateMessage:\n${e.message}`);
-			throw new Error("Error in unpeg validateMessage");
+			throw new Error('Error in unpeg validateMessage');
 		}
 	}
 
 	async returnRandomResponse(toUser : string, fromUser : string, room : string) : Promise<MessageObject> {
 		let num = this.utilities.getRandomInt(7);
-		toUser = (toUser || "someone");
-		fromUser = (fromUser || "Dave");
+		toUser = (toUser || 'someone');
+		fromUser = (fromUser || 'Dave');
 		switch(num) {
 			case 0:
-				return await this.sendFollowUpResponse(`Peg removed from ${toUser}.`, "Kidding!", room);
+				return await this.sendFollowUpResponse(`Peg removed from ${toUser}.`, 'Kidding!', room);
 			case 1:
 				return this.sendResponse(`It looks like ${toUser} has hidden their pegs too well for me to find them!`);
 			case 2:
@@ -127,7 +128,7 @@ Unable to brew coffee. Or pegs.`);
 `\`\`\`
 Error: Access Denied user ${fromUser} does not have the correct privileges
 	at UnPeg (unpeg.js:126)
-	at EveryoneBut${fromUser.replace(" ", "")} (unpeg.js:4253)
+	at EveryoneBut${fromUser.replace(' ', '')} (unpeg.js:4253)
 	at ExecuteBadCode (pockybot.js:1467)
 	at DecrementPegs (pockybot.js:1535)
 \`\`\``
@@ -139,7 +140,7 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 		}
 	}
 
-	private sendResponse(response) : MessageObject {
+	private sendResponse(response : string) : MessageObject {
 		return {
 			markdown: response
 		}

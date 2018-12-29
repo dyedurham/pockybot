@@ -7,7 +7,7 @@
 import __logger from '../logger';
 
 // Triggers
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import Results from './results';
 import Winners from './winners';
 import Reset from './reset';

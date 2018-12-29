@@ -1,9 +1,10 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
+import { Role, ResultRow } from '../../models/database';
 
 const resetCommand = '(?: )*reset(?: )*';
 
@@ -19,7 +20,7 @@ export default class Reset extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'reset'))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Reset))) {
 			return false;
 		}
 
@@ -28,7 +29,7 @@ export default class Reset extends Trigger {
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		let data;
+		let data : ResultRow[];
 		try {
 			data = await this.database.returnResults();
 		} catch (error) {
@@ -38,7 +39,7 @@ export default class Reset extends Trigger {
 			};
 		}
 
-		__logger.debug("About to reset pegs, current state: " + JSON.stringify(data));
+		__logger.debug('About to reset pegs, current state: ' + JSON.stringify(data));
 		try {
 			await this.database.reset();
 			return {

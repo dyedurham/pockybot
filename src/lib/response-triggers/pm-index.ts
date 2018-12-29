@@ -7,7 +7,7 @@
 import __logger from '../logger';
 
 // Triggers
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import Status from './status';
 import Welcome from './welcome';
 import Help from './help';

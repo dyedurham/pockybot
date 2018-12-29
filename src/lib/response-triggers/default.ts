@@ -1,4 +1,4 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 

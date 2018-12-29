@@ -1,4 +1,4 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
@@ -32,7 +32,7 @@ export default class Help extends Trigger {
 	1. To give someone a peg type: \`@${constants.botName} peg @bob {comment}\`.\n`;
 
 		if (keywordsRequired) {
-			newMessage += "		* Note that your comment MUST include a keyword.\n"
+			newMessage += '		* Note that your comment MUST include a keyword.\n'
 		}
 
 		newMessage += `* Check your status 📈!

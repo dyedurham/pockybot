@@ -1,5 +1,5 @@
 import constants from '../../constants';
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import { MessageObject } from 'ciscospark/env';
 
 const commandText = 'ping';

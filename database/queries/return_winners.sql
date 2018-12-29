@@ -15,7 +15,7 @@ WITH goodPegs AS (
 	FROM goodPegs
 	GROUP BY receiver
 )
-SELECT r.username receiver, c.receiver receiverid, c.pegsReceived, s.username sender, p.comment
+SELECT r.username receiver, c.receiver receiverid, s.username sender, p.comment
 FROM count c
 INNER JOIN goodPegs p ON c.receiver = p.receiver
 INNER JOIN pockyusers r ON c.receiver = r.userid

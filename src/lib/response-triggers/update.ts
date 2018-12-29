@@ -1,9 +1,10 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { UserRow, Role } from '../../models/database';
 
 const updateCommand = '(?: )*update(?: )*';
 
@@ -21,7 +22,7 @@ export default class Update extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'update'))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Update))) {
 			return false;
 		}
 
@@ -30,7 +31,7 @@ export default class Update extends Trigger {
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		let users;
+		let users : UserRow[];
 		try {
 			users = await this.database.getUsers();
 		} catch (error) {
@@ -41,7 +42,7 @@ export default class Update extends Trigger {
 		}
 
 		try {
-			await Promise.all(users.map(async (user) => {
+			await Promise.all(users.map(async (user : UserRow) => {
 				let username = await this.getUsername(user.userid);
 				let response = await this.database.updateUser(username, user.userid);
 
@@ -65,13 +66,14 @@ export default class Update extends Trigger {
 		}
 	}
 
-	private getUsername(personId) : Promise<string> {
-		return this.spark.people.get(personId)
-		.then((data) => {
+	private async getUsername(personId : string) : Promise<string> {
+		try {
+			const data = await this.spark.people.get(personId);
 			return data.displayName;
-		}).catch((error) => {
+		}
+		catch (error) {
 			__logger.error(`Error getting username for ${personId}:\n${error.message}`);
-			throw new Error("Error getting username");
-		});
+			throw new Error('Error getting username');
+		}
 	}
 }

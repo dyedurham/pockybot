@@ -1,4 +1,4 @@
-import Trigger from '../types/trigger';
+import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import * as fs from 'fs';
@@ -7,12 +7,15 @@ import TableSizeParser from '../TableSizeParser';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { ResultRow, Role } from '../../models/database';
+import { Receiver } from '../../models/receiver';
+import { PegReceivedData } from '../../models/peg-received-data';
 
 const lineEnding = '\r\n';
 const resultsCommand = '(?: )*results(?: )*';
 
 export default class Results extends Trigger {
-	readonly cannotDisplayResults : string = "Error encountered; cannot display results.";
+	readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';
 
 	spark : CiscoSpark;
 	database : PockyDB;
@@ -25,12 +28,12 @@ export default class Results extends Trigger {
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.tableSizer = tableSizer;
-		this.cannotDisplayResults = "Error encountered; cannot display results.";
+		this.cannotDisplayResults = 'Error encountered; cannot display results.';
 		this.config = config;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId,'admin') || this.config.checkRole(message.personId,'results'))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Results))) {
 			return false;
 		}
 		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resultsCommand, 'ui');
@@ -38,7 +41,7 @@ export default class Results extends Trigger {
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		let data;
+		let data : ResultRow[];
 		try {
 			data = await this.database.returnResults();
 		} catch (e) {
@@ -59,41 +62,43 @@ export default class Results extends Trigger {
 		}
 	}
 
-	async createResponse(data) {
+	async createResponse(data : ResultRow[]) {
 		let today = new Date();
-		let todayString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-		if (fs.existsSync(__dirname + "/pegs-" + todayString + ".txt")) {
-			fs.unlinkSync(__dirname + "/pegs-" + todayString + ".txt");
+		let filePath = `${__dirname}/../../../pegs-${todayString}`;
+
+		if (fs.existsSync(filePath + '.txt')) {
+			fs.unlinkSync(filePath + '.txt');
 		}
 
-		let results = TableHelper.mapResults(data);
+		let results : Receiver[] = TableHelper.mapResults(data);
 		let columnWidths = TableHelper.getColumnWidths(results);
 
 		// define table heading
-		let resultsTable = TableHelper.padString("Receiver", columnWidths.receiver) + " | " + TableHelper.padString("Sender", columnWidths.sender) + " | Comments" + lineEnding;
-		resultsTable += "Total".padEnd(columnWidths.receiver) + " | " + " ".padEnd(columnWidths.sender) + " | " + lineEnding;
-		resultsTable += "".padEnd(columnWidths.receiver, "-") + "-+-" + "".padEnd(columnWidths.sender, "-") + "-+-" + "".padEnd(columnWidths.comment, "-") + lineEnding;
+		let resultsTable = TableHelper.padString('Receiver', columnWidths.receiver) + ' | ' + TableHelper.padString('Sender', columnWidths.sender) + ' | Comments' + lineEnding;
+		resultsTable += 'Total'.padEnd(columnWidths.receiver) + ' | ' + ' '.padEnd(columnWidths.sender) + ' | ' + lineEnding;
+		resultsTable += ''.padEnd(columnWidths.receiver, '-') + '-+-' + ''.padEnd(columnWidths.sender, '-') + '-+-' + ''.padEnd(columnWidths.comment, '-') + lineEnding;
 
 		let pegsReceived = {};
 
 		// map table data
-		results.forEach((result) => {
-			pegsReceived[result.id] = ""
-			pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + " | " + "".padEnd(columnWidths.sender) + " | " + lineEnding;
+		results.forEach((result : Receiver) => {
+			pegsReceived[result.id] = ''
+			pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
 			let firstPeg = true;
 			let pegCount = result.pegs.length;
-			result.pegs.forEach((peg) => {
+			result.pegs.forEach((peg : PegReceivedData) => {
 				if (firstPeg) {
-					pegsReceived[result.id] += pegCount.toString().padEnd(columnWidths.receiver) + " | " + peg.sender.toString().padEnd(columnWidths.sender) + " | " + peg.comment + lineEnding;
+					pegsReceived[result.id] += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
 					firstPeg = false;
 				} else {
-					pegsReceived[result.id] += "".padEnd(columnWidths.receiver) + " | " + peg.sender.toString().padEnd(columnWidths.sender) + " | " + peg.comment + lineEnding;
+					pegsReceived[result.id] += ''.padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
 				}
 			});
 			resultsTable += pegsReceived[result.id];
 		});
-		__logger.information("Results table fully mapped");
+		__logger.information('Results table fully mapped');
 
 		let markdown = `Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`;
 
@@ -111,34 +116,34 @@ ${pegsReceived[receiver]}
 
 		let html = this.generateHtml(results, todayString);
 
-		fs.writeFileSync(__dirname + "/pegs-" + todayString + ".txt", resultsTable);
-		fs.writeFileSync(__dirname + "/pegs-" + todayString + ".html", html);
+		fs.writeFileSync(filePath + '.txt', resultsTable);
+		fs.writeFileSync(filePath + '.html', html);
 
 		return {
 			markdown: markdown,
-			files: [constants.fileURL + '?filename=' +  "pegs-" + todayString + ".txt"]
+			files: [constants.fileURL + '?filename=' +  'pegs-' + todayString + '.txt']
 		}
 	}
 
-	generateHtml(results, todayString) {
-		__logger.information("generating html");
+	generateHtml(results : Receiver[], todayString : string) {
+		__logger.information('generating html');
 		try {
 			let tableify = require('tableify');
 
 			let htmlTables = [];
 
-			results.forEach((result) => {
+			results.forEach((result : Receiver) => {
 
 				let table = {};
 
-				result.pegs.forEach((peg) => {
+				result.pegs.forEach((peg : PegReceivedData) => {
 					table[peg.sender.toString()] = peg.comment;
 				});
 
 				htmlTables.push([result.person.toString(),result.pegs.length, tableify(table)]);
 			});
 
-			__logger.information("finsihed generating html");
+			__logger.information('finished generating html');
 
 			let html =
 `<html>
