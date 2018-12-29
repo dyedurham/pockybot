@@ -73,276 +73,206 @@ function createDatabase(givePegSuccess : boolean, givePegResponse : number, coun
 	return db;
 }
 
-describe('creating Message', function() {
-	it('should create a proper message - 1 peg', function (done) {
+describe('creating Message', () => {
+	it('should create a proper message - 1 peg', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should create a proper message - 2 pegs', function (done) {
+	it('should create a proper message - 2 pegs', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 2 pegs this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 2 pegs this fortnight.');
+		done();
 	});
 
-	it('should fail to give peg - out of pegs', function (done) {
+	it('should fail to give peg - out of pegs', async (done : DoneFn) => {
 		let database = createDatabase(true, 1, true, 2);
 		let peg = new Peg(null, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Sorry, but you have already spent all of your pegs for this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Sorry, but you have already spent all of your pegs for this fortnight.');
+		done();
 	});
 
-	it('should fail to give peg - exception', function (done) {
+	it('should fail to give peg - exception', async (done : DoneFn) => {
 		let database = createDatabase(true, 2, true, 2);
 		let peg = new Peg(null, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Error encountered, peg not given');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Error encountered, peg not given');
+		done();
 	});
 
-	it('should fail to peg with no comment', function (done) {
+	it('should fail to peg with no comment', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(null, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention></p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe(
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe(
 `I'm sorry, I couldn't understand your peg request. Please use the following format:
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`
-			);
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		);
+		done();
 	});
 
-	it('should fail to peg with no comment with space', function (done) {
+	it('should fail to peg with no comment with space', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(null, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> </p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe(
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe(
 `I'm sorry, I couldn't understand your peg request. Please use the following format:
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`
-			);
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		);
+		done();
 	});
 
-	it('should give peg with \'to\' keyword', function(done) {
+	it('should give peg with \'to\' keyword', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> to <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should work with multiple keywords', function(done) {
+	it('should work with multiple keywords', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg to <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should fail with no keyword', function(done) {
+	it('should fail with no keyword', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(null, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe(
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe(
 `I'm sorry, I couldn't understand your peg request. Please use the following format:
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`
-			);
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		);
+		done();
 	});
 
-	it('should fail with embedded keyword', function(done) {
+	it('should fail with embedded keyword', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(null, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe(
-				`I'm sorry, I couldn't understand your peg request. Please use the following format:
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe(
+			`I'm sorry, I couldn't understand your peg request. Please use the following format:
 @${constants.botName} peg @Person this is the reason for giving you a peg`
-			);
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		);
+		done();
 	});
 
-	it('should work with two spaces', function(done) {
+	it('should work with two spaces', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>  peg  <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should work with three spaces', function(done) {
+	it('should work with three spaces', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>   peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should work with iPhone format', function(done) {
+	it('should work with iPhone format', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-			done();
-		}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	});
 
-	it('should work with ampersand', function(done) {
+	it('should work with ampersand', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 1);
 		let peg = new Peg(spark, database, config);
 		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons &amp; stuff',
 			'mockfromID');
-		peg.createMessage(sentMessage)
-			.then((message) => {
-				expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
-				done();
-			}).catch((error) => {
-			expect(true).toBe(false);
-			done();
-		});
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
 	})
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	let peg = new Peg(null, null, config);
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> yipeg</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> peg</p>', null, 'mockID');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>peg<spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons  </p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
-	it('should accept iPhone format', function() {
+	it('should accept iPhone format', () => {
 		let message = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for reasons', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
-	it('should reject unpeg trigger', function () {
+	it('should reject unpeg trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
@@ -355,15 +285,15 @@ describe('testing triggers', function() {
 	})
 });
 
-describe('testing keywords in messages', function() {
+describe('testing keywords in messages', () => {
 	let peg = new Peg(null, null, config);
-	it('should reject with no keyword', function () {
+	it('should reject with no keyword', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
-	it('should accept with multiple keywords', function () {
+	it('should accept with multiple keywords', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for customer, brave, awesome, collaborative, real reasons</p>', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);

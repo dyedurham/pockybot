@@ -22,15 +22,15 @@ app.get('/', (req, res) => {
 	res.status(200).end();
 });
 
-app.post('/respond', function (req, res) {
+app.post('/respond', (req, res) => {
 	responder.respond(req.body);
 });
 
-app.post('/pm', function (req, res) {
+app.post('/pm', (req, res) => {
 	pmResponder.respond(req.body);
 });
 
-app.get('/results', function (req, res) {
+app.get('/results', (req, res) => {
 	try {
 		let url_parts = url.parse(req.url, true);
 		let query = url_parts.query;
@@ -41,7 +41,7 @@ app.get('/results', function (req, res) {
 	}
 });
 
-app.get('/test', function (req, res) {
+app.get('/test', (req, res) => {
 	let url_parts = url.parse(req.url, true);
 	let query = url_parts.query;
 	fs.readFile(__dirname + '/' + query.filename, 'utf8', function(err, data) {

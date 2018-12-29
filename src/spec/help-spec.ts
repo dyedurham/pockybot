@@ -27,74 +27,72 @@ beforeAll(() => {
 	});
 })
 
-describe('ponging the ping', function() {
+describe('ponging the ping', () => {
 	const help = new Help(config);
 
-	it('should pong', function (done) {
-		help.createMessage()
-		.then((response) => {
-			expect(response.markdown).toBeDefined();
-			done();
-		});
+	it('should pong', async (done : DoneFn) => {
+		let response = await help.createMessage();
+		expect(response.markdown).toBeDefined();
+		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	const help = new Help(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help`);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfhelp`);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> help`);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>help`);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help `);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
 
-describe('testing PM triggers', function() {
+describe('testing PM triggers', () => {
 	const help = new Help(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createPrivateMessage('help');
 		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createPrivateMessage('helooo');
 		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept whitespace around', function () {
+	it('should accept whitespace around', () => {
 		let message = createPrivateMessage(' help ');
 		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept capitalised command', function () {
+	it('should accept capitalised command', () => {
 		let message = createPrivateMessage('Help');
 		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);

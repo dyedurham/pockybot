@@ -71,8 +71,8 @@ function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
 	return db;
 }
 
-describe('creating Message', function() {
-    it('should show the remaining pegs', function (done) {
+describe('creating Message', () => {
+    it('should show the remaining pegs', async (done : DoneFn) => {
         const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
@@ -83,14 +83,12 @@ describe('creating Message', function() {
         let status = new Status(spark, database, config);
         let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
-        status.createMessage(sentMessage)
-        .then((message) => {
-            expect(message.markdown).toContain(`You have ${expectedCount} pegs left to give.`);
-            done();
-        });
+        let message = await status.createMessage(sentMessage);
+		expect(message.markdown).toContain(`You have ${expectedCount} pegs left to give.`);
+		done();
     });
 
-    it('should show the remaining pegs', function (done) {
+    it('should show the remaining pegs', async (done : DoneFn) => {
         const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
@@ -101,14 +99,12 @@ describe('creating Message', function() {
         let status = new Status(spark, database, config);
         let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'mockunlimitedID');
-        status.createMessage(sentMessage)
-        .then((message) => {
-            expect(message.markdown).toContain(`You have unlimited pegs left to give.`);
-            done();
-        });
+        let message = await status.createMessage(sentMessage);
+		expect(message.markdown).toContain(`You have unlimited pegs left to give.`);
+		done();
     });
 
-	it('should send the message to the the sender', function (done) {
+	it('should send the message to the the sender', async (done : DoneFn) => {
         const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
@@ -119,14 +115,12 @@ describe('creating Message', function() {
         let status = new Status(spark, database, config);
         let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
             'person!');
-        status.createMessage(sentMessage)
-        .then((message) => {
-            expect(message.toPersonId).toBe('person!');
-            done();
-        });
+        let message = await status.createMessage(sentMessage);
+		expect(message.toPersonId).toBe('person!');
+		done();
     });
 
-	it('should have the items in the message', function (done) {
+	it('should have the items in the message', async (done : DoneFn) => {
 		const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
@@ -137,15 +131,13 @@ describe('creating Message', function() {
 		let status = new Status(spark, database, config);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
-		status.createMessage(sentMessage)
-		.then((message) => {
-			expect(message.markdown).toContain('* **test3display** — "_dtsdsrtdrsdpf_"');
-			done();
-		});
+		let message = await status.createMessage(sentMessage);
+		expect(message.markdown).toContain('* **test3display** — "_dtsdsrtdrsdpf_"');
+		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	const status = new Status(spark, null, config);
 
 	const TriggerTestCases = [
@@ -162,27 +154,27 @@ describe('testing triggers', function() {
 	});
 });
 
-describe('testing PM triggers', function() {
+describe('testing PM triggers', () => {
 	const status = new Status(spark, null, config);
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createPrivateMessage('status');
 		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createPrivateMessage('sssting');
 		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept whitespace around', function () {
+	it('should accept whitespace around', () => {
 		let message = createPrivateMessage(' status ');
 		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept capitalised command', function () {
+	it('should accept capitalised command', () => {
 		let message = createPrivateMessage('Status');
 		let results = status.isToTriggerOnPM(message)
 		expect(results).toBe(true);

@@ -26,74 +26,72 @@ function createPrivateMessage(message : string) : MessageObject {
 	}
 }
 
-describe('ponging the ping', function() {
+describe('ponging the ping', () => {
 	const keywords = new Keywords(config);
 
-	it('should pong', function (done) {
-		keywords.createMessage()
-		.then((response) => {
-			expect(response.markdown).toBeDefined();
-			done();
-		});
+	it('should pong', async (done) => {
+		let response = await keywords.createMessage();
+		expect(response.markdown).toBeDefined();
+		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	const keywords = new Keywords(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords`);
 		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfkeywords`);
 		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="notabotID">${constants.botName}</spark-mention> keywords`);
 		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>keywords`);
 		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> keywords `);
 		let results = keywords.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
 
-describe('testing PM triggers', function() {
+describe('testing PM triggers', () => {
 	const keywords = new Keywords(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createPrivateMessage('keywords');
 		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createPrivateMessage('keyyywrods');
 		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept whitespace around', function () {
+	it('should accept whitespace around', () => {
 		let message = createPrivateMessage(' keywords ');
 		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept capitalised command', function () {
+	it('should accept capitalised command', () => {
 		let message = createPrivateMessage('Keywords');
 		let results = keywords.isToTriggerOnPM(message)
 		expect(results).toBe(true);

@@ -35,74 +35,72 @@ function createPrivateMessage(message : string) : MessageObject {
 	}
 }
 
-describe('ponging the ping', function() {
+describe('ponging the ping', () => {
 	const welcome = new Welcome(config);
 
-	it('should pong', function (done) {
-		welcome.createMessage()
-		.then((response) => {
-			expect(response.markdown == '').toBeFalsy();
-			done();
-		});
+	it('should pong', async (done : DoneFn) => {
+		let response = await welcome.createMessage();
+		expect(response.markdown == '').toBeFalsy();
+		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	const welcome = new Welcome(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfwelcome');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> welcome');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>welcome');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome ');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 });
 
-describe('testing PM triggers', function() {
+describe('testing PM triggers', () => {
 	const welcome = new Welcome(config);
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createPrivateMessage('welcome');
 		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createPrivateMessage('welccccc');
 		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept whitespace around', function () {
+	it('should accept whitespace around', () => {
 		let message = createPrivateMessage(' welcome ');
 		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept capitalised command', function () {
+	it('should accept capitalised command', () => {
 		let message = createPrivateMessage('Welcome');
 		let results = welcome.isToTriggerOnPM(message)
 		expect(results).toBe(true);

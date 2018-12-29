@@ -58,7 +58,7 @@ function createDatabase(success : boolean) : PockyDB {
 	return db;
 }
 
-describe('testing response', function() {
+describe('testing response', () => {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -67,16 +67,14 @@ describe('testing response', function() {
 		reset = new Reset(database, config);
 	});
 
-	it('should reset', function (done) {
-		reset.createMessage()
-		.then((response) => {
-			expect(response.markdown).toBe('Pegs cleared');
-			done();
-		});
+	it('should reset', async (done : DoneFn) => {
+		let response = await reset.createMessage();
+		expect(response.markdown).toBe('Pegs cleared');
+		done();
 	});
 });
 
-describe('testing failed response', function() {
+describe('testing failed response', () => {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -85,58 +83,56 @@ describe('testing failed response', function() {
 		reset = new Reset(database, config);
 	})
 
-	it('should display an error message', function (done) {
-		reset.createMessage()
-		.then((response) => {
-			expect(response.markdown).toBe('Error clearing pegs');
-			done();
-		});
+	it('should display an error message', async (done : DoneFn) => {
+		let response = await reset.createMessage();
+		expect(response.markdown).toBe('Error clearing pegs');
+		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	let reset : Reset;
 
 	beforeEach(() => {
 		reset = new Reset(null, config);
 	})
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfreset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMGFiNWE5ZS05MjliLTQ3N2EtOTk0MC00ZGJlN2QY2MzNzU">' + constants.botName + '</spark-mention> reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>reset',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset ',
 		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
-	it('should fail with non admin', function () {
+	it('should fail with non admin', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockID');
 		let results = reset.isToTriggerOn(message)

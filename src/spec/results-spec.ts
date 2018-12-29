@@ -5,7 +5,7 @@ import PockyDB from '../lib/PockyDB';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
-import { Role } from '../models/database';
+import { Role, ResultRow } from '../models/database';
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();
@@ -44,13 +44,12 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createData() {
+function createData() : ResultRow[] {
 	return [{
-		'receiver': 'mock receiver',
-		'pegsreceived': '3',
-		'sender': 'mock sender',
-		'comment': ' test',
-		'receiverid': 'mockID'
+		receiver: 'mock receiver',
+		sender: 'mock sender',
+		comment: ' test',
+		receiverid: 'mockID'
 	}];
 }
 
@@ -68,26 +67,24 @@ function createDatabase(success : boolean, data) : PockyDB {
 	return db;
 }
 
-describe('creating responses', function() {
+describe('creating responses', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data = createData();
 	let results = new Results(spark, null, null, config);
-	it('should parse a proper message', function (done) {
-		results.createResponse(data)
-		.then((message) => {
-			expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
-			expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
-			expect(message.files.length).toBe(1);
-			done();
-		});
+	it('should parse a proper message', async (done : DoneFn) => {
+		let message = await results.createResponse(data);
+		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
+		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
+		expect(message.files.length).toBe(1);
+		done();
 	});
 });
 
-describe('creating a message', function() {
+describe('creating a message', () => {
 	let today : Date;
 	let todayString : string;
-	let data;
+	let data : ResultRow[];
 	let database : PockyDB;
 	let results : Results;
 
@@ -99,18 +96,16 @@ describe('creating a message', function() {
 		results = new Results(spark, database, null, config);
 	});
 
-	it('should create a proper message', function (done) {
-		results.createMessage()
-		.then((message) => {
-			expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
-			expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
-			expect(message.files.length).toBe(1);
-			done();
-		});
+	it('should create a proper message', async (done : DoneFn) => {
+		let message = await results.createMessage();
+		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
+		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
+		expect(message.files.length).toBe(1);
+		done();
 	});
 });
 
-describe('failing at creating a message', function() {
+describe('failing at creating a message', () => {
 	let database : PockyDB;
 	let results : Results;
 
@@ -119,59 +114,61 @@ describe('failing at creating a message', function() {
 		results = new Results(null, database, null, config);
 	});
 
-	it('should create a proper message on fail', function (done) {
-		results.createMessage().then((data) => {
+	it('should create a proper message on fail', async (done : DoneFn) => {
+		try {
+			await results.createMessage();
 			fail('should have thrown an error');
-		}).catch((error) => {
+		} catch (error) {
 			expect(error.message).toBe('Error encountered; cannot display results.')
-		});
+		}
+
 		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	let results : Results;
 
 	beforeEach(() => {
 		results = new Results(null, null, null, config);
 	});
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfresults',
 			'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="badID">' + constants.botName + '</spark-mention> results',
 			'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>results',
 			'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results ',
 			'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should fail with non admin', function () {
+	it('should fail with non admin', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockID');
 		let triggered = results.isToTriggerOn(message)

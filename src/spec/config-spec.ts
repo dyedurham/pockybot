@@ -44,7 +44,7 @@ describe('creating config', () => {
 	});
 });
 
-describe('setting config', function() {
+describe('setting config', () => {
 	let config : Config;
 
 	beforeEach(() => {

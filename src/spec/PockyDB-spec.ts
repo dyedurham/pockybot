@@ -104,61 +104,55 @@ function createSparkMock() : CiscoSpark {
 	return spark;
 }
 
-describe('return results', function() {
+describe('return results', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
 	})
 
-	it('should return the results from database as is', function (done) {
+	it('should return the results from database as is', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.returnResults()
-		.then((results) => {
-			expect(results as any).toBe('mock name');
-			done();
-		});
+		let results = await database.returnResults();
+		expect(results as any).toBe('mock name');
+		done();
 	});
 });
 
-describe('return winners', function() {
+describe('return winners', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
 	})
 
-	it('should return the results from database as is', function (done) {
+	it('should return the results from database as is', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.returnWinners()
-		.then((results) => {
-			expect(results as any).toBe('mock name');
-			done();
-		});
+		let results = await database.returnWinners();
+		expect(results as any).toBe('mock name');
+		done();
 	});
 });
 
-describe('reset', function() {
+describe('reset', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
 	})
 
-	it('should call query and return the raw output', function (done) {
+	it('should call query and return the raw output', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.reset()
-		.then((results) => {
-			expect(results as any).toBe('reset return');
-			done();
-		});
+		let results = await database.reset();
+		expect(results as any).toBe('reset return');
+		done();
 	});
 });
 
-describe('create user', function() {
+describe('create user', () => {
 	let pgClientMock : Client;
 	let sparkMock : CiscoSpark;
 
@@ -167,45 +161,39 @@ describe('create user', function() {
 		sparkMock = createSparkMock();
 	})
 
-	it('should call query and return the raw output', function (done) {
+	it('should call query and return the raw output', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, sparkMock);
 		database.loadConfig(config);
-		database.createUser('some_sender')
-		.then((results) => {
-			expect(results as any).toBe('create return');
-			done();
-		});
+		let results = await database.createUser('some_sender');
+		expect(results as any).toBe('create return');
+		done();
 	});
 });
 
-describe('has spare pegs', function() {
+describe('has spare pegs', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, 99);
 	})
 
-	it('should return true for default_user', function (done) {
+	it('should return true for default_user', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.hasSparePegs('default_user')
-		.then((result) => {
-			expect(result).toBe(true);
-			done();
-		});
+		let result = await database.hasSparePegs('default_user');
+		expect(result).toBe(true);
+		done();
 	});
 
-	it('should return true for mockunmeteredID', function (done) {
+	it('should return true for mockunmeteredID', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.hasSparePegs('mockunmeteredID')
-		.then((result) => {
-			expect(result).toBe(true);
-			done();
-		});
+		let result = await database.hasSparePegs('mockunmeteredID');
+		expect(result).toBe(true);
+		done();
 	});
 
-	it('should return false for other users', function (done) {
+	it('should return false for other users', async (done : DoneFn) => {
 
 		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) =>
 			resolve({
@@ -215,14 +203,12 @@ describe('has spare pegs', function() {
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.hasSparePegs('some_sender')
-		.then((result) => {
-			expect(result).toBe(false);
-			done();
-		});
+		let result = await database.hasSparePegs('some_sender');
+		expect(result).toBe(false);
+		done();
 	});
 
-	it('should return true for no pegs spent', function (done) {
+	it('should return true for no pegs spent', async (done : DoneFn) => {
 		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) => {
 			resolve({
 				rows: [{count:0}]
@@ -231,72 +217,62 @@ describe('has spare pegs', function() {
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.hasSparePegs('some_sender')
-		.then((result) => {
-			expect(result).toBe(true);
-			done();
-		});
+		let result = await database.hasSparePegs('some_sender');
+		expect(result).toBe(true);
+		done();
 	});
 });
 
-describe('count pegs', function() {
+describe('count pegs', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, 125689);
 	});
 
-	it('should return count of pegs', function (done) {
+	it('should return count of pegs', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.countPegsGiven('some_sender')
-		.then((result) => {
-			expect(result).toBe(125689);
-			done();
-		});
+		let result = await database.countPegsGiven('some_sender');
+		expect(result).toBe(125689);
+		done();
 	});
 });
 
-describe('exists', function() {
-	it('should make return true if the user already exists', function (done) {
+describe('exists', () => {
+	it('should make return true if the user already exists', async (done : DoneFn) => {
 		let pgClientMock = createPgClient(true, null);
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.existsOrCanBeCreated('some_sender')
-		.then((result) => {
-			expect(result).toBe(true);
-			done();
-		});
+		let result = await database.existsOrCanBeCreated('some_sender');
+		expect(result).toBe(true);
+		done();
 	});
 
-	 it('should make create a user and return true', function (done) {
+	 it('should make create a user and return true', async (done : DoneFn) => {
 		let pgClientMock = createPgClient(true, null);
 
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.existsOrCanBeCreated('some_sender')
-		.then((result) => {
-			expect(result).toBe(true);
-			done();
-		});
+		let result = await database.existsOrCanBeCreated('some_sender');
+		expect(result).toBe(true);
+		done();
 	});
 });
 
-describe('give peg with comment', function() {
+describe('give peg with comment', () => {
 	let pgClientMock : Client;
 
 	beforeEach(() => {
 		pgClientMock = createPgClient(true, null);
 	})
 
-	it('should return 0', function (done) {
+	it('should return 0', async (done : DoneFn) => {
 		const database = new PockyDB(pgClientMock, null);
 		database.loadConfig(config);
-		database.givePegWithComment('some comment here', 'some_receiver', 'some_sender')
-		.then((result) => {
-			expect(result).toBe(0);
-			done();
-		});
+		let result = await database.givePegWithComment('some comment here', 'some_receiver', 'some_sender');
+		expect(result).toBe(0);
+		done();
 	});
 });

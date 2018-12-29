@@ -65,7 +65,7 @@ function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
 	return db;
 }
 
-describe('creating responses', function() {
+describe('creating responses', () => {
 	let data : ResultRow[];
 	let winners : Winners;
 
@@ -74,22 +74,20 @@ describe('creating responses', function() {
 		winners = new Winners(null, null, config);
 	})
 
-	it('should parse a proper message', function (done) {
-		winners.createResponse(data)
-		.then((message) => {
-			expect(message).toBe('```\n' +
+	it('should parse a proper message', async (done : DoneFn) => {
+		let message = await winners.createResponse(data);
+		expect(message).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +
 'Total         |             | \n' +
 '--------------+-------------+---------\n' +
 'mock receiver |             | \n' +
 '1             | mock sender |  test\n' +
 '```');
-			done();
-		});
+		done();
 	});
 });
 
-describe('creating a message', function() {
+describe('creating a message', () => {
 	let data : ResultRow[];
 	let database : PockyDB;
 	let winners : Winners;
@@ -100,22 +98,20 @@ describe('creating a message', function() {
 		winners = new Winners(database, null, config);
 	});
 
-	it('should create a proper message', function (done) {
-		winners.createMessage()
-		.then((message) => {
-			expect(message.markdown).toBe('```\n' +
+	it('should create a proper message', async (done : DoneFn) => {
+		let message = await winners.createMessage();
+		expect(message.markdown).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +
 'Total         |             | \n' +
 '--------------+-------------+---------\n' +
 'mock receiver |             | \n' +
 '1             | mock sender |  test\n' +
 '```');
-			done();
-		});
+		done();
 	});
 });
 
-describe('failing at creating a message', function() {
+describe('failing at creating a message', () => {
 	let database : PockyDB;
 	let winners : Winners;
 
@@ -124,59 +120,61 @@ describe('failing at creating a message', function() {
 		winners = new Winners(database, null, config);
 	});
 
-	it('should create a proper message on fail', function (done) {
-		winners.createMessage().then((data) => {
+	it('should create a proper message on fail', async (done : DoneFn) => {
+		try {
+			await winners.createMessage();
 			fail('should have thrown an error');
-		}).catch((error) => {
-			expect(error.message).toBe('Error encountered; cannot display winners.')
-		});
+		} catch (error) {
+			expect(error.message).toBe('Error encountered; cannot display winners.');
+		}
+
 		done();
 	});
 });
 
-describe('testing triggers', function() {
+describe('testing triggers', () => {
 	let winners : Winners;
 
 	beforeEach(() => {
 		winners = new Winners(null, null, config);
 	});
 
-	it('should accept trigger', function () {
+	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> winners',
 			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should reject wrong command', function () {
+	it('should reject wrong command', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> asdfwinners',
 			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
-	it('should reject wrong id', function () {
+	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> winners',
 			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
 
-	it('should accept no space', function () {
+	it('should accept no space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention>winners',
 			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should accept trailing space', function () {
+	it('should accept trailing space', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> winners ',
 			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(true);
 	});
 
-	it('should fail with non admin', function () {
+	it('should fail with non admin', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> winners',
 			'badID');
 		let triggered = winners.isToTriggerOn(message)
