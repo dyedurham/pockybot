@@ -14,7 +14,7 @@ export default class Config {
 		this.stringConfig = [];
 	}
 
-	getRoles(userid : string) {
+	getRoles(userid : string) : string[] {
 		if (this.users.length === 0) {
 			return [];
 		}
@@ -23,7 +23,7 @@ export default class Config {
 		return userRoles.map(x => x.role);
 	}
 
-	getConfig(config : string) {
+	getConfig(config : string) : number {
 		if (this.config.length === 0) {
 			return null;
 		}
@@ -31,7 +31,7 @@ export default class Config {
 		return this.config.find(x => x.name.toUpperCase() === config.toUpperCase()).value;
 	}
 
-	getStringConfig(config : string) {
+	getStringConfig(config : string) : string[] {
 		return this.stringConfig.filter(x => x.name.toUpperCase() === config.toUpperCase())
 			.map(function (x) {
 				return x.value;
@@ -39,7 +39,7 @@ export default class Config {
 		);
 	}
 
-	checkRole(userid : string, role : string) {
+	checkRole(userid : string, role : string) : boolean {
 		if(!this.users) return false;
 		return this.users.some(x =>
 			x.userid === userid &&
@@ -54,37 +54,37 @@ export default class Config {
 		return this.config;
 	}
 
-	async updateAll(){
+	async updateAll() : Promise<void> {
 		await Promise.all([this.updateRoles(), this.updateConfig(), this.updateStringConfig()]);
 	}
 
-	async updateRoles() {
+	async updateRoles() : Promise<void> {
 		let data = await this.database.getRoles();
 
 		this.users = data;
 		__logger.debug(this.users);
 	}
 
-	async updateConfig() {
+	async updateConfig() : Promise<void> {
 		let data = await this.database.getConfig();
 
 		this.config = data;
 		__logger.debug(this.config);
 	}
 
-	async updateStringConfig() {
+	async updateStringConfig() : Promise<void> {
 		let data = await this.database.getStringConfig();
 
 		this.stringConfig = data;
 		__logger.debug(this.stringConfig);
 	}
 
-	async setRole(userid : string, role : string) {
+	async setRole(userid : string, role : string) : Promise<void> {
 		await this.database.setRoles(userid, role.toUpperCase());
 		await this.updateRoles();
 	}
 
-	async setConfig(config : string, value : number) {
+	async setConfig(config : string, value : number) : Promise<void> {
 		if (isNaN(value)) {
 			throw new Error('error: config must be an integer');
 		}
@@ -93,7 +93,7 @@ export default class Config {
 		await this.updateConfig();
 	}
 
-	async setStringConfig(config : string, value : string) {
+	async setStringConfig(config : string, value : string) : Promise<void> {
 		await this.database.setStringConfig(config, value);
 		await this.updateStringConfig();
 	}

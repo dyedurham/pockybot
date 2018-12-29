@@ -15,7 +15,7 @@ export default class Finish extends Trigger {
 	reset : Reset;
 	config : Config;
 
-	constructor(winnersService, resultsService, resetService, config) {
+	constructor(winnersService : Winners, resultsService : Results, resetService : Reset, config : Config) {
 		super();
 
 		this.winners = winnersService;

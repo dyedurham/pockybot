@@ -1,27 +1,31 @@
 import Help from '../lib/response-triggers/help';
 import constants from '../constants';
+import Config from '../lib/config';
+import { MessageObject } from 'ciscospark/env';
 
-const config = {
-	getConfig(config) {
-		if (config == 'requireValues') {
-			return 1;
-		}
+const config = new Config(null);
 
-		throw new Error("bad config");
-	}
-}
-
-function createMessage(htmlMessage) {
+function createMessage(htmlMessage : string) : MessageObject {
 	return {
 		html: htmlMessage
 	}
 }
 
-function createPrivateMessage(message) {
+function createPrivateMessage(message : string) : MessageObject {
 	return {
 		text: message
 	}
 }
+
+beforeAll(() => {
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
+		if (config == 'requireValues') {
+			return 1;
+		}
+
+		throw new Error("bad config");
+	});
+})
 
 describe("ponging the ping", function() {
 	const help = new Help(config);

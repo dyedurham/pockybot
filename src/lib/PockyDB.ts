@@ -30,8 +30,8 @@ export default class PockyDB {
 	private spark : CiscoSpark;
 	private config : Config;
 
-	constructor(Client, sparkService) {
-		this.client = Client;
+	constructor(client : Client, sparkService : CiscoSpark) {
+		this.client = client;
 		this.spark = sparkService;
 
 		this.client.connect()

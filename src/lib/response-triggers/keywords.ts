@@ -9,7 +9,7 @@ export default class Keywords extends Trigger {
 
 	config : Config;
 
-	constructor(config) {
+	constructor(config : Config) {
 		super();
 
 		this.config = config;

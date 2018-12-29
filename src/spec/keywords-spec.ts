@@ -1,23 +1,25 @@
 import Keywords from '../lib/response-triggers/keywords';
 import constants from '../constants';
+import Config from '../lib/config';
 
-const config = {
-	getStringConfig(config) {
+const config = new Config(null);
+beforeAll(() => {
+	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
 		if (config == 'keyword') {
 			return ["customer", "brave", "awesome", "collaborative", "real"];
 		}
 
 		throw new Error("bad config");
-	}
-}
+	});
+})
 
-function createMessage(htmlMessage) {
+function createMessage(htmlMessage : string) {
 	return {
 		html: htmlMessage
 	}
 }
 
-function createPrivateMessage(message) {
+function createPrivateMessage(message : string) {
 	return {
 		text: message
 	}

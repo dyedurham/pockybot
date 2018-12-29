@@ -5,17 +5,17 @@ import xmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 
 export default class Peg extends Trigger {
 	readonly pegCommand : string;
 	readonly pegComment : string;
 
-	spark : any;
+	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
 
-	constructor(sparkService, databaseService : PockyDB, config : Config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
 		super();
 
 		this.spark = sparkService;
@@ -103,7 +103,7 @@ export default class Peg extends Trigger {
 	}
 
 	async givePegWithComment(comment : string, toPersonId : string, fromPerson : string) : Promise<MessageObject> {
-		let result;
+		let result : number;
 		try {
 			result = await this.database.givePegWithComment(comment, toPersonId, fromPerson);
 		} catch(e) {

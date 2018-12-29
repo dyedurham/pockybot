@@ -1,61 +1,56 @@
 import Reset from '../lib/response-triggers/reset';
 import constants from '../constants';
+import Config from '../lib/config';
+import PockyDB from '../lib/PockyDB';
 
-const config = {
+const config = new Config(null);
 
-	checkRole(userid, value) {
+beforeAll(() => {
+	spyOn(config, 'checkRole').and.callFake((userid : string, value : string) => {
 		if (userid == 'mockadminID' && value.toUpperCase() == 'ADMIN') {
 			return true;
 		}
 		else {
 			return false;
 		}
-	},
+	});
 
-	getConfig(config) {
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
 		if (config == 'limit') {
 			return 10;
-		}
-		else if (config == 'minimum') {
+		} else if (config == 'minimum') {
 			return 5;
-		}
-		else if (config == 'winners') {
+		} else if (config == 'winners') {
 			return 3;
-		}
-		else if (config == 'commentsRequired') {
+		} else if (config == 'commentsRequired') {
 			return 1;
-		}
-		else if (config == 'pegWithoutKeyword') {
+		} else if (config == 'pegWithoutKeyword') {
 			return 0;
 		}
-		throw new Error("bad config");
-	}
-}
 
-function createMessage(htmlMessage, person) {
+		throw new Error("bad config");
+	});
+})
+
+function createMessage(htmlMessage : string, person : string) {
 	return {
 		html: htmlMessage,
 		personId: person
 	}
 }
 
-function createDatabase(success) {
-	return {
-		reset: function () {
-			return new Promise((resolve, reject) => {
-				if (success) {
-					resolve();
-				} else {
-					reject(new Error('Rejected!'));
-				}
-			});
-		},
-		returnResults: function () {
-			return new Promise((resolve, reject) => {
-				resolve();
-			});
-		}
+function createDatabase(success : boolean) : PockyDB {
+	let db = new PockyDB(null, null);
+
+	if (success) {
+		spyOn(db, 'reset').and.returnValue(new Promise((resolve, reject) => resolve()));
+	} else {
+		spyOn(db, 'reset').and.returnValue(new Promise((resolve, reject) => reject('Rejected!')));
 	}
+
+	spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve()));
+
+	return db;
 }
 
 describe("testing response", function() {

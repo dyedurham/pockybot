@@ -11,7 +11,7 @@ export default class Reset extends Trigger {
 	database : PockyDB;
 	config : Config;
 
-	constructor(databaseService, config) {
+	constructor(databaseService : PockyDB, config : Config) {
 		super();
 
 		this.database = databaseService

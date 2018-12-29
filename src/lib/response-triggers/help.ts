@@ -9,7 +9,7 @@ export default class Help extends Trigger {
 
 	config : Config;
 
-	constructor(config) {
+	constructor(config : Config) {
 		super();
 
 		this.config = config;

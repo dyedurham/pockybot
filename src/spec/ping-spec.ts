@@ -1,13 +1,13 @@
 import constants from '../constants';
 import Ping from '../lib/response-triggers/ping';
 
-function createMessage(htmlMessage) {
+function createMessage(htmlMessage : string) {
 	return {
 		html: htmlMessage
 	}
 }
 
-function createPrivateMessage(message) {
+function createPrivateMessage(message : string) {
 	return {
 		text: message
 	}
