@@ -3,34 +3,34 @@ import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
 
-function respond(messageEvent : any) {
+async function respond(messageEvent : any) {
 	try {
-		spark.messages.get(messageEvent.data.id)
-		.then((message : MessageObject) => {
-			__logger.debug('processing message: ' + JSON.stringify(message));
-			let room = message.roomId;
+		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 
-			if(message.personId !== constants.botId){
-				return responseFactory(message, room)
-				.then((responseMessage : MessageObject) => {
-					__logger.information(responseMessage);
-					return spark.messages.create(
-						{
-							roomId: room,
-							...responseMessage
-						})
-					.then((data) => {
-						__logger.debug(data);
-					})
-					.catch(function(e) {
-						__logger.error(`Error in sending direct message:\n${e.message}`);
-					});
-				});
+		__logger.debug('processing message: ' + JSON.stringify(message));
+		let room = message.roomId;
+
+		if (message.personId !== constants.botId){
+			let responseMessage : MessageObject;
+			try {
+				responseMessage = await responseFactory(message, room);
+				__logger.information(responseMessage);
+			} catch (e) {
+				__logger.error(`Error in direct responder:\n${e.message}`);
 			}
-		})
-		.catch(function(e) {
-			__logger.error(`Error in direct responder:\n${e.message}`);
-		});
+
+			if (responseMessage) {
+				try {
+					let data = await spark.messages.create({
+						roomId: room,
+						...responseMessage
+					});
+					__logger.debug(data);
+				} catch (e) {
+					__logger.error(`Error in sending direct message:\n${e.message}`);
+				}
+			}
+		}
 	} catch (e) {
 		__logger.error(`Uncaught error in direct responder:\n${e.message}`);
 	}

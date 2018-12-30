@@ -1,18 +1,34 @@
-import spark from 'ciscospark/env';
+import spark, { WebhookObject, Page } from 'ciscospark/env';
 import constants from '../constants';
 import __logger from './logger';
 
+function filterHooks(webhooks : Page<WebhookObject>) : WebhookObject[] {
+	return webhooks.items.filter((w : WebhookObject) => {
+		return w.name === constants.botName + ' webhook' || w.name === constants.botName + ' direct webhook';
+	});
+}
+
 try {
 	spark.webhooks.list()
-		.then(function(webhooks) {
-			let myhooks = webhooks.items.filter(function(w) {
-				return w.name === constants.botName + ' webhook' || w.name === constants.botName + ' direct webhook';
-			});
-			myhooks.forEach((hook) => {
+		.then(async (webhooks : Page<WebhookObject>) => {
+			let myHooks : WebhookObject[] = [];
+			let first = true;
+			do {
+				if (first) {
+					first = false;
+				} else {
+					webhooks = await webhooks.next();
+				}
+
+				myHooks = myHooks.concat(filterHooks(webhooks));
+			} while (webhooks.hasNext())
+
+			myHooks.forEach((hook : WebhookObject) => {
 				spark.webhooks.remove(hook);
 			});
+
 			__logger.debug('successfully cleaned up old hooks');
-		}).then(function() {
+		}).then(() => {
 			spark.webhooks.create({
 				resource: 'messages',
 				event: 'created',
