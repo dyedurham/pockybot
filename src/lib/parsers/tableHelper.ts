@@ -1,4 +1,4 @@
-import stringWidth = require('string-width');
+const stringWidth = require('string-width');
 import __logger from '../logger';
 import { ResultRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';

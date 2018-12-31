@@ -1,4 +1,5 @@
-import spark, { WebhookObject, Page } from 'ciscospark/env';
+import { WebhookObject, Page } from 'ciscospark/env';
+const spark = require('ciscospark/env');
 import constants from '../constants';
 import __logger from './logger';
 

@@ -1,5 +1,5 @@
 import * as xml from 'libxmljs';
-import unescape = require('unescape');
+const unescape = require('unescape');
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 

@@ -1,4 +1,4 @@
-import stringWidth = require('string-width');
+const stringWidth = require('string-width');
 
 export default class TableSizeParser {
 	padString(str : string, length : number) {
