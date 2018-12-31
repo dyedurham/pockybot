@@ -1,4 +1,5 @@
-import spark, { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'ciscospark/env';
+const spark = require("ciscospark/env");
 import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';

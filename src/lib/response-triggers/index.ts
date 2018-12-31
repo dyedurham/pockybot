@@ -24,7 +24,8 @@ import Default from './default';
 
 // Services
 import TableSizeParser from '../TableSizeParser';
-import spark, { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'ciscospark/env';
+const spark = require("ciscospark/env");
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';

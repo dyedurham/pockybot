@@ -16,7 +16,8 @@ import Keywords from './keywords';
 import Default from './default';
 
 // Services
-import spark, { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'ciscospark/env';
+const spark = require("ciscospark/env");
 import { Client } from 'pg';
 import configService from '../config';
 
