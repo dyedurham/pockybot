@@ -4,6 +4,7 @@
 	"description": "Spark bot that handles team recognition",
 	"main": "server.js",
 	"scripts": {
+		"build": "tsc",
 		"start": "node built/server.js",
 		"test": "jasmine-ts --config=jasmine.json"
 	},
