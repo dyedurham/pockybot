@@ -67,12 +67,12 @@ function createDatabase(success : boolean, data) : PockyDB {
 	return db;
 }
 
-describe('creating responses', () => {
+xdescribe('creating responses', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data = createData();
 	let results = new Results(spark, null, null, config);
-	it('should parse a proper message', async (done : DoneFn) => {
+	xit('should parse a proper message', async (done : DoneFn) => {
 		let message = await results.createResponse(data);
 		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
 		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
@@ -81,7 +81,7 @@ describe('creating responses', () => {
 	});
 });
 
-describe('creating a message', () => {
+xdescribe('creating a message', () => {
 	let today : Date;
 	let todayString : string;
 	let data : ResultRow[];
@@ -96,7 +96,7 @@ describe('creating a message', () => {
 		results = new Results(spark, database, null, config);
 	});
 
-	it('should create a proper message', async (done : DoneFn) => {
+	xit('should create a proper message', async (done : DoneFn) => {
 		let message = await results.createMessage();
 		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
 		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
