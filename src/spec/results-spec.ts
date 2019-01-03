@@ -73,7 +73,7 @@ describe('creating responses', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data = createData();
-	let results = new Results(spark, null, null, config);
+	let results = new Results(spark, null, config);
 
 	beforeEach(() => {
 		var fakeExistsSync = sinon.fake.returns(false);
@@ -108,7 +108,7 @@ describe('creating a message', () => {
 		todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 		data = createData();
 		database = createDatabase(true, data);
-		results = new Results(spark, database, null, config);
+		results = new Results(spark, database, config);
 
 		var fakeExistsSync = sinon.fake.returns(false);
 		var fakeWriteFileSync = sinon.fake();
@@ -136,7 +136,7 @@ describe('failing at creating a message', () => {
 
 	beforeEach(() => {
 		database = createDatabase(false, null);
-		results = new Results(null, database, null, config);
+		results = new Results(null, database, config);
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
@@ -155,7 +155,7 @@ describe('testing triggers', () => {
 	let results : Results;
 
 	beforeEach(() => {
-		results = new Results(null, null, null, config);
+		results = new Results(null, null, config);
 	});
 
 	it('should accept trigger', () => {

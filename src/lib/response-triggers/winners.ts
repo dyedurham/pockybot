@@ -1,7 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
-import TableSizeParser from '../TableSizeParser';
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
@@ -13,14 +12,12 @@ const resultsCommand = '(?: )*winners(?: )*';
 
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = 'Error encountered; cannot display winners.';
-	tableSizer : TableSizeParser;
 	database : PockyDB;
 	config : Config;
 
-	constructor(database : PockyDB, tableSizer : TableSizeParser, config : Config) {
+	constructor(database : PockyDB, config : Config) {
 		super();
 
-		this.tableSizer = tableSizer;
 		this.database = database;
 		this.config = config;
 	}

@@ -71,7 +71,7 @@ describe('creating responses', () => {
 
 	beforeEach(() => {
 		data = createData();
-		winners = new Winners(null, null, config);
+		winners = new Winners(null, config);
 	})
 
 	it('should parse a proper message', async (done : DoneFn) => {
@@ -95,7 +95,7 @@ describe('creating a message', () => {
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
-		winners = new Winners(database, null, config);
+		winners = new Winners(database, config);
 	});
 
 	it('should create a proper message', async (done : DoneFn) => {
@@ -117,7 +117,7 @@ describe('failing at creating a message', () => {
 
 	beforeEach(() => {
 		database = createDatabase(false, null);
-		winners = new Winners(database, null, config);
+		winners = new Winners(database, config);
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
@@ -136,7 +136,7 @@ describe('testing triggers', () => {
 	let winners : Winners;
 
 	beforeEach(() => {
-		winners = new Winners(null, null, config);
+		winners = new Winners(null, config);
 	});
 
 	it('should accept trigger', () => {

@@ -3,7 +3,6 @@ import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import * as fs from 'fs';
 import PockyDB from '../PockyDB';
-import TableSizeParser from '../TableSizeParser';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
@@ -19,15 +18,13 @@ export default class Results extends Trigger {
 
 	spark : CiscoSpark;
 	database : PockyDB;
-	tableSizer : TableSizeParser;
 	config : Config;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, tableSizer : TableSizeParser, config : Config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
 		super();
 
 		this.spark = sparkService;
 		this.database = databaseService;
-		this.tableSizer = tableSizer;
 		this.cannotDisplayResults = 'Error encountered; cannot display results.';
 		this.config = config;
 	}
