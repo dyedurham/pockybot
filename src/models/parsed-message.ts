@@ -1,9 +1,9 @@
-import * as xml from "libxmljs";
+import * as xml from 'libxmljs';
 
 export interface ParsedMessage {
-	fromPerson: string;
-	toPersonId: string;
-	botId: string;
-	children: xml.Element[];
-	comment: string;
+	fromPerson : string;
+	toPersonId : string;
+	botId : string;
+	children : xml.Element[];
+	comment : string;
 }

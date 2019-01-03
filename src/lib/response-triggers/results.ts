@@ -59,7 +59,7 @@ export default class Results extends Trigger {
 		}
 	}
 
-	async createResponse(data : ResultRow[]): Promise<MessageObject> {
+	async createResponse(data : ResultRow[]) : Promise<MessageObject> {
 		let today = new Date();
 		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
