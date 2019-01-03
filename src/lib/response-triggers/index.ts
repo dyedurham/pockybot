@@ -23,7 +23,6 @@ import Keywords from './keywords';
 import Default from './default';
 
 // Services
-import TableSizeParser from '../TableSizeParser';
 import { MessageObject } from 'ciscospark/env';
 const spark = require("ciscospark/env");
 import { Client } from 'pg';
@@ -34,7 +33,6 @@ import PockyDB from '../PockyDB';
 
 // Service instantiation
 const utilities = new Utilities();
-const tableSizer = new TableSizeParser();
 const database = new PockyDB(new Client(), spark);
 const config = new Config(database);
 
@@ -45,8 +43,8 @@ config.updateAll();
 const peg = new Peg(spark, database, config);
 const unpeg = new Unpeg(spark, database, utilities);
 const reset = new Reset(database, config);
-const winners = new Winners(database, tableSizer, config);
-const results = new Results(spark, database, tableSizer, config);
+const winners = new Winners(database, config);
+const results = new Results(spark, database, config);
 const status = new Status(spark, database, config);
 const update = new Update(spark, database, config);
 const finish = new Finish(winners, results, reset, config);
