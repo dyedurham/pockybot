@@ -60,7 +60,7 @@ export default class PockyDB {
 		this.sqlSetRoles = this._readFile('../../database/queries/set_roles.sql');
 	}
 
-	loadConfig(config) {
+	loadConfig(config: Config) {
 		this.config = config;
 	}
 
@@ -69,7 +69,7 @@ export default class PockyDB {
 	 *         1 on 'you have no more pegs left to give' failure
 	 *         2 on error
 	 */
-	async givePegWithComment(comment : string, receiver : string, sender = 'default_user') {
+	async givePegWithComment(comment : string, receiver : string, sender = 'default_user'): Promise<number> {
 		try {
 			await Promise.all([this.existsOrCanBeCreated(sender), this.existsOrCanBeCreated(receiver)]);
 		} catch (error) {

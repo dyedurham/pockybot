@@ -59,7 +59,7 @@ export default class Results extends Trigger {
 		}
 	}
 
-	async createResponse(data : ResultRow[]) {
+	async createResponse(data : ResultRow[]): Promise<MessageObject> {
 		let today = new Date();
 		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
@@ -122,7 +122,7 @@ ${pegsReceived[receiver]}
 		}
 	}
 
-	generateHtml(results : Receiver[], todayString : string) {
+	generateHtml(results : Receiver[], todayString : string): string {
 		__logger.information('generating html');
 		try {
 			let tableify = require('tableify');

@@ -47,11 +47,11 @@ export default class Config {
 			x.role === role);
 	}
 
-	getAllRoles() {
+	getAllRoles(): RolesRow[] {
 		return this.roles;
 	}
 
-	getAllConfig() {
+	getAllConfig(): ConfigRow[] {
 		return this.config;
 	}
 

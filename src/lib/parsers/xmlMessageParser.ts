@@ -2,14 +2,7 @@ import * as xml from 'libxmljs';
 const unescape = require('unescape');
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
-
-interface ParsedMessage {
-	fromPerson : string;
-	toPersonId : string;
-	botId : string;
-	children : xml.Element[];
-	comment : string;
-}
+import { ParsedMessage } from '../../models/parsed-message';
 
 function parseMessage(message : MessageObject) : ParsedMessage {
 	try {

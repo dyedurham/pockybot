@@ -1,7 +1,8 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import dbConstants from '../db-constants';
-import xmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
+import xmlMessageParser from '../parsers/xmlMessageParser';
+import { ParsedMessage } from "../../models/parsed-message";
 import PockyDB from '../PockyDB';
 import Config from '../config';
 import __logger from '../logger';
@@ -53,7 +54,7 @@ export default class Peg extends Trigger {
 		if (this.config.getConfig('requireValues') && !this.validateValues(parsedMessage)) {
 			return {
 				markdown:
-`I'm sorry, you have to include a keyword in your comment. Please include one of the below keywords in your comment:\n`
+`I'm sorry, you have to include a keyword in your comment. Please include one of the below keywords in your comment: \n`
  + this.config.getStringConfig('keyword').join(', ')
 			};
 		}

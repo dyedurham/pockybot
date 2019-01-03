@@ -1,6 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import XmlMessageParser, { ParsedMessage } from '../parsers/xmlMessageParser';
+import XmlMessageParser from '../parsers/xmlMessageParser';
+import { ParsedMessage } from "../../models/parsed-message";
 import PockyDB from '../PockyDB';
 import Utilities from '../utilities';
 import __logger from '../logger';

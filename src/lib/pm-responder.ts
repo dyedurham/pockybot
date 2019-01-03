@@ -4,7 +4,7 @@ import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
 
-async function respond(messageEvent : any) {
+async function respond(messageEvent : any): Promise<void> {
 	try {
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 
