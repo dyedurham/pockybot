@@ -3,7 +3,7 @@ import constants from '../../constants';
 import dbConstants from '../db-constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
-import PockyDB from '../PockyDB';
+import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import Config from '../config';
 import __logger from '../logger';

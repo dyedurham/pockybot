@@ -30,7 +30,7 @@ import Utilities from '../utilities';
 import Config from '../config';
 import QueryHandler from '../database/query-handler';
 
-import PockyDB from '../PockyDB';
+import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
 
@@ -38,8 +38,8 @@ import DbConfig from '../database/db-config';
 const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
-const database = new PockyDB(spark, queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
+const database = new PockyDB(spark, queryHandler,dbUsers);
 const config = new Config(dbConfig);
 
 database.loadConfig(config);

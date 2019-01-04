@@ -1,10 +1,11 @@
-import dbConstants from './db-constants';
+import dbConstants from '../db-constants';
 import { QueryResult, QueryConfig } from 'pg';
-import Config from './config';
-import __logger from './logger';
+import Config from '../config';
+import __logger from '../logger';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
-import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../models/database';
-import QueryHandler from './database/query-handler';
+import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../../models/database';
+import QueryHandler from './query-handler';
+import DbUsers from './db-users';
 
 export default class PockyDB {
 	private readonly sqlGivePegWithComment : string;
@@ -17,10 +18,12 @@ export default class PockyDB {
 	private spark : CiscoSpark;
 	private config : Config;
 	private queryHandler : QueryHandler;
+	private dbUsers : DbUsers;
 
-	constructor(sparkService : CiscoSpark, queryHandler : QueryHandler) {
+	constructor(sparkService : CiscoSpark, queryHandler : QueryHandler, dbUsers : DbUsers) {
 		this.spark = sparkService;
 		this.queryHandler = queryHandler;
+		this.dbUsers = dbUsers;
 
 		this.sqlGivePegWithComment = this.queryHandler.readFile('../../database/queries/give_peg_with_comment.sql');
 		this.sqlPegsGiven = this.queryHandler.readFile('../../database/queries/pegs_given.sql');
@@ -42,7 +45,7 @@ export default class PockyDB {
 	 */
 	async givePegWithComment(comment : string, receiver : string, sender = 'default_user') : Promise<number> {
 		try {
-			await Promise.all([this.existsOrCanBeCreated(sender), this.existsOrCanBeCreated(receiver)]);
+			await Promise.all([this.dbUsers.existsOrCanBeCreated(sender), this.dbUsers.existsOrCanBeCreated(receiver)]);
 		} catch (error) {
 			__logger.error(`Error in one of the sender/receiver exists queries:\n${error.message}`);
 			return dbConstants.pegError;
