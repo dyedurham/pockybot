@@ -38,12 +38,21 @@ export default class Status extends Trigger {
 		let map : PegGivenData[] = await this.mapIdToName(pegs);
 		let mapped = await this.mapData(map, fromPerson);
 
-		return {
-			markdown: `
-You have ${mapped.remaining} pegs left to give.
+		let response : string = `You have ${mapped.remaining} pegs left to give.`;
+
+		if (mapped.hasPegged) {
+			response += `
 
 Here's the pegs you've given so far...
-${mapped.list}`,
+${mapped.list}`;
+		} else {
+			response += `
+
+You have not given any pegs so far.`;
+		}
+
+		return {
+			markdown: response,
 			toPersonId: fromPerson,
 			roomId: null // Do this to over-write default
 		};
@@ -60,7 +69,7 @@ ${mapped.list}`,
 		return Promise.all(mapToDisplayNameAsync);
 	}
 
-	mapData(data : PegGivenData[], fromPerson : string) : {list : string, remaining : string} {
+	mapData(data : PegGivenData[], fromPerson : string) : {list : string, remaining : string, hasPegged : boolean} {
 		let remaining = '';
 
 		if (this.config.checkRole(fromPerson, Role.Unmetered)) {
@@ -71,7 +80,8 @@ ${mapped.list}`,
 
 		return {
 			list: data.reduce((msg, p) => msg + `* **${p.receiver}** — "_${p.comment}_"\n`, ''),
-			remaining: remaining
+			remaining: remaining,
+			hasPegged: data.length > 0
 		};
 	}
 }
