@@ -1,15 +1,17 @@
 import 'jasmine-ts';
 import Config from '../lib/config';
-import PockyDB from '../lib/PockyDB';
+import DbConfig from '../lib/database/db-config';
 import { Client } from 'pg';
+import QueryHandler from '../lib/database/query-handler';
 import { Role } from '../models/database';
 
-let database : PockyDB;
+let database : DbConfig;
 
 beforeAll(() => {
 	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	database = new PockyDB(client, null);
+	let queryHandler = new QueryHandler(client);
+	spyOn(queryHandler, 'readFile').and.returnValue(null);
+	database = new DbConfig(queryHandler);
 
 	spyOn(database, 'getRoles').and.returnValue(new Promise((resolve, reject) => resolve([{'userid': 'user', 'role': Role.Admin}])));
 	spyOn(database, 'getConfig').and.returnValue(new Promise((resolve, reject) => resolve([{'name': 'config', 'value': 1}])));

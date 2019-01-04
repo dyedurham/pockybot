@@ -15,7 +15,7 @@ export default class QueryHandler {
 		});
 	}
 
-	public _readFile(filename : string) : string {
+	public readFile(filename : string) : string {
 		let filePath : string = path.resolve(__dirname, filename);
 		return fs.readFileSync(filePath, 'utf8');
 	}

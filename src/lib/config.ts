@@ -1,14 +1,14 @@
-import PockyDB from './PockyDB';
+import DbConfig from './database/db-config';
 import __logger from './logger';
 import { ConfigRow, StringConfigRow, RolesRow, Role } from '../models/database';
 
 export default class Config {
-	database : PockyDB;
+	database : DbConfig;
 	roles : RolesRow[];
 	config : ConfigRow[];
 	stringConfig : StringConfigRow[];
 
-	constructor(database : PockyDB) {
+	constructor(database : DbConfig) {
 		this.database = database;
 		this.roles = [];
 		this.config = [];

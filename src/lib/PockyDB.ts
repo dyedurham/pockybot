@@ -2,9 +2,7 @@ import dbConstants from './db-constants';
 import { QueryResult, QueryConfig } from 'pg';
 import Config from './config';
 import __logger from './logger';
-import * as path from 'path';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
-import * as fs from 'fs';
 import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../models/database';
 import QueryHandler from './database/query-handler';
 
@@ -21,13 +19,6 @@ export default class PockyDB {
 	private readonly sqlGetUsers : string;
 	private readonly sqlGetUser : string;
 
-	private readonly sqlGetConfig : string;
-	private readonly sqlGetStringConfig : string;
-	private readonly sqlGetRoles : string;
-	private readonly sqlSetConfig : string;
-	private readonly sqlSetStringConfig : string;
-	private readonly sqlSetRoles : string;
-
 	private spark : CiscoSpark;
 	private config : Config;
 	private queryHandler : QueryHandler;
@@ -36,24 +27,17 @@ export default class PockyDB {
 		this.spark = sparkService;
 		this.queryHandler = queryHandler;
 
-		this.sqlCreateUser = this.queryHandler._readFile('../../database/queries/create_pocky_user.sql');
-		this.sqlExists = this.queryHandler._readFile('../../database/queries/exists.sql');
-		this.sqlGivePegWithComment = this.queryHandler._readFile('../../database/queries/give_peg_with_comment.sql');
-		this.sqlPegsGiven = this.queryHandler._readFile('../../database/queries/pegs_given.sql');
-		this.sqlReset = this.queryHandler._readFile('../../database/queries/reset.sql');
-		this.sqlReturnResults = this.queryHandler._readFile('../../database/queries/return_results.sql');
-		this.sqlReturnWinners = this.queryHandler._readFile('../../database/queries/return_winners.sql');
-		this.sqlReturnGives = this.queryHandler._readFile('../../database/queries/return_gives.sql');
-		this.sqlUpdate = this.queryHandler._readFile('../../database/queries/update_pocky_user.sql');
-		this.sqlGetUsers = this.queryHandler._readFile('../../database/queries/select_all_users.sql');
-		this.sqlGetUser = this.queryHandler._readFile('../../database/queries/select_user.sql');
-
-		this.sqlGetConfig = this.queryHandler._readFile('../../database/queries/get_config.sql');
-		this.sqlGetStringConfig = this.queryHandler._readFile('../../database/queries/get_string_config.sql');
-		this.sqlGetRoles = this.queryHandler._readFile('../../database/queries/get_roles.sql');
-		this.sqlSetConfig = this.queryHandler._readFile('../../database/queries/set_config.sql');
-		this.sqlSetStringConfig = this.queryHandler._readFile('../../database/queries/set_string_config.sql');
-		this.sqlSetRoles = this.queryHandler._readFile('../../database/queries/set_roles.sql');
+		this.sqlCreateUser = this.queryHandler.readFile('../../database/queries/create_pocky_user.sql');
+		this.sqlExists = this.queryHandler.readFile('../../database/queries/exists.sql');
+		this.sqlGivePegWithComment = this.queryHandler.readFile('../../database/queries/give_peg_with_comment.sql');
+		this.sqlPegsGiven = this.queryHandler.readFile('../../database/queries/pegs_given.sql');
+		this.sqlReset = this.queryHandler.readFile('../../database/queries/reset.sql');
+		this.sqlReturnResults = this.queryHandler.readFile('../../database/queries/return_results.sql');
+		this.sqlReturnWinners = this.queryHandler.readFile('../../database/queries/return_winners.sql');
+		this.sqlReturnGives = this.queryHandler.readFile('../../database/queries/return_gives.sql');
+		this.sqlUpdate = this.queryHandler.readFile('../../database/queries/update_pocky_user.sql');
+		this.sqlGetUsers = this.queryHandler.readFile('../../database/queries/select_all_users.sql');
+		this.sqlGetUser = this.queryHandler.readFile('../../database/queries/select_user.sql');
 	}
 
 	loadConfig(config : Config) {
@@ -278,65 +262,5 @@ export default class PockyDB {
 		};
 
 		return await this.queryHandler.executeQuery(query);
-	}
-
-	async getRoles() : Promise<RolesRow[]> {
-		let query : QueryConfig = {
-			name: 'returnRolesQuery',
-			text: this.sqlGetRoles,
-			values: []
-		};
-
-		return await this.queryHandler.executeQuery(query);
-	}
-
-	async getConfig() : Promise<ConfigRow[]> {
-		let query : QueryConfig = {
-			name: 'returnConfigQuery',
-			text: this.sqlGetConfig,
-			values: []
-		};
-
-		return await this.queryHandler.executeQuery(query);
-	}
-
-	async getStringConfig() : Promise<StringConfigRow[]> {
-		let query : QueryConfig = {
-			name: 'returnStringConfigQuery',
-			text: this.sqlGetStringConfig,
-			values: []
-		};
-
-		return await this.queryHandler.executeQuery(query);
-	}
-
-	async setRoles(userid : string, role : Role) : Promise<void> {
-		let query : QueryConfig = {
-			name: 'setRolesQuery',
-			text: this.sqlSetRoles,
-			values: [userid, role]
-		};
-
-		await this.queryHandler.executeNonQuery(query);
-	}
-
-	async setConfig(config : string, value : number) : Promise<void> {
-		let query : QueryConfig = {
-			name: 'setConfigQuery',
-			text: this.sqlSetConfig,
-			values: [config, value]
-		};
-
-		await this.queryHandler.executeNonQuery(query);
-	}
-
-	async setStringConfig(config : string, value : string) : Promise<void> {
-		let query : QueryConfig = {
-			name: 'setStringConfigQuery',
-			text: this.sqlSetStringConfig,
-			values: [config, value]
-		};
-
-		await this.queryHandler.executeNonQuery(query);
 	}
 }
