@@ -31,7 +31,6 @@ export default class PockyDB {
 		this.sqlReturnResults = this.queryHandler.readFile('../../database/queries/return_results.sql');
 		this.sqlReturnWinners = this.queryHandler.readFile('../../database/queries/return_winners.sql');
 		this.sqlReturnGives = this.queryHandler.readFile('../../database/queries/return_gives.sql');
-
 	}
 
 	loadConfig(config : Config) {

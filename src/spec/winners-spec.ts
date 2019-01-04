@@ -2,9 +2,10 @@ import Winners from '../lib/response-triggers/winners';
 import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
-import PockyDB from '../lib/PockyDB';
+import PockyDB from '../lib/database/pocky-db';
 import { Client } from 'pg';
 import { Role, ResultRow } from '../models/database';
+import QueryHandler from '../lib/database/query-handler';
 
 const config = new Config(null);
 
@@ -53,8 +54,11 @@ function createData() : ResultRow[] {
 
 function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
 	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(client, null);
+	let queryHandler = new QueryHandler(null);
+	//spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	spyOn(queryHandler, 'readFile').and.returnValue('sql file');
+	spyOn(queryHandler, 'executeQuery').and.returnValue(new Promise(resolve => resolve()));
+	let db = new PockyDB(null, queryHandler, null);
 
 	if (success) {
 		spyOn(db, 'returnWinners').and.returnValue(new Promise(resolve => resolve(data)));

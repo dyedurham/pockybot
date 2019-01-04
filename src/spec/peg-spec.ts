@@ -1,7 +1,7 @@
 import Peg from '../lib/response-triggers/peg';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/PockyDB';
+import PockyDB from '../lib/database/pocky-db';
 import MockCiscoSpark from './mocks/mock-spark';
 import { Client } from 'pg';
 import { MessageObject } from 'ciscospark/env';
