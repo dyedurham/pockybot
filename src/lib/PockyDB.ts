@@ -1,11 +1,12 @@
 import dbConstants from './db-constants';
-import { Client, QueryResult, QueryConfig } from 'pg';
+import { QueryResult, QueryConfig } from 'pg';
 import Config from './config';
 import __logger from './logger';
 import * as path from 'path';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import * as fs from 'fs';
 import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../models/database';
+import QueryHandler from './database/query-handler';
 
 export default class PockyDB {
 	private readonly sqlCreateUser : string;
@@ -27,37 +28,32 @@ export default class PockyDB {
 	private readonly sqlSetStringConfig : string;
 	private readonly sqlSetRoles : string;
 
-	private client : Client;
 	private spark : CiscoSpark;
 	private config : Config;
+	private queryHandler : QueryHandler;
 
-	constructor(client : Client, sparkService : CiscoSpark) {
-		this.client = client;
+	constructor(sparkService : CiscoSpark, queryHandler : QueryHandler) {
 		this.spark = sparkService;
+		this.queryHandler = queryHandler;
 
-		this.client.connect()
-		.catch(function(e) {
-			__logger.error(`Error connecting to database:\n${e.message}`);
-		});
+		this.sqlCreateUser = this.queryHandler._readFile('../../database/queries/create_pocky_user.sql');
+		this.sqlExists = this.queryHandler._readFile('../../database/queries/exists.sql');
+		this.sqlGivePegWithComment = this.queryHandler._readFile('../../database/queries/give_peg_with_comment.sql');
+		this.sqlPegsGiven = this.queryHandler._readFile('../../database/queries/pegs_given.sql');
+		this.sqlReset = this.queryHandler._readFile('../../database/queries/reset.sql');
+		this.sqlReturnResults = this.queryHandler._readFile('../../database/queries/return_results.sql');
+		this.sqlReturnWinners = this.queryHandler._readFile('../../database/queries/return_winners.sql');
+		this.sqlReturnGives = this.queryHandler._readFile('../../database/queries/return_gives.sql');
+		this.sqlUpdate = this.queryHandler._readFile('../../database/queries/update_pocky_user.sql');
+		this.sqlGetUsers = this.queryHandler._readFile('../../database/queries/select_all_users.sql');
+		this.sqlGetUser = this.queryHandler._readFile('../../database/queries/select_user.sql');
 
-		this.sqlCreateUser = this._readFile('../../database/queries/create_pocky_user.sql');
-		this.sqlExists = this._readFile('../../database/queries/exists.sql');
-		this.sqlGivePegWithComment = this._readFile('../../database/queries/give_peg_with_comment.sql');
-		this.sqlPegsGiven = this._readFile('../../database/queries/pegs_given.sql');
-		this.sqlReset = this._readFile('../../database/queries/reset.sql');
-		this.sqlReturnResults = this._readFile('../../database/queries/return_results.sql');
-		this.sqlReturnWinners = this._readFile('../../database/queries/return_winners.sql');
-		this.sqlReturnGives = this._readFile('../../database/queries/return_gives.sql');
-		this.sqlUpdate = this._readFile('../../database/queries/update_pocky_user.sql');
-		this.sqlGetUsers = this._readFile('../../database/queries/select_all_users.sql');
-		this.sqlGetUser = this._readFile('../../database/queries/select_user.sql');
-
-		this.sqlGetConfig = this._readFile('../../database/queries/get_config.sql');
-		this.sqlGetStringConfig = this._readFile('../../database/queries/get_string_config.sql');
-		this.sqlGetRoles = this._readFile('../../database/queries/get_roles.sql');
-		this.sqlSetConfig = this._readFile('../../database/queries/set_config.sql');
-		this.sqlSetStringConfig = this._readFile('../../database/queries/set_string_config.sql');
-		this.sqlSetRoles = this._readFile('../../database/queries/set_roles.sql');
+		this.sqlGetConfig = this.queryHandler._readFile('../../database/queries/get_config.sql');
+		this.sqlGetStringConfig = this.queryHandler._readFile('../../database/queries/get_string_config.sql');
+		this.sqlGetRoles = this.queryHandler._readFile('../../database/queries/get_roles.sql');
+		this.sqlSetConfig = this.queryHandler._readFile('../../database/queries/set_config.sql');
+		this.sqlSetStringConfig = this.queryHandler._readFile('../../database/queries/set_string_config.sql');
+		this.sqlSetRoles = this.queryHandler._readFile('../../database/queries/set_roles.sql');
 	}
 
 	loadConfig(config : Config) {
@@ -97,7 +93,7 @@ export default class PockyDB {
 		};
 
 		try {
-			await this.executeNonQuery(query);
+			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.pegSuccess;
 		} catch (e) {
 			__logger.error(`Error after givePegWithCommentQuery:\n${e.message}`);
@@ -122,7 +118,7 @@ export default class PockyDB {
 		};
 
 		try {
-			return await this.executeNonQuery(query);
+			return await this.queryHandler.executeNonQuery(query);
 		} catch (error) {
 			__logger.error(`Error creating new user:\n${error.message}`);
 			throw new Error('Error creating new user');
@@ -146,7 +142,7 @@ export default class PockyDB {
 		};
 
 		try {
-			await this.executeNonQuery(query);
+			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.updateUserSuccess;
 		} catch (error) {
 			__logger.error(`Error after updateUserQuery in updateUser for ${userid}:\n${error.message}`);
@@ -160,7 +156,7 @@ export default class PockyDB {
 			text: this.sqlGetUsers
 		};
 
-		return await this.executeQuery(query);
+		return await this.queryHandler.executeQuery(query);
 	}
 
 	async getUser(userid : string) : Promise<UserRow> {
@@ -170,7 +166,7 @@ export default class PockyDB {
 			values: [userid]
 		};
 
-		let user : UserRow[] = await this.executeQuery(query);
+		let user : UserRow[] = await this.queryHandler.executeQuery(query);
 
 		if (user.length === 1) {
 			return user[0];
@@ -212,7 +208,7 @@ export default class PockyDB {
 		};
 
 		__logger.debug(`Checking if user ${userid} exists`);
-		let existingUser = await this.executeQuery(query);
+		let existingUser = await this.queryHandler.executeQuery(query);
 		return existingUser[0]['exists'];
 	}
 
@@ -223,25 +219,19 @@ export default class PockyDB {
 			values: [user]
 		};
 
-		let data = await this.executeQuery(query);
+		let data = await this.queryHandler.executeQuery(query);
 		return data[0]['count'];
 	}
 
 	async hasSparePegs(user : string) : Promise<boolean> {
+		let count = this.countPegsGiven(user);
 		__logger.debug(`Checking if user ${user} has spare pegs`);
+
 		if (user === 'default_user' || this.config.checkRole(user, Role.Unmetered)) {
 			return true;
 		}
 
-		let query : QueryConfig = {
-			name: 'pegsGiven',
-			text: this.sqlPegsGiven,
-			values: [user]
-		};
-
-		let data = await this.executeQuery(query);
-		let count : number = data[0]['count'];
-		if (count < this.config.getConfig('limit')) {
+		if (await count < this.config.getConfig('limit')) {
 			return true;
 		}
 
@@ -254,7 +244,7 @@ export default class PockyDB {
 			text: this.sqlReset
 		};
 
-		return await this.executeNonQuery(query);
+		return await this.queryHandler.executeNonQuery(query);
 	}
 
 	async returnResults() : Promise<ResultRow[]> {
@@ -263,7 +253,7 @@ export default class PockyDB {
 			text: this.sqlReturnResults,
 		};
 
-		let results : ResultRow[] = await this.executeQuery(query);
+		let results : ResultRow[] = await this.queryHandler.executeQuery(query);
 		__logger.debug('returning results: ' + JSON.stringify(results));
 		return results;
 	}
@@ -275,7 +265,7 @@ export default class PockyDB {
 			values: [this.config.getConfig('minimum'), this.config.getConfig('winners')]
 		};
 
-		let winners : ResultRow[] = await this.executeQuery(query);
+		let winners : ResultRow[] = await this.queryHandler.executeQuery(query);
 		__logger.debug('returning winners: ' + JSON.stringify(winners));
 		return winners;
 	}
@@ -287,7 +277,7 @@ export default class PockyDB {
 			values: [user]
 		};
 
-		return await this.executeQuery(query);
+		return await this.queryHandler.executeQuery(query);
 	}
 
 	async getRoles() : Promise<RolesRow[]> {
@@ -297,7 +287,7 @@ export default class PockyDB {
 			values: []
 		};
 
-		return await this.executeQuery(query);
+		return await this.queryHandler.executeQuery(query);
 	}
 
 	async getConfig() : Promise<ConfigRow[]> {
@@ -307,7 +297,7 @@ export default class PockyDB {
 			values: []
 		};
 
-		return await this.executeQuery(query);
+		return await this.queryHandler.executeQuery(query);
 	}
 
 	async getStringConfig() : Promise<StringConfigRow[]> {
@@ -317,7 +307,7 @@ export default class PockyDB {
 			values: []
 		};
 
-		return await this.executeQuery(query);
+		return await this.queryHandler.executeQuery(query);
 	}
 
 	async setRoles(userid : string, role : Role) : Promise<void> {
@@ -327,7 +317,7 @@ export default class PockyDB {
 			values: [userid, role]
 		};
 
-		await this.executeNonQuery(query);
+		await this.queryHandler.executeNonQuery(query);
 	}
 
 	async setConfig(config : string, value : number) : Promise<void> {
@@ -337,7 +327,7 @@ export default class PockyDB {
 			values: [config, value]
 		};
 
-		await this.executeNonQuery(query);
+		await this.queryHandler.executeNonQuery(query);
 	}
 
 	async setStringConfig(config : string, value : string) : Promise<void> {
@@ -347,30 +337,6 @@ export default class PockyDB {
 			values: [config, value]
 		};
 
-		await this.executeNonQuery(query);
-	}
-
-	private _readFile(filename : string) : string {
-		let filePath : string = path.resolve(__dirname, filename);
-		return fs.readFileSync(filePath, 'utf8');
-	}
-
-	private async executeQuery(query : QueryConfig) : Promise<any> {
-		try {
-			let data = await this.client.query(query);
-			return data['rows'];
-		} catch (error) {
-			__logger.error(`Error executing query ${query.name}:\n${error.message}`);
-			throw new Error('Error executing query');
-		}
-	}
-
-	private async executeNonQuery(query : QueryConfig) : Promise<QueryResult> {
-		try {
-			return await this.client.query(query);
-		} catch (error) {
-			__logger.error(`Error executing non query ${query.name}:\n${error.message}`);
-			throw new Error('Error executing non query');
-		}
+		await this.queryHandler.executeNonQuery(query);
 	}
 }
