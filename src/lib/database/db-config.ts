@@ -23,7 +23,6 @@ export default class DbConfig {
 		this.sqlSetRoles = this.queryHandler.readFile('../../database/queries/set_roles.sql');
 	}
 
-
 	async getRoles() : Promise<RolesRow[]> {
 		let query : QueryConfig = {
 			name: 'returnRolesQuery',

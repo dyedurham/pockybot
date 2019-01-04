@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import XmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
-import PockyDB from '../PockyDB';
+import DbUsers from '../database/db-users';
 import Utilities from '../utilities';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
@@ -13,10 +13,10 @@ export default class  Unpeg extends Trigger {
 	readonly unpegCommand : string;
 
 	spark : CiscoSpark;
-	database : PockyDB;
+	database : DbUsers;
 	utilities : Utilities;
 
-	constructor(spark : CiscoSpark, database : PockyDB, utilities : Utilities) {
+	constructor(spark : CiscoSpark, database : DbUsers, utilities : Utilities) {
 		super();
 
 		this.spark = spark;

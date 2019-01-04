@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import PockyDB from '../PockyDB';
+import DbUsers from '../database/db-users';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
@@ -10,10 +10,10 @@ const updateCommand = '(?: )*update(?: )*';
 
 export default class Update extends Trigger {
 	spark : CiscoSpark;
-	database : PockyDB;
+	database : DbUsers;
 	config : Config;
 
-	constructor(sparkService, databaseService, config) {
+	constructor(sparkService : CiscoSpark, databaseService : DbUsers, config : Config) {
 		super();
 
 		this.spark = sparkService;
