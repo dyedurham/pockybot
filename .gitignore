@@ -99,3 +99,6 @@ _UpgradeReport_Files/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Auto-generated JS files from Typescript
+built/
