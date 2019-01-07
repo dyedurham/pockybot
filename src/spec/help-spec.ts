@@ -29,9 +29,10 @@ beforeAll(() => {
 
 describe('ponging the ping', () => {
 	const help = new Help(config);
+	const helpMessage = { personId: 'asdfar'};
 
 	it('should pong', async (done : DoneFn) => {
-		let response = await help.createMessage();
+		let response = await help.createMessage(helpMessage);
 		expect(response.markdown).toBeDefined();
 		done();
 	});
