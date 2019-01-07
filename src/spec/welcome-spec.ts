@@ -35,17 +35,17 @@ function createPrivateMessage(message : string) : MessageObject {
 	}
 }
 
-describe('ponging the ping', () => {
+describe('welcome trigger', () => {
 	const welcome = new Welcome(config);
 
-	it('should pong', async (done : DoneFn) => {
+	it('should create a message', async (done : DoneFn) => {
 		let response = await welcome.createMessage();
 		expect(response.markdown == '').toBeFalsy();
 		done();
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing welcome triggers', () => {
 	const welcome = new Welcome(config);
 
 	it('should accept trigger', () => {
@@ -79,7 +79,7 @@ describe('testing triggers', () => {
 	});
 });
 
-describe('testing PM triggers', () => {
+describe('testing welcome PM triggers', () => {
 	const welcome = new Welcome(config);
 
 	it('should accept trigger', () => {

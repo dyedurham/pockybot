@@ -234,7 +234,7 @@ describe('creating Message', () => {
 	})
 });
 
-describe('testing triggers', () => {
+describe('testing peg triggers', () => {
 	let peg = new Peg(null, null, config);
 	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
@@ -285,7 +285,7 @@ describe('testing triggers', () => {
 	})
 });
 
-describe('testing keywords in messages', () => {
+describe('testing keywords in peg messages', () => {
 	let peg = new Peg(null, null, config);
 	it('should reject with no keyword', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');

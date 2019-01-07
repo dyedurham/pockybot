@@ -27,18 +27,18 @@ beforeAll(() => {
 	});
 })
 
-describe('ponging the ping', () => {
+describe('help message', () => {
 	const help = new Help(config);
 	const helpMessage = { personId: 'asdfar'};
 
-	it('should pong', async (done : DoneFn) => {
+	it('should create the message', async (done : DoneFn) => {
 		let response = await help.createMessage(helpMessage);
 		expect(response.markdown).toBeDefined();
 		done();
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing help triggers', () => {
 	const help = new Help(config);
 
 	it('should accept trigger', () => {
@@ -72,7 +72,7 @@ describe('testing triggers', () => {
 	});
 });
 
-describe('testing PM triggers', () => {
+describe('testing help PM triggers', () => {
 	const help = new Help(config);
 
 	it('should accept trigger', () => {

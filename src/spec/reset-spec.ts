@@ -58,7 +58,7 @@ function createDatabase(success : boolean) : PockyDB {
 	return db;
 }
 
-describe('testing response', () => {
+describe('testing reset response', () => {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -74,7 +74,7 @@ describe('testing response', () => {
 	});
 });
 
-describe('testing failed response', () => {
+describe('testing reset failed response', () => {
 	let database : PockyDB;
 	let reset : Reset;
 
@@ -90,7 +90,7 @@ describe('testing failed response', () => {
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing reset triggers', () => {
 	let reset : Reset;
 
 	beforeEach(() => {

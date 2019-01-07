@@ -65,7 +65,7 @@ function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
 	return db;
 }
 
-describe('creating responses', () => {
+describe('creating winners responses', () => {
 	let data : ResultRow[];
 	let winners : Winners;
 
@@ -87,7 +87,7 @@ describe('creating responses', () => {
 	});
 });
 
-describe('creating a message', () => {
+describe('creating a winners message', () => {
 	let data : ResultRow[];
 	let database : PockyDB;
 	let winners : Winners;
@@ -111,7 +111,7 @@ describe('creating a message', () => {
 	});
 });
 
-describe('failing at creating a message', () => {
+describe('failing at creating a winners message', () => {
 	let database : PockyDB;
 	let winners : Winners;
 
@@ -132,7 +132,7 @@ describe('failing at creating a message', () => {
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing winners triggers', () => {
 	let winners : Winners;
 
 	beforeEach(() => {
