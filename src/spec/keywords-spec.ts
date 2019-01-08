@@ -26,17 +26,17 @@ function createPrivateMessage(message : string) : MessageObject {
 	}
 }
 
-describe('ponging the ping', () => {
+describe('keywords trigger', () => {
 	const keywords = new Keywords(config);
 
-	it('should pong', async (done) => {
+	it('should return the message', async (done) => {
 		let response = await keywords.createMessage();
 		expect(response.markdown).toBeDefined();
 		done();
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing keywords triggers', () => {
 	const keywords = new Keywords(config);
 
 	it('should accept trigger', () => {
@@ -70,7 +70,7 @@ describe('testing triggers', () => {
 	});
 });
 
-describe('testing PM triggers', () => {
+describe('testing keywords PM triggers', () => {
 	const keywords = new Keywords(config);
 
 	it('should accept trigger', () => {

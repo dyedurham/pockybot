@@ -14,7 +14,7 @@ function createPrivateMessage(message : string) : MessageObject {
 	}
 }
 
-describe('testing response', () => {
+describe('ping trigger', () => {
 	const ping = new Ping();
 
 	it('should pong', async (done : DoneFn) => {
@@ -24,7 +24,7 @@ describe('testing response', () => {
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing ping triggers', () => {
 	const ping = new Ping();
 
 	it('should accept trigger', () => {
@@ -58,7 +58,7 @@ describe('testing triggers', () => {
 	});
 });
 
-describe('testing PM triggers', () => {
+describe('testing ping PM triggers', () => {
 	const ping = new Ping();
 
 	it('should accept trigger', () => {

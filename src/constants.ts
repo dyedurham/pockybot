@@ -6,8 +6,7 @@ export default {
 	postUrl: process.env.POST_URL,
 	pmUrl: process.env.PM_URL,
 
-	//TODO change this before going open source (also package.json stash url but can't comment in JSON)
-	todoUrl: 'https://github.com/Lauraducky/pockybot/blob/master/TODO.md',
+	todoUrl: 'https://github.com/Lauraducky/pockybot/issues',
 
 	//format rules
 	mentionAny: '<spark-mention data-object-type="person" data-object-id="([^"]*)">(?:[^<]*)<\/spark-mention>',

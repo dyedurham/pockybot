@@ -71,7 +71,7 @@ function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
 	return db;
 }
 
-describe('creating Message', () => {
+describe('creating status message', () => {
     it('should show the remaining pegs', async (done : DoneFn) => {
         const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
@@ -137,7 +137,7 @@ describe('creating Message', () => {
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing status triggers', () => {
 	const status = new Status(spark, null, config);
 
 	const TriggerTestCases = [
@@ -154,7 +154,7 @@ describe('testing triggers', () => {
 	});
 });
 
-describe('testing PM triggers', () => {
+describe('testing status PM triggers', () => {
 	const status = new Status(spark, null, config);
 	it('should accept trigger', () => {
 		let message = createPrivateMessage('status');
