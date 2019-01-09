@@ -125,59 +125,48 @@ ${pegsReceived[receiver]}
 	generateHtml(results : Receiver[], todayString : string): string {
 		__logger.information('generating html');
 		try {
-			let tableify = require('tableify');
-
-			let htmlTables = [];
+			let htmlTables = '';
 
 			results.forEach((result : Receiver) => {
 
-				let table = {};
+				htmlTables +=
+`				<thead class="thead-light">
+					<tr><th colspan="2">`+ result.person.toString() +` - `+ result.pegs.length +` peg(s) total</th></tr>
+				</thead>
+				<tbody>`;
 
 				result.pegs.forEach((peg : PegReceivedData) => {
-					table[peg.sender.toString()] = peg.comment;
+					htmlTables +=
+`
+					<tr><td>`+ peg.sender.toString() +`</td><td>`+ peg.comment +`</td></tr>
+`;
 				});
 
-				htmlTables.push([result.person.toString(),result.pegs.length, tableify(table)]);
+				htmlTables +=
+`				</tbody>
+`;
 			});
 
-			__logger.information('finished generating html');
-
-			let html =
-`<html>
+			let html = `<html>
 	<head>
-		<style>
-			table {
-			    font-family: arial, sans-serif;
-			    border-collapse: collapse;
-			    width: 100%;
-			}
-
-			td, th {
-			    border: 1px solid #dddddd;
-			    text-align: left;
-			    padding: 8px;
-			}
-
-			tr:nth-child(even) {
-			    background-color: #dddddd;
-			}
-		</style>
+		<title>Pegs ` + todayString + `</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
 	</head>
 	<body>
-		<title>pegs ` + todayString + `</title>
-		<h1>Pegs and Pocky</h1>
-		<h2>Pegs Received:</h2>`;
+		<div class="container content">
+			<h1 class="pt-3 pb-3">Pegs and Pocky ` + todayString + `</h1>
+			<h2>Pegs Received:</h2>
+			<table class="table">
+` + htmlTables + `
+			</table>
+		</div>
+	</body>
+</html>`;
 
-			htmlTables.forEach((table) => {
-				html +=
-`		<h3>` + table[0] + ` - ` + table[1] + `</h3>
-			` + table[2];
-			});
-
-			html +=
-`	</body>
-</html>`
-
+			__logger.information("finished generating html");
 			return html;
 		} catch(e) {
 			__logger.error(`Error in generating html:\n${e.message}`);
