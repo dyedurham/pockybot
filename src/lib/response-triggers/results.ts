@@ -69,6 +69,8 @@ export default class Results extends Trigger {
 			fs.unlinkSync(filePath + '.txt');
 		}
 
+		__logger.information("File path: " + filePath);
+
 		let results : Receiver[] = TableHelper.mapResults(data);
 		let columnWidths = TableHelper.getColumnWidths(results);
 
