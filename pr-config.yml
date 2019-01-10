@@ -26,6 +26,7 @@ items:
       GCLOUD_CLIENT_EMAIL: "<<GCLOUD_CLIENT_EMAIL_placeholder>>"
       GCLOUD_CLIENT_ID: "<<GCLOUD_CLIENT_ID_placeholder>>"
       GCLOUD_CLIENT_CERT_URL: "<<GCLOUD_CLIENT_CERT_URL_placeholder>>"
+      GCLOUD_BUCKET_NAME: "<<GCLOUD_BUCKET_NAME_placeholder>>"
   - apiVersion: v1
     kind: Secret
     metadata:

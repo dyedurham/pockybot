@@ -9,6 +9,7 @@ import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { ResultRow, Role } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
+import { Storage } from '@google-cloud/storage';
 
 const lineEnding = '\r\n';
 const resultsCommand = '(?: )*results(?: )*';
@@ -117,6 +118,9 @@ ${pegsReceived[receiver]}
 
 		fs.writeFileSync(filePath + '.txt', resultsTable);
 		fs.writeFileSync(filePath + '.html', html);
+
+		const storage = new Storage();
+		await storage.bucket(process.env.GCLOUD_BUCKET_NAME).upload(filePath + '.html');
 
 		return {
 			markdown: markdown,

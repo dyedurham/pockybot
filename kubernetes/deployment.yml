@@ -141,6 +141,11 @@ items:
                     configMapKeyRef:
                         name: pocky-config
                         key: GCLOUD_CLIENT_CERT_URL
+              - name: GCLOUD_BUCKET_NAME
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_BUCKET_NAME
             livenessProbe:
               httpGet:
                 path: /
