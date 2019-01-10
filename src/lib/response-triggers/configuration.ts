@@ -5,7 +5,7 @@ import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 
 export default class Keywords extends Trigger {
-	readonly commandText : string = 'Config';
+	readonly commandText : string = 'config';
 	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
 
 	config : Config;
@@ -17,7 +17,7 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
 		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
@@ -25,11 +25,10 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		//TODO: this will need a better trigger
-		return message.text.toLowerCase().trim() === this.commandText;
+		return message.text.toLowerCase().trim().startsWith(this.commandText);
 	}
 
 	async createMessage(message) : Promise<MessageObject> {
@@ -46,9 +45,12 @@ export default class Keywords extends Trigger {
 				newMessage = this.config.getAllConfig();
 				break;
 			case "set":
-				//TODO: check the syntrax
+				//TODO: check the syntax
 				this.config.setConfig(words[2], words[3]);
 				newMessage = "Config has been set";
+				break;
+			case "delete":
+				//TODO: this needs to be added to config and DB
 				break;
 			case "update":
 				this.config.updateConfig();
