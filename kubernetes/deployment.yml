@@ -111,6 +111,36 @@ items:
                     secretKeyRef:
                         name: pocky-config
                         key: PGPASSWORD
+              - name: GCLOUD_PROJECT_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PROJECT_ID
+              - name: GCLOUD_PRIVATE_KEY_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PRIVATE_KEY_ID
+              - name: GCLOUD_PRIVATE_KEY
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PRIVATE_KEY
+              - name: GCLOUD_CLIENT_EMAIL
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_EMAIL
+              - name: GCLOUD_CLIENT_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_ID
+              - name: GCLOUD_CLIENT_CERT_URL
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_CERT_URL
             livenessProbe:
               httpGet:
                 path: /
