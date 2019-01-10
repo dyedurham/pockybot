@@ -7,6 +7,7 @@ import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role, ResultRow } from '../models/database';
 import * as fs from 'fs';
+import storage = require('@google-cloud/storage');
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();
@@ -81,6 +82,14 @@ describe('creating results responses', () => {
 
 		sinon.replace(fs, 'existsSync', fakeExistsSync);
 		sinon.replace(fs, 'writeFileSync', fakeWriteFileSync);
+
+		var fakeStorage = sinon.fake.returns({
+			bucket: (name : string) => { return {
+				upload: (name : string) => { return null; }
+			}}
+		});
+
+		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
 	});
 
 	afterEach(() => {
@@ -115,6 +124,14 @@ describe('creating a results message', () => {
 
 		sinon.replace(fs, "existsSync", fakeExistsSync);
 		sinon.replace(fs, "writeFileSync", fakeWriteFileSync);
+
+		var fakeStorage = sinon.fake.returns({
+			bucket: (name : string) => { return {
+				upload: (name : string) => { return null; }
+			}}
+		});
+
+		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
 	});
 
 	afterEach(() => {
