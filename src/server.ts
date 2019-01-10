@@ -46,7 +46,7 @@ app.get('/results', (req, res) => {
 	try {
 		let url_parts = url.parse(req.url, true);
 		let query = url_parts.query;
-		res.download(__dirname + '/' + query.filename);
+		res.download(__dirname + '/../' + query.filename);
 	} catch (e) {
 		__logger.error(`Error in server /results:\n${e.message}`);
 		res.status(404).end();

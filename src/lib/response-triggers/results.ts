@@ -118,7 +118,7 @@ ${pegsReceived[receiver]}
 
 		return {
 			markdown: markdown,
-			files: [constants.fileURL + '?filename=' +  'pegs-' + todayString + '.txt']
+			files: [constants.fileURL + '?filename=' +  'pegs-' + todayString + '.html']
 		}
 	}
 
