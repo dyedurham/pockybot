@@ -7,7 +7,7 @@ import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role, ResultRow } from '../models/database';
 import * as fs from 'fs';
-import storage = require('@google-cloud/storage');
+const storage = require('@google-cloud/storage');
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();

@@ -9,7 +9,7 @@ import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { ResultRow, Role } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
-import storage = require('@google-cloud/storage');
+const storage = require('@google-cloud/storage');
 
 const lineEnding = '\r\n';
 const resultsCommand = '(?: )*results(?: )*';
