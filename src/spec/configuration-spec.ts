@@ -29,6 +29,10 @@ beforeAll(() => {
 		return;
 	});
 
+	spyOn(config, 'setStringConfig').and.callFake(() => {
+		return;
+	});
+
 	spyOn(config, 'updateConfig').and.callFake(() => {
 		return;
 	});
@@ -57,6 +61,13 @@ describe('configuration message parsing', () => {
 		const helpMessage = { text: 'config set test 1'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("Config has been set");
+		done();
+	});
+
+	it('should create the set string message', async (done : DoneFn) => {
+		const helpMessage = { text: 'config set test test'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("String config has been set");
 		done();
 	});
 

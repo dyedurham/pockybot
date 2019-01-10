@@ -45,9 +45,13 @@ export default class Keywords extends Trigger {
 				newMessage = this.config.getAllConfig();
 				break;
 			case "set":
-				//TODO: check the syntax
-				this.config.setConfig(words[2], words[3]);
-				newMessage = "Config has been set";
+				if (isNaN(words[3])) {
+					this.config.setStringConfig(words[2], words[3]);
+					newMessage = "String config has been set";
+				} else {
+					this.config.setConfig(words[2], words[3]);
+					newMessage = "Config has been set";
+				}
 				break;
 			case "delete":
 				//TODO: this needs to be added to config and DB
