@@ -123,7 +123,7 @@ items:
                         key: GCLOUD_PRIVATE_KEY_ID
               - name: GCLOUD_PRIVATE_KEY
                 valueFrom:
-                    configMapKeyRef:
+                    secretKeyRef:
                         name: pocky-config
                         key: GCLOUD_PRIVATE_KEY
               - name: GCLOUD_CLIENT_EMAIL

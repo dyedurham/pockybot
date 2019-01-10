@@ -22,7 +22,6 @@ items:
       PGPORT: "<<PGPORT_placeholder>>"
       GCLOUD_PROJECT_ID: "<<GCLOUD_PROJECT_ID_placeholder>>"
       GCLOUD_PRIVATE_KEY_ID: "<<GCLOUD_PRIVATE_KEY_ID_placeholder>>"
-      GCLOUD_PRIVATE_KEY: "<<GCLOUD_PRIVATE_KEY_placeholder>>"
       GCLOUD_CLIENT_EMAIL: "<<GCLOUD_CLIENT_EMAIL_placeholder>>"
       GCLOUD_CLIENT_ID: "<<GCLOUD_CLIENT_ID_placeholder>>"
       GCLOUD_CLIENT_CERT_URL: "<<GCLOUD_CLIENT_CERT_URL_placeholder>>"
@@ -34,3 +33,4 @@ items:
       namespace: <<namespace_placeholder>>
     data:
       PGPASSWORD: "<<PG_password_placeholder>>"
+      GCLOUD_PRIVATE_KEY: "<<GCLOUD_PRIVATE_KEY_placeholder>>"
