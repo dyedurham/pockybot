@@ -100,8 +100,6 @@ export default class Results extends Trigger {
 		});
 		__logger.information('Results table fully mapped');
 
-		let markdown = `Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`;
-
 		for (let receiver in pegsReceived) {
 			this.spark.messages.create(
 			{
@@ -120,11 +118,15 @@ ${pegsReceived[receiver]}
 		fs.writeFileSync(filePath + '.html', html);
 
 		const client = new storage.Storage();
-		await client.bucket(process.env.GCLOUD_BUCKET_NAME).upload(filePath + '.html');
+		let response = await client.bucket(process.env.GCLOUD_BUCKET_NAME).upload(filePath + '.html');
+		let file = response[0];
+		await file.makePublic();
+
+		let fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
+		let markdown = `Here are all pegs given this fortnight ([beta html view](${fileUrl}))`;
 
 		return {
-			markdown: markdown,
-			files: [constants.fileURL + '?filename=' +  'pegs-' + todayString + '.html']
+			markdown: markdown
 		}
 	}
 

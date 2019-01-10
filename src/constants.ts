@@ -7,6 +7,7 @@ export default {
 	pmUrl: process.env.PM_URL,
 
 	todoUrl: 'https://github.com/Lauraducky/pockybot/issues',
+	googleUrl: 'https://storage.googleapis.com/',
 
 	//format rules
 	mentionAny: '<spark-mention data-object-type="person" data-object-id="([^"]*)">(?:[^<]*)<\/spark-mention>',
