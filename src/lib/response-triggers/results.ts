@@ -123,7 +123,7 @@ ${pegsReceived[receiver]}
 		await file.makePublic();
 
 		let fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
-		let markdown = `Here are all pegs given this fortnight ([beta html view](${fileUrl}))`;
+		let markdown = `[Here are all pegs given this fortnight](${fileUrl})`;
 
 		return {
 			markdown: markdown
