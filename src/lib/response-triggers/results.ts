@@ -62,7 +62,7 @@ export default class Results extends Trigger {
 
 	async createResponse(data : ResultRow[]) : Promise<MessageObject> {
 		let today = new Date();
-		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+		let todayString = today.getFullYear() + '&ndash;' + (today.getMonth() + 1) + '&ndash;' + today.getDate();
 
 		let filePath = `${__dirname}/../../../pegs-${todayString}`;
 
@@ -139,7 +139,7 @@ ${pegsReceived[receiver]}
 
 				htmlTables +=
 `				<thead class="thead-light">
-					<tr><th colspan="2">${result.person.toString()} - ${result.pegs.length} peg(s) total</th></tr>
+					<tr><th colspan="2">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
 				</thead>
 				<tbody>`;
 
