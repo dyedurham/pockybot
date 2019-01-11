@@ -104,7 +104,7 @@ export default class Results extends Trigger {
 			this.spark.messages.create(
 			{
 				markdown:
-`Here are the pegs your have received this fortnight:
+`Here are the pegs your have received this cycle:
 \`\`\`
 ${pegsReceived[receiver]}
 \`\`\``,
@@ -123,7 +123,7 @@ ${pegsReceived[receiver]}
 		await file.makePublic();
 
 		let fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
-		let markdown = `[Here are all pegs given this fortnight](${fileUrl})`;
+		let markdown = `[Here are all pegs given this cycle](${fileUrl})`;
 
 		return {
 			markdown: markdown
@@ -139,14 +139,14 @@ ${pegsReceived[receiver]}
 
 				htmlTables +=
 `				<thead class="thead-light">
-					<tr><th colspan="2">`+ result.person.toString() +` - `+ result.pegs.length +` peg(s) total</th></tr>
+					<tr><th colspan="2">${result.person.toString()} - ${result.pegs.length} peg(s) total</th></tr>
 				</thead>
 				<tbody>`;
 
 				result.pegs.forEach((peg : PegReceivedData) => {
 					htmlTables +=
 `
-					<tr><td>`+ peg.sender.toString() +`</td><td>`+ peg.comment +`</td></tr>
+					<tr><td>${peg.sender.toString()}</td><td>${peg.comment}</td></tr>
 `;
 				});
 
@@ -157,7 +157,7 @@ ${pegsReceived[receiver]}
 
 			let html = `<html>
 	<head>
-		<title>Pegs ` + todayString + `</title>
+		<title>Pegs ${todayString}</title>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -165,10 +165,10 @@ ${pegsReceived[receiver]}
 	</head>
 	<body>
 		<div class="container content">
-			<h1 class="pt-3 pb-3">Pegs and Pocky ` + todayString + `</h1>
+			<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>
 			<h2>Pegs Received:</h2>
 			<table class="table">
-` + htmlTables + `
+${htmlTables}
 			</table>
 		</div>
 	</body>
