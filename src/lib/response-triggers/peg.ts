@@ -76,12 +76,9 @@ export default class Peg extends Trigger {
 
 	validateValues(message : ParsedMessage) : boolean {
 		let keywords = this.config.getStringConfig('keyword');
-		for (let i = 0; i < keywords.length; i++) {
-			if (message.comment.includes(keywords[i])) {
-				return true;
-			}
-		}
-		return false
+		return keywords.some(keyword =>
+			message.comment.toLowerCase().includes(keyword.toLowerCase())
+		);
 	}
 
 	validateMessage(message : ParsedMessage) : boolean {

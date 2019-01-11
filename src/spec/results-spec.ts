@@ -69,7 +69,7 @@ function createDatabase(success : boolean, data) : PockyDB {
 	return db;
 }
 
-describe('creating responses', () => {
+describe('creating results responses', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data = createData();
@@ -96,7 +96,7 @@ describe('creating responses', () => {
 	});
 });
 
-describe('creating a message', () => {
+describe('creating a results message', () => {
 	let today : Date;
 	let todayString : string;
 	let data : ResultRow[];
@@ -130,7 +130,7 @@ describe('creating a message', () => {
 	});
 });
 
-describe('failing at creating a message', () => {
+describe('failing at creating a results message', () => {
 	let database : PockyDB;
 	let results : Results;
 
@@ -151,7 +151,7 @@ describe('failing at creating a message', () => {
 	});
 });
 
-describe('testing triggers', () => {
+describe('testing results triggers', () => {
 	let results : Results;
 
 	beforeEach(() => {

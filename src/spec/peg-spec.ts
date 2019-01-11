@@ -166,6 +166,17 @@ describe('creating Message', () => {
 		done();
 	});
 
+	it('should work with mixed case keyword', async (done: DoneFn) => {
+		let database = createDatabase(true, 0, true, 1);
+		let peg = new Peg(spark, database, config);
+
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg to <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an AwEsoME comment</p>',
+			'mockfromID');
+		let message = await peg.createMessage(sentMessage);
+		expect(message.markdown).toBe('Peg given to mock name. You have given 1 peg this fortnight.');
+		done();
+	});
+
 	it('should fail with no keyword', async (done : DoneFn) => {
 		let database = createDatabase(true, 0, true, 2);
 		let peg = new Peg(null, database, config);
@@ -234,7 +245,7 @@ describe('creating Message', () => {
 	})
 });
 
-describe('testing triggers', () => {
+describe('testing peg triggers', () => {
 	let peg = new Peg(null, null, config);
 	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
@@ -285,7 +296,7 @@ describe('testing triggers', () => {
 	})
 });
 
-describe('testing keywords in messages', () => {
+describe('testing keywords in peg messages', () => {
 	let peg = new Peg(null, null, config);
 	it('should reject with no keyword', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');

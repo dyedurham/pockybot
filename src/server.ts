@@ -22,12 +22,24 @@ app.get('/', (req, res) => {
 	res.status(200).end();
 });
 
-app.post('/respond', (req, res) => {
-	responder.respond(req.body);
+app.post('/respond', async (req, res) => {
+	try {
+		await responder.respond(req.body);
+		res.status(200).end();
+	} catch (e) {
+		__logger.error(`Error in server /respond:\n${e.message}`);
+		res.status(400).end();
+	}
 });
 
-app.post('/pm', (req, res) => {
-	pmResponder.respond(req.body);
+app.post('/pm', async (req, res) => {
+	try {
+		await pmResponder.respond(req.body);
+		res.status(200).end();
+	} catch (e) {
+		__logger.error(`Error in server /pm:\n${e.message}`);
+		res.status(400).end();
+	}
 });
 
 app.get('/results', (req, res) => {
