@@ -108,7 +108,7 @@ describe('creating results responses', () => {
 
 	it('should parse a proper message', async (done : DoneFn) => {
 		let message = await results.createResponse(data);
-		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html))`);
+		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
 	});
 });
@@ -158,7 +158,7 @@ describe('creating a results message', () => {
 
 	it('should create a proper message', async (done : DoneFn) => {
 		let message = await results.createMessage();
-		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html))`);
+		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
 	});
 });
