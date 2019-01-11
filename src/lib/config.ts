@@ -55,6 +55,10 @@ export default class Config {
 		return this.config;
 	}
 
+	getAllStringConfig() : StringConfigRow[] {
+		return this.stringConfig;
+	}
+
 	async updateAll() : Promise<void> {
 		await Promise.all([this.updateRoles(), this.updateConfig(), this.updateStringConfig()]);
 	}

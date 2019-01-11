@@ -22,7 +22,17 @@ function createPrivateMessage(message : string, person : string) : MessageObject
 
 beforeAll(() => {
 	spyOn(config, 'getAllConfig').and.callFake(() => {
-		return ['test', '1'];
+		return [{
+			name: 'test',
+			value: 1
+		}];
+	});
+
+	spyOn(config, 'getAllStringConfig').and.callFake(() => {
+		return [{
+			name: 'test',
+			value: 'test'
+		}];
 	});
 
 	spyOn(config, 'setConfig').and.callFake(() => {
@@ -53,7 +63,13 @@ describe('configuration message parsing', () => {
 	it('should create the get message', async (done : DoneFn) => {
 		const helpMessage = { text: 'config get'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toEqual(['test', '1']);
+		expect(response.markdown).toBe(
+`Here is the current config:
+Name | Value
+name | 1
+test | test
+`
+		);
 		done();
 	});
 
@@ -71,8 +87,8 @@ describe('configuration message parsing', () => {
 		done();
 	});
 
-	it('should create the update message', async (done : DoneFn) => {
-		const helpMessage = { text: 'config update'};
+	it('should create the refresh message', async (done : DoneFn) => {
+		const helpMessage = { text: 'config refresh'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("Config has been updated");
 		done();
