@@ -66,11 +66,6 @@ items:
                     configMapKeyRef:
                         name: pocky-config
                         key: bot-name
-              - name: FILE_URL
-                valueFrom:
-                    configMapKeyRef:
-                        name: pocky-config
-                        key: file-url
               - name: POST_URL
                 valueFrom:
                     configMapKeyRef:

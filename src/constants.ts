@@ -2,7 +2,6 @@ export default {
 	//environment constants
 	botId: process.env.BOT_ID,
 	botName: process.env.BOT_NAME,
-	fileURL: process.env.FILE_URL,
 	postUrl: process.env.POST_URL,
 	pmUrl: process.env.PM_URL,
 

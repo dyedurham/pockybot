@@ -12,7 +12,6 @@ items:
       spark-access-token: "<<spark_access_token_placeholder>>"
       bot-id: "<<bot_id_placeholder>>"
       bot-name: "<<bot_name_placeholder>>"
-      file-url: "<<file_url_placeholder>>"
       post-url: "<<post_url_placeholder>>"
       pm-url: "<<pm_url_placeholder>>"
       version-branch: "<<version_branch_placeholder>>"
