@@ -23,6 +23,7 @@ describe('ping trigger', () => {
 	beforeEach(() => {
 		const version: string = '1.0.1';
 		sinon.replace(pjson, 'version', version)
+		process.env.BUILD_NUMBER = '234';
 	});
 
 	afterEach(() => {
@@ -31,7 +32,7 @@ describe('ping trigger', () => {
 
 	it('should pong', async (done : DoneFn) => {
 		let response = await ping.createMessage();
-		expect(response.markdown).toBe('pong. I\'m alive! (version 1.0.1)');
+		expect(response.markdown).toBe('pong. I\'m alive! (version 1.0.1) (build 234)');
 		done();
 	});
 });

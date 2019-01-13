@@ -141,6 +141,8 @@ items:
                     configMapKeyRef:
                         name: pocky-config
                         key: GCLOUD_BUCKET_NAME
+              - name: BUILD_NUMBER
+                value: <<version_placeholder>>
             livenessProbe:
               httpGet:
                 path: /

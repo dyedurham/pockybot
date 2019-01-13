@@ -18,7 +18,7 @@ export default class Ping extends Trigger {
 
 	async createMessage() : Promise<MessageObject> {
 		return {
-			markdown: `pong. I'm alive! (version ${pjson.version})`
+			markdown: `pong. I'm alive! (version ${pjson.version}) (build ${process.env.BUILD_NUMBER})`
 		};
 	}
 }
