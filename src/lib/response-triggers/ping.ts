@@ -1,6 +1,7 @@
 import constants from '../../constants';
 import Trigger from '../../models/trigger';
 import { MessageObject } from 'ciscospark/env';
+import * as pjson from 'pjson';
 
 const commandText = 'ping';
 const pingCommand = `(?: )*${commandText}(?: )*`;
@@ -17,7 +18,7 @@ export default class Ping extends Trigger {
 
 	async createMessage() : Promise<MessageObject> {
 		return {
-			markdown: `pong. I'm alive!`
+			markdown: `pong. I'm alive! (version ${pjson.version})`
 		};
 	}
 }
