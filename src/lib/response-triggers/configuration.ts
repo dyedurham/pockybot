@@ -93,7 +93,7 @@ export default class Keywords extends Trigger {
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
 		mappedConfig.forEach((config : StringConfigRow) => {
-			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value.padEnd(columnWidths.value) + '\n';
+			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n';
 		});
 
 		return message;

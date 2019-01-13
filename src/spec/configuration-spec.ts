@@ -63,10 +63,10 @@ describe('configuration message parsing', () => {
 	it('should create the get message', async (done : DoneFn) => {
 		const helpMessage = { text: 'config get'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe(
+		expect(response.markdown).toContain(
 `Here is the current config:
 Name | Value
-name | 1
+test | 1
 test | test
 `
 		);
@@ -82,6 +82,13 @@ test | test
 
 	it('should create the set string message', async (done : DoneFn) => {
 		const helpMessage = { text: 'config set test test'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("String config has been set");
+		done();
+	});
+
+	it('should create the set string message with mixed input', async (done : DoneFn) => {
+		const helpMessage = { text: 'config set test test123'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("String config has been set");
 		done();
