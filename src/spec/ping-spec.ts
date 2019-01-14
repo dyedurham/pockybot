@@ -27,7 +27,7 @@ describe('ping trigger', () => {
 	});
 
 	afterEach(() => {
-		sinon.restore;
+		sinon.restore();
 	});
 
 	it('should pong', async (done : DoneFn) => {
