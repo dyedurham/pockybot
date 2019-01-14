@@ -1,6 +1,9 @@
 import constants from '../constants';
 import Ping from '../lib/response-triggers/ping';
 import { MessageObject } from 'ciscospark/env';
+import * as pjson from "pjson";
+
+import sinon = require('sinon');
 
 function createMessage(htmlMessage : string) : MessageObject {
 	return {
@@ -17,9 +20,19 @@ function createPrivateMessage(message : string) : MessageObject {
 describe('ping trigger', () => {
 	const ping = new Ping();
 
+	beforeEach(() => {
+		const version: string = '1.0.1';
+		sinon.replace(pjson, 'version', version)
+		process.env.BUILD_NUMBER = '234';
+	});
+
+	afterEach(() => {
+		sinon.restore();
+	});
+
 	it('should pong', async (done : DoneFn) => {
 		let response = await ping.createMessage();
-		expect(response.markdown).toBe('pong. I\'m alive!');
+		expect(response.markdown).toBe('pong. I\'m alive! (version 1.0.1) (build 234)');
 		done();
 	});
 });
