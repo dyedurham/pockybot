@@ -1,6 +1,6 @@
 {
 	"name": "PockyBot",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Spark bot that handles team recognition",
 	"main": "server.js",
 	"scripts": {
