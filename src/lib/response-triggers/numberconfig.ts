@@ -3,11 +3,11 @@ import Config from '../config';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'ciscospark/env';
-import { Role, StringConfigRow, ConfigRow } from '../../models/database';
+import { Role, ConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 
 export default class Keywords extends Trigger {
-	readonly commandText : string = 'config';
+	readonly commandText : string = 'numberconfig';
 	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
 
 	config : Config;
@@ -47,13 +47,8 @@ export default class Keywords extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
-				if (isNaN(words[3])) {
-					this.config.setStringConfig(words[2], words[3]);
-					newMessage = 'String config has been set';
-				} else {
-					this.config.setConfig(words[2], words[3]);
-					newMessage = 'Config has been set';
-				}
+				this.config.setConfig(words[2], words[3]);
+				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
 				this.config.updateConfig();
@@ -75,37 +70,28 @@ export default class Keywords extends Trigger {
 
 	private getConfigMessage() : string {
 		const numberConfig = this.config.getAllConfig();
-		const stringConfig = this.config.getAllStringConfig();
 
-		let mappedConfig : StringConfigRow[] = numberConfig.map((value : ConfigRow) => {
-			return {
-				name: value.name,
-				value: value.value.toString()
-			}
-		});
 
-		mappedConfig = mappedConfig.concat(stringConfig);
-
-		let columnWidths = this.getColumnWidths(mappedConfig);
+		let columnWidths = this.getColumnWidths(numberConfig);
 
 		let message = 'Here is the current config:\n';
 
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
-		mappedConfig.forEach((config : StringConfigRow) => {
+		numberConfig.forEach((config : ConfigRow) => {
 			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n';
 		});
 
 		return message;
 	} 
 
-	private getColumnWidths(configValues : StringConfigRow[]) : { name : number, value : number } {
+	private getColumnWidths(configValues : ConfigRow[]) : { name : number, value : number } {
 		const stringWidth = require('string-width');
 
 		let longestname = stringWidth('name');
 		let longestvalue = stringWidth('value');
 
-		configValues.forEach((value : StringConfigRow) => {
+		configValues.forEach((value : ConfigRow) => {
 			if (stringWidth(value.name) > longestname) {
 				longestname = stringWidth(value.name);
 			}

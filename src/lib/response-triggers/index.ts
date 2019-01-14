@@ -20,7 +20,8 @@ import Welcome from './welcome';
 import Help from './help';
 import Ping from './ping';
 import Keywords from './keywords';
-import Configuration from './configuration';
+import Numberconfig from './numberconfig';
+import Stringconfig from './stringconfig';
 import Default from './default';
 
 // Services
@@ -51,7 +52,8 @@ const update = new Update(spark, database, config);
 const finish = new Finish(winners, results, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
-const configuration = new Keywords(config);
+const numberconfig = new Numberconfig(config);
+const stringconfig = new Stringconfig(config);
 const help = new Help(config);
 const ping = new Ping();
 const defaultTrigger = new Default();
@@ -69,7 +71,8 @@ const triggers : Trigger[] = [
 	finish,
 	unpeg,
 	keywords,
-	configuration,
+	numberconfig,
+	stringconfig,
 	defaultTrigger,
 ];
 
