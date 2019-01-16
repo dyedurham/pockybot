@@ -55,9 +55,13 @@ export default class Keywords extends Trigger {
 				newMessage = 'Roles has been updated';
 				break;
 			case ConfigAction.Delete:
-				//TODO: this needs to be added to config and DB
+				if (words[2] == null || words[3] == null) {
+					newMessage = 'You must specify a user and a role to be deleted';
+					break;
+				}
+				this.config.deleteRole(words[2], words[3]);
+				newMessage = 'Role has been deleted';
 				break;
-
 			default:
 				newMessage = 'Unknown config command';
 				break;

@@ -36,6 +36,10 @@ beforeAll(() => {
 		return;
 	});
 
+	spyOn(config, 'deleteRole').and.callFake(() => {
+		return;
+	});
+
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockAdminID' && value === Role.Admin) {
 			return true;
@@ -86,6 +90,27 @@ test | 1
 		const helpMessage = { text: 'roleconfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("Roles has been updated");
+		done();
+	});
+
+	it('should create the delete message', async (done : DoneFn) => {
+		const helpMessage = { text: 'roleconfig delete 1 test'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("Role has been deleted");
+		done();
+	});
+
+	it('should fail to create the delete message with no user specified', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("You must specify a user and a role to be deleted");
+		done();
+	});
+
+	it('should fail to create the delete message with no role specified', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete 1'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("You must specify a user and a role to be deleted");
 		done();
 	});
 });

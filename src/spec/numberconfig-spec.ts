@@ -36,6 +36,10 @@ beforeAll(() => {
 		return;
 	});
 
+	spyOn(config, 'deleteConfig').and.callFake(() => {
+		return;
+	});
+
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockAdminID' && value === Role.Admin) {
 			return true;
@@ -86,6 +90,20 @@ test | 1
 		const helpMessage = { text: 'numberconfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("Config has been updated");
+		done();
+	});
+
+	it('should create the delete message', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete test'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("Config has been deleted");
+		done();
+	});
+
+	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("You must specify a config to be deleted");
 		done();
 	});
 });

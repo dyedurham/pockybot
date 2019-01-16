@@ -32,7 +32,11 @@ beforeAll(() => {
 		return;
 	});
 
-	spyOn(config, 'updateConfig').and.callFake(() => {
+	spyOn(config, 'updateStringConfig').and.callFake(() => {
+		return;
+	});
+
+	spyOn(config, 'deleteStringConfig').and.callFake(() => {
 		return;
 	});
 
@@ -86,6 +90,20 @@ test | test
 		const helpMessage = { text: 'stringConfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toBe("Config has been updated");
+		done();
+	});
+
+	it('should create the delete message', async (done : DoneFn) => {
+		const helpMessage = { text: 'stringConfig delete test'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("Config has been deleted");
+		done();
+	});
+
+	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe("You must specify a config to be deleted");
 		done();
 	});
 });

@@ -350,6 +350,36 @@ export default class PockyDB {
 		await this.executeNonQuery(query);
 	}
 
+	async deleteRole(userid : string, role : Role) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteRoleQuery',
+			text: this.sqlSetRoles,
+			values: [userid, role]
+		};
+
+		await this.executeNonQuery(query);
+	}
+
+	async deleteConfig(config : string) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteConfigQuery',
+			text: this.sqlSetConfig,
+			values: [config]
+		};
+
+		await this.executeNonQuery(query);
+	}
+
+	async deleteStringConfig(config : string) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteStringConfigQuery',
+			text: this.sqlSetStringConfig,
+			values: [config]
+		};
+
+		await this.executeNonQuery(query);
+	}
+
 	private _readFile(filename : string) : string {
 		let filePath : string = path.resolve(__dirname, filename);
 		return fs.readFileSync(filePath, 'utf8');

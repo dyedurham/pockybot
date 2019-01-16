@@ -51,13 +51,17 @@ export default class Keywords extends Trigger {
 				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
-				this.config.updateConfig();
+				this.config.updateStringConfig();
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
-				//TODO: this needs to be added to config and DB
+				if (words[2] == null) {
+					newMessage = 'You must specify a config to be deleted';
+					break;
+				}
+				this.config.deleteStringConfig(words[2]);
+				newMessage = 'Config has been deleted';
 				break;
-
 			default:
 				newMessage = 'Unknown config command';
 				break;
