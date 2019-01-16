@@ -5,6 +5,8 @@ import Config from '../lib/config';
 import Peg from '../lib/response-triggers/peg';
 
 import MockCiscoSpark from './mocks/mock-spark';
+import MockPockyDb from './mocks/mock-pockydb';
+import MockDbUsers from './mocks/mock-dbusers';
 
 const spark = new MockCiscoSpark();
 
@@ -22,6 +24,8 @@ describe('creating Message', () => {
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="mockID">ShameBot</spark-mention> with an awesome comment</p>',
 			'mockfromID');
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
+		let pockyDb = new MockPockyDb(true, 1, false, 0);
+		let dbUsers = new MockDbUsers();
 
 		let peg = new Peg(spark, pockyDb, dbUsers, config);
 

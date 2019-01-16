@@ -1,7 +1,7 @@
 import QueryHandler from './query-handler';
 import { QueryConfig } from 'pg';
 import { ConfigRow, RolesRow, StringConfigRow, Role } from '../../models/database';
-import { DbConfig as DbConfigInterface } from './DbInterfaces';
+import { DbConfig as DbConfigInterface } from './db-interfaces';
 
 export default class DbConfig  implements DbConfigInterface {
 	private readonly sqlGetConfig : string;

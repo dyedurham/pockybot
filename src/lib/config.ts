@@ -1,8 +1,9 @@
 import DbConfig from './database/db-config';
 import __logger from './logger';
 import { ConfigRow, StringConfigRow, RolesRow, Role } from '../models/database';
+import Config as ConfigInterface from './config-interface';
 
-export default class Config {
+export default class Config implements ConfigInterface {
 	database : DbConfig;
 	roles : RolesRow[];
 	config : ConfigRow[];

@@ -4,7 +4,7 @@ import { QueryResult, QueryConfig } from 'pg';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import dbConstants from '../db-constants';
 import { UserRow } from '../../models/database';
-import { DbUsers as DbUsersInterface } from './DbInterfaces';
+import { DbUsers as DbUsersInterface } from './db-interfaces';
 
 export default class DbUsers implements DbUsersInterface {
 	private readonly sqlUpdate : string;
