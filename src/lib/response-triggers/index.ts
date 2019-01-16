@@ -59,9 +59,9 @@ const update = new Update(spark, dbUsers, config);
 const finish = new Finish(winners, results, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
-const numberconfig = new Numberconfig(config);
-const stringconfig = new Stringconfig(config);
-const roleconfig = new Stringconfig(config);
+const numberConfig = new Numberconfig(config);
+const stringConfig = new Stringconfig(config);
+const roleConfig = new Rolecongfig(config);
 const help = new Help(config);
 const ping = new Ping();
 const defaultTrigger = new Default();
@@ -79,9 +79,9 @@ const triggers : Trigger[] = [
 	finish,
 	unpeg,
 	keywords,
-	numberconfig,
-	stringconfig,
-	roleconfig,
+	numberConfig,
+	stringConfig,
+	roleConfig,
 	defaultTrigger,
 ];
 
