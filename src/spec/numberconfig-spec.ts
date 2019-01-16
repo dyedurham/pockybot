@@ -71,14 +71,14 @@ test | 1
 	it('should fail to create with a string paramater', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig set test test'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("asdf");
+		expect(response.markdown).toBe("Config must be set to a number");
 		done();
 	});
 
 	it('should fail to create the with mixed input', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig set test test123'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("asdf");
+		expect(response.markdown).toBe("Config must be set to a number");
 		done();
 	});
 

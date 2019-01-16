@@ -61,10 +61,10 @@ test | test
 		done();
 	});
 
-	it('should fail to create with a number paramater', async (done : DoneFn) => {
+	it('should create with a number paramater', async (done : DoneFn) => {
 		const helpMessage = { text: 'stringConfig set test 1'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("asdf");
+		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
 

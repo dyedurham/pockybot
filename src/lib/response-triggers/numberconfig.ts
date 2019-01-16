@@ -47,6 +47,10 @@ export default class Keywords extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
+				if (isNaN(words[3])) {
+					newMessage = 'Config must be set to a number';
+					break;
+				}
 				this.config.setConfig(words[2], words[3]);
 				newMessage = 'Config has been set';
 				break;
