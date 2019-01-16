@@ -1,4 +1,4 @@
-import { Role, RolesRow, ConfigRow } from "../models/database";
+import { Role, RolesRow, ConfigRow } from '../models/database';
 
 export default interface Config {
 	getRoles : (userid : string) => Role[];

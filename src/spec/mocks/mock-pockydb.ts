@@ -37,23 +37,23 @@ export default class MockPockyDb implements PockyDB {
 	}
 
 	async hasSparePegs(user: string) : Promise<boolean> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	async returnResults() : Promise<ResultRow[]> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	async returnWinners() : Promise<ResultRow[]> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	async getPegsGiven(user : string) : Promise<PegGiven[]> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	async reset() : Promise<QueryResult> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 

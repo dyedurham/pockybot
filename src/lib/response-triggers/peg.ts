@@ -4,7 +4,7 @@ import dbConstants from '../db-constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
 import { PockyDB, DbUsers } from '../database/db-interfaces';
-import Config from '../config';
+import Config from '../config-interface';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow } from '../../models/database';
