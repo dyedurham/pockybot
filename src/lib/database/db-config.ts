@@ -83,4 +83,34 @@ export default class DbConfig  implements DbConfigInterface {
 
 		await this.queryHandler.executeNonQuery(query);
 	}
+
+	async deleteRole(userid : string, role : Role) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteRoleQuery',
+			text: this.sqlSetRoles,
+			values: [userid, role]
+		};
+
+		await this.queryHandler.executeNonQuery(query);
+	}
+
+	async deleteConfig(config : string) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteConfigQuery',
+			text: this.sqlSetConfig,
+			values: [config]
+		};
+
+		await this.queryHandler.executeNonQuery(query);
+	}
+
+	async deleteStringConfig(config : string) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteStringConfigQuery',
+			text: this.sqlSetStringConfig,
+			values: [config]
+		};
+
+		await this.queryHandler.executeNonQuery(query);
+	}
 }
