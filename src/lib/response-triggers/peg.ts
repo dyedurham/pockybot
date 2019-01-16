@@ -3,8 +3,8 @@ import constants from '../../constants';
 import dbConstants from '../db-constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
-import PockyDB from '../PockyDB';
-import Config from '../config';
+import { PockyDB, DbUsers } from '../database/db-interfaces';
+import Config from '../config-interface';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow } from '../../models/database';
@@ -15,13 +15,15 @@ export default class Peg extends Trigger {
 
 	spark : CiscoSpark;
 	database : PockyDB;
+	dbUsers : DbUsers;
 	config : Config;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, dbUsers : DbUsers, config : Config) {
 		super();
 
 		this.spark = sparkService;
 		this.database = databaseService;
+		this.dbUsers = dbUsers;
 		this.config = config;
 
 		// match peg, to, at, for with optional spaces between them, and no other words.
@@ -145,7 +147,7 @@ export default class Peg extends Trigger {
 
 		let data : UserRow;
 		try {
-			data = await this.database.getUser(toPersonId);
+			data = await this.dbUsers.getUser(toPersonId);
 		} catch (error) {
 			__logger.error(`Error in getting receiver in pmSender:\n${error.message}`);
 			return {
@@ -167,7 +169,7 @@ export default class Peg extends Trigger {
 	async pmReceiver(comment : string, toPersonId : string, fromPerson : string) : Promise<void> {
 		let data : UserRow;
 		try {
-			data = await this.database.getUser(fromPerson);
+			data = await this.dbUsers.getUser(fromPerson);
 		} catch (error) {
 			__logger.error(`Error in creating PM notifying user ${toPersonId} of peg from ${fromPerson}:\n${error.message}`);
 		}

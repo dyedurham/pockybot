@@ -21,11 +21,19 @@ const spark = require("ciscospark/env");
 import { Client } from 'pg';
 import configService from '../config';
 
-import PockyDB from '../PockyDB';
+import QueryHandler from '../database/query-handler';
+
+import PockyDB from '../database/pocky-db';
+import DbUsers from '../database/db-users';
+import DbConfig from '../database/db-config';
+
 
 // Service instantiation
-const database = new PockyDB(new Client(), spark);
-const config = new configService(database);
+const queryHandler = new QueryHandler(new Client());
+const dbConfig = new DbConfig(queryHandler);
+const dbUsers = new DbUsers(spark, queryHandler);
+const database = new PockyDB(spark, queryHandler, dbUsers);
+const config = new configService(dbConfig);
 
 database.loadConfig(config);
 config.updateAll();

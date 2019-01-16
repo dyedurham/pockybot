@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import PockyDB from '../PockyDB';
+import PockyDB from '../database/pocky-db';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
