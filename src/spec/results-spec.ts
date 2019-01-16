@@ -1,7 +1,7 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/database/pocky-db';
+import { PockyDB } from '../lib/database/db-interfaces';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
@@ -11,6 +11,7 @@ import * as fs from 'fs';
 const config = new Config(null);
 const spark = new MockCiscoSpark();
 import sinon = require('sinon');
+import MockPockyDb from './mocks/mock-pockydb';
 
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
@@ -56,16 +57,7 @@ function createData() : ResultRow[] {
 }
 
 function createDatabase(success : boolean, data) : PockyDB {
-	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(null, null, null);
-
-	if (success) {
-		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve(data)));
-	} else {
-		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => reject('Rejected!')));
-	}
-
+	let db = new MockPockyDb(true, 0, true, 2, success ? data : undefined);
 	return db;
 }
 
@@ -130,7 +122,7 @@ describe('creating a results message', () => {
 	});
 });
 
-describe('failing at creating a results message', () => {
+fdescribe('failing at creating a results message', () => {
 	let database : PockyDB;
 	let results : Results;
 
