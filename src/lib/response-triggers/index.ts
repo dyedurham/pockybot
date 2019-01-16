@@ -22,6 +22,7 @@ import Ping from './ping';
 import Keywords from './keywords';
 import Numberconfig from './numberconfig';
 import Stringconfig from './stringconfig';
+import Rolecongfig from './roleconfig';
 import Default from './default';
 
 // Services
@@ -54,6 +55,7 @@ const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const numberconfig = new Numberconfig(config);
 const stringconfig = new Stringconfig(config);
+const roleconfig = new Stringconfig(config);
 const help = new Help(config);
 const ping = new Ping();
 const defaultTrigger = new Default();
@@ -73,6 +75,7 @@ const triggers : Trigger[] = [
 	keywords,
 	numberconfig,
 	stringconfig,
+	roleconfig,
 	defaultTrigger,
 ];
 
