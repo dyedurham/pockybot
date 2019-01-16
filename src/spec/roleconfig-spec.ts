@@ -1,4 +1,4 @@
-import Numberconfig from '../lib/response-triggers/numberconfig';
+import Roleconfig from '../lib/response-triggers/roleconfig';
 import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
@@ -21,18 +21,18 @@ function createPrivateMessage(message : string, person : string) : MessageObject
 }
 
 beforeAll(() => {
-	spyOn(config, 'getAllConfig').and.callFake(() => {
+	spyOn(config, 'getAllRoles').and.callFake(() => {
 		return [{
-			name: 'test',
-			value: 1
+			role: 'test',
+			userid: 1
 		}];
 	});
 
-	spyOn(config, 'setConfig').and.callFake(() => {
+	spyOn(config, 'setRole').and.callFake(() => {
 		return;
 	});
 
-	spyOn(config, 'updateConfig').and.callFake(() => {
+	spyOn(config, 'updateRoles').and.callFake(() => {
 		return;
 	});
 
@@ -47,10 +47,10 @@ beforeAll(() => {
 })
 
 describe('configuration message parsing', () => {
-	const configuration = new Numberconfig(config);
+	const configuration = new Roleconfig(config);
 
 	it('should create the get message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig get'};
+		const helpMessage = { text: 'roleconfig get'};
 		let response = await configuration.createMessage(helpMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -62,81 +62,81 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test 1'};
+		const helpMessage = { text: 'roleconfig set test 1'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Config has been set");
+		expect(response.markdown).toBe("Role has been set");
 		done();
 	});
 
-	it('should fail to create with a string paramater', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test test'};
+	it('should create with a string paramater', async (done : DoneFn) => {
+		const helpMessage = { text: 'roleconfig set test test'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Config must be set to a number");
+		expect(response.markdown).toBe("Role has been set");
 		done();
 	});
 
-	it('should fail to create with mixed input', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test test123'};
+	it('should create with mixed input', async (done : DoneFn) => {
+		const helpMessage = { text: 'roleconfig set test test123'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Config must be set to a number");
+		expect(response.markdown).toBe("Role has been set");
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig refresh'};
+		const helpMessage = { text: 'roleconfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Config has been updated");
+		expect(response.markdown).toBe("Roles has been updated");
 		done();
 	});
 });
 
 describe('testing configuration triggers', () => {
-	const configuration = new Numberconfig(config);
+	const configuration = new Roleconfig(config);
 
 	it('should accept trigger', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it('should reject wrong command', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfnumberconfig`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfroleconfig`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> numberconfig`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> roleconfig`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it('should accept no space', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>numberconfig`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>roleconfig`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it('should accept trailing space', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig `,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig `,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
 
 	it('should fail for non admin', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig`,
 			'mockID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
 
 	it('should accept an additional parameter', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig get`,
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig get`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(true);
@@ -151,10 +151,10 @@ describe('testing configuration triggers', () => {
 });
 
 describe('testing configuration PM triggers', () => {
-	const configuration = new Numberconfig(config);
+	const configuration = new Roleconfig(config);
 
 	it('should accept trigger', () => {
-		let message = createPrivateMessage('numberconfig', "mockAdminID");
+		let message = createPrivateMessage('roleconfig', "mockAdminID");
 		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
@@ -166,25 +166,25 @@ describe('testing configuration PM triggers', () => {
 	});
 
 	it('should accept whitespace around', () => {
-		let message = createPrivateMessage(' numberconfig ', "mockAdminID");
+		let message = createPrivateMessage(' roleconfig ', "mockAdminID");
 		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it('should accept capitalised command', () => {
-		let message = createPrivateMessage('numberconfig', "mockAdminID");
+		let message = createPrivateMessage('roleconfig', "mockAdminID");
 		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
 
 	it('should fail for non admin PM', () => {
-		let message = createPrivateMessage('numberconfig', "mockID");
+		let message = createPrivateMessage('roleconfig', "mockID");
 		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 
 	it('should accept an additional parameter', () => {
-		let message = createPrivateMessage('numberconfig get', "mockAdminID");
+		let message = createPrivateMessage('roleconfig get', "mockAdminID");
 		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});
