@@ -1,7 +1,7 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/PockyDB';
+import PockyDB from '../lib/database/pocky-db';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
@@ -58,7 +58,7 @@ function createData() : ResultRow[] {
 function createDatabase(success : boolean, data) : PockyDB {
 	let client = new Client();
 	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(client, null);
+	let db = new PockyDB(null, null, null);
 
 	if (success) {
 		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve(data)));

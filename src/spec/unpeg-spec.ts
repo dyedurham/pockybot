@@ -1,10 +1,11 @@
 import Unpeg from '../lib/response-triggers/unpeg';
 import constants from '../constants';
-import PockyDB from '../lib/PockyDB';
+import PockyDB from '../lib/database/pocky-db';
 import Utilities from '../lib/utilities';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
+import DbUsers from '../lib/database/db-users';
 
 const spark = new MockCiscoSpark();
 
@@ -16,10 +17,10 @@ function createMessage(htmlMessage : string, personId = 'MockSender', receiver =
 	};
 }
 
-function createDatabase() : PockyDB {
+function createDatabase() : DbUsers {
 	let client = new Client();
 	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(client, null);
+	let db = new DbUsers(null, null);
 
 	spyOn(db, 'getUser').and.callFake((userid : string) => {
 		return new Promise((resolve, reject) => {

@@ -6,8 +6,9 @@ import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../../models/database';
 import QueryHandler from './query-handler';
 import DbUsers from './db-users';
+import { PockyDB as PockyDbInterface } from './DbInterfaces';
 
-export default class PockyDB {
+export default class PockyDB implements PockyDbInterface {
 	private readonly sqlGivePegWithComment : string;
 	private readonly sqlPegsGiven : string;
 	private readonly sqlReset : string;
