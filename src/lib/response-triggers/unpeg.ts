@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import XmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
-import DbUsers from '../database/db-users';
+import { DbUsers } from '../database/db-interfaces';
 import Utilities from '../utilities';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';

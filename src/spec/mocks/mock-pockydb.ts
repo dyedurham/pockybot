@@ -52,7 +52,11 @@ export default class MockPockyDb implements PockyDB {
 	}
 
 	async returnWinners() : Promise<ResultRow[]> {
-		throw new Error('Method not implemented.');
+		if (this.results) {
+			return this.results;
+		} else {
+			return Promise.reject('Fail');
+		}
 	}
 
 	async getPegsGiven(user : string) : Promise<PegGiven[]> {

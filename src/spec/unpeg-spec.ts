@@ -5,7 +5,8 @@ import Utilities from '../lib/utilities';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
-import DbUsers from '../lib/database/db-users';
+import { DbUsers } from '../lib/database/db-interfaces';
+import MockDbUsers from './mocks/mock-dbusers';
 
 const spark = new MockCiscoSpark();
 
@@ -20,7 +21,7 @@ function createMessage(htmlMessage : string, personId = 'MockSender', receiver =
 function createDatabase() : DbUsers {
 	let client = new Client();
 	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new DbUsers(null, null);
+	let db = new MockDbUsers();
 
 	spyOn(db, 'getUser').and.callFake((userid : string) => {
 		return new Promise((resolve, reject) => {
