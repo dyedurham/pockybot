@@ -3,7 +3,7 @@ import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import * as fs from 'fs';
 import { PockyDB } from '../database/db-interfaces';
-import Config from '../config';
+import Config from '../config-interface';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { ResultRow, Role } from '../../models/database';

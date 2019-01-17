@@ -27,7 +27,7 @@ export default class MockPockyDb implements PockyDB {
 		if (this.givePegSuccess) {
 			return this.givenPegsResponse;
 		} else {
-			Promise.reject();
+			return Promise.reject('Fail');
 		}
 	}
 
@@ -35,7 +35,7 @@ export default class MockPockyDb implements PockyDB {
 		if (this.countSuccess) {
 			return this.countResponse;
 		} else {
-			Promise.reject();
+			return Promise.reject('Fail');
 		}
 	}
 
@@ -47,7 +47,7 @@ export default class MockPockyDb implements PockyDB {
 		if (this.results) {
 			return this.results;
 		} else {
-			Promise.reject();
+			return Promise.reject('Fail');
 		}
 	}
 

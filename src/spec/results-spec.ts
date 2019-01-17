@@ -7,8 +7,9 @@ import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role, ResultRow } from '../models/database';
 import * as fs from 'fs';
+import MockConfig from './mocks/mock-config';
 
-const config = new Config(null);
+const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three']);
 const spark = new MockCiscoSpark();
 import sinon = require('sinon');
 import MockPockyDb from './mocks/mock-pockydb';
@@ -122,7 +123,7 @@ describe('creating a results message', () => {
 	});
 });
 
-fdescribe('failing at creating a results message', () => {
+describe('failing at creating a results message', () => {
 	let database : PockyDB;
 	let results : Results;
 
@@ -132,6 +133,9 @@ fdescribe('failing at creating a results message', () => {
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
+		// expect(async () => {
+		// 	await results.createMessage();
+		// }).toThrowError('Error encountered; cannot display results.');
 		try {
 			await results.createMessage();
 			fail('should have thrown an error');

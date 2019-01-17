@@ -21,6 +21,7 @@ export default class MockConfig implements Config {
 		this.requireValues = requireValues;
 		this.keywords = keywords;
 	}
+
 	getRoles(userid : string) : Role[] {
 		throw new Error('Method not implemented.');
 	}
