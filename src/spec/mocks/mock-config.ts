@@ -9,10 +9,12 @@ export default class MockConfig implements Config {
 	private pegWithoutKeyword : number;
 	private requireValues : number;
 	private keywords : string[];
+	private hasRole? : boolean;
 
 	constructor(limit : number, minimum : number, winners : number,
 		commentsRequired : number, pegWithoutKeyword : number, requireValues : number,
-		keywords : string[]) {
+		keywords : string[],
+		hasRole? : boolean) {
 		this.limit = limit;
 		this.minimum = minimum;
 		this.winners = winners;
@@ -20,6 +22,9 @@ export default class MockConfig implements Config {
 		this.pegWithoutKeyword = pegWithoutKeyword;
 		this.requireValues = requireValues;
 		this.keywords = keywords;
+		if (hasRole != null) {
+			this.hasRole = hasRole;
+		}
 	}
 
 	getRoles(userid : string) : Role[] {
@@ -54,7 +59,11 @@ export default class MockConfig implements Config {
 	}
 
 	checkRole(userid : string, role : Role) : boolean {
-		throw new Error('Method not implemented.');
+		if (this.hasRole != null) {
+			return this.hasRole;
+		}
+
+		throw new Error('hasRole not specified');
 	}
 
 	getAllRoles() : RolesRow[] {

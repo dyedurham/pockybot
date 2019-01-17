@@ -1,11 +1,11 @@
 import dbConstants from '../db-constants';
 import { QueryResult, QueryConfig } from 'pg';
-import Config from '../config';
+import Config from '../config-interface';
 import __logger from '../logger';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import { ConfigRow, StringConfigRow, RolesRow, PegGiven, ResultRow, UserRow, Role } from '../../models/database';
-import QueryHandler from './query-handler';
-import DbUsers from './db-users';
+import QueryHandler from './query-handler-interface';
+import { DbUsers } from './db-interfaces';
 import { PockyDB as PockyDbInterface } from './db-interfaces';
 
 export default class PockyDB implements PockyDbInterface {
