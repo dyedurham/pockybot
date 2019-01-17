@@ -1,6 +1,6 @@
 {
 	"name": "PockyBot",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Spark bot that handles team recognition",
 	"main": "server.js",
 	"scripts": {
@@ -24,17 +24,19 @@
 	"author": "blake.mccririck@globalx.com.au",
 	"license": "ISC",
 	"dependencies": {
+		"@google-cloud/storage": "^2.3.4",
 		"ciscospark": "^1.32.23",
 		"express": "^4.16.4",
 		"libxmljs": "^0.19.5",
 		"pg": "^7.7.1",
+		"pjson": "^1.0.9",
 		"rewiremock": "^3.12.3",
 		"string-width": "^2.1.1",
-		"tableify": "^1.1.0",
 		"unescape": "^1.0.1"
 	},
 	"devDependencies": {
 		"@types/express": "^4.16.0",
+		"@types/google-cloud__storage": "^1.7.2",
 		"@types/jasmine": "^3.3.5",
 		"@types/libxmljs": "^0.18.2",
 		"@types/node": "^10.12.18",

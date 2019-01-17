@@ -46,11 +46,10 @@ export default class Finish extends Trigger {
 			.then((data) => {
 				__logger.information('Reset promise executed');
 				let message = `## Winners\n\n` + values[0].markdown + '\n\n';
-				message += 'All pegs given out this fortnight can be found in the attached file.';
+				message += values[1].markdown;
 				message += '\n\n' + data.markdown;
 				return {
-					markdown: message,
-					files: values[1].files
+					markdown: message
 				};
 			}).catch((error) => {
 				__logger.error(`Error clearing pegs:\n${error.message}`);

@@ -15,7 +15,7 @@ function parseMessage(message : MessageObject) : ParsedMessage {
 			children: children,
 			comment: children.reduce((a, child, index) => {
 				// first three children should be mentions or command words
-				if (child.name() !== 'spark-mention' && index > 2) {
+				if (index > 2) {
 					return a + child.text();
 				}
 				return a;

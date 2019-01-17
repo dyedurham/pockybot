@@ -2,11 +2,39 @@ import { WebhookObject, Page } from 'ciscospark/env';
 const spark = require('ciscospark/env');
 import constants from '../constants';
 import __logger from './logger';
+import * as fs from "fs";
 
 function filterHooks(webhooks : Page<WebhookObject>) : WebhookObject[] {
 	return webhooks.items.filter((w : WebhookObject) => {
 		return w.name === constants.botName + ' webhook' || w.name === constants.botName + ' direct webhook';
 	});
+}
+
+function setGcloudCredentials(){
+	const filePath = `${__dirname}/../../gcloud-credentials.json`;
+
+	const credentials = `
+{
+  "type": "service_account",
+  "project_id": "${process.env.GCLOUD_PROJECT_ID}",
+  "private_key_id": "${process.env.GCLOUD_PRIVATE_KEY_ID}",
+  "private_key": "${process.env.GCLOUD_PRIVATE_KEY}",
+  "client_email": "${process.env.GCLOUD_CLIENT_EMAIL}",
+  "client_id": "${process.env.GCLOUD_CLIENT_ID}",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "${process.env.GCLOUD_CLIENT_CERT_URL}"
+}`;
+
+	fs.writeFileSync(filePath, credentials);
+	process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath;
+}
+
+try {
+	setGcloudCredentials();
+} catch(e){
+	__logger.error(`Unable to create google cloud credentials:\n${e.message}`);
 }
 
 try {
