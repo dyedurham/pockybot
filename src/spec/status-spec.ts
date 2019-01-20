@@ -1,11 +1,11 @@
 import Status from '../lib/response-triggers/status';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/PockyDB';
-import { Client } from 'pg';
+import { PockyDB } from '../lib/database/db-interfaces';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
+import MockPockyDb from './mocks/mock-pockydb';
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();
@@ -58,9 +58,7 @@ function createPrivateMessage(message : string) : MessageObject {
 }
 
 function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
-	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(client, null);
+	let db = new MockPockyDb(true, 0, true, 1);
 
 	if (statusSuccess) {
 		spyOn(db, 'getPegsGiven').and.returnValue(new Promise((resolve, reject) => resolve(statusResponse)));
@@ -72,53 +70,53 @@ function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
 }
 
 describe('creating status message', () => {
-    it('should show the remaining pegs', async (done : DoneFn) => {
-        const expectedCount = config.getConfig('limit') - 3;
+	it('should show the remaining pegs', async (done : DoneFn) => {
+		const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        let status = new Status(spark, database, config);
-        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
-            'person!');
-        let message = await status.createMessage(sentMessage);
+		let status = new Status(spark, database, config);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+			'person!');
+		let message = await status.createMessage(sentMessage);
 		expect(message.markdown).toContain(`You have ${expectedCount} pegs left to give.`);
 		done();
-    });
+	});
 
-    it('should show the remaining pegs', async (done : DoneFn) => {
-        const expectedCount = config.getConfig('limit') - 3;
+	it('should show the remaining pegs', async (done : DoneFn) => {
+		const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        let status = new Status(spark, database, config);
-        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
-            'mockunlimitedID');
-        let message = await status.createMessage(sentMessage);
+		let status = new Status(spark, database, config);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+			'mockunlimitedID');
+		let message = await status.createMessage(sentMessage);
 		expect(message.markdown).toContain(`You have unlimited pegs left to give.`);
 		done();
-    });
+	});
 
 	it('should send the message to the the sender', async (done : DoneFn) => {
-        const expectedCount = config.getConfig('limit') - 3;
+		const expectedCount = config.getConfig('limit') - 3;
 		let database = createDatabase(true,
 			[
 				{receiver: 'test', comment: 'trsioetnsrio'},
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-        let status = new Status(spark, database, config);
-        let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
-            'person!');
-        let message = await status.createMessage(sentMessage);
+		let status = new Status(spark, database, config);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
+			'person!');
+		let message = await status.createMessage(sentMessage);
 		expect(message.toPersonId).toBe('person!');
 		done();
-    });
+	});
 
 	it('should have the items in the message', async (done : DoneFn) => {
 		const expectedCount = config.getConfig('limit') - 3;

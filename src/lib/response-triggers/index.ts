@@ -28,25 +28,31 @@ const spark = require("ciscospark/env");
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
+import QueryHandler from '../database/query-handler';
 
-import PockyDB from '../PockyDB';
+import PockyDB from '../database/pocky-db';
+import DbUsers from '../database/db-users';
+import DbConfig from '../database/db-config';
 
 // Service instantiation
 const utilities = new Utilities();
-const database = new PockyDB(new Client(), spark);
-const config = new Config(database);
+const queryHandler = new QueryHandler(new Client());
+const dbConfig = new DbConfig(queryHandler);
+const dbUsers = new DbUsers(spark, queryHandler);
+const database = new PockyDB(spark, queryHandler,dbUsers);
+const config = new Config(dbConfig);
 
 database.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const peg = new Peg(spark, database, config);
-const unpeg = new Unpeg(spark, database, utilities);
+const peg = new Peg(spark, database, dbUsers, config);
+const unpeg = new Unpeg(spark, dbUsers, utilities);
 const reset = new Reset(database, config);
 const winners = new Winners(database, config);
 const results = new Results(spark, database, config);
 const status = new Status(spark, database, config);
-const update = new Update(spark, database, config);
+const update = new Update(spark, dbUsers, config);
 const finish = new Finish(winners, results, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
