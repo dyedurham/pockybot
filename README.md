@@ -68,7 +68,7 @@ All other roles relate to the commands of the same name displayed below.
 
 Use any of these commands in a room PockyBot is participating in to perform commands.
 
-* `@PockyBot status` &mdash; get a list of pegs given.
+* `@PockyBot status` &mdash; get a list of pegs you have given this cycle.
 * `@PockyBot welcome` &mdash; display a welcome message.
 * `@PockyBot ping` &mdash; verify that the bot is alive.
 * `@PockyBot help` &mdash; display a list of available commands.
@@ -82,7 +82,7 @@ Use any of these commands in a room PockyBot is participating in to perform comm
 
 PockyBot can be messaged directly with certain commands.
 
-* `status` &mdash; get a list of pegs given.
+* `status` &mdash; get a list of pegs you have given this cycle.
 * `welcome` &mdash; display a welcome message.
 * `ping` &mdash; verify that the bot is alive.
 * `help` &mdash; display a list of available commands.
