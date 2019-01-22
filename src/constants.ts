@@ -5,7 +5,7 @@ export default {
 	postUrl: process.env.POST_URL,
 	pmUrl: process.env.PM_URL,
 
-	todoUrl: 'https://github.com/Lauraducky/pockybot/issues',
+	todoUrl: 'https://github.com/GlobalX/pockybot/issues',
 	googleUrl: 'https://storage.googleapis.com/',
 
 	//format rules
