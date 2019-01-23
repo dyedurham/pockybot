@@ -1,4 +1,4 @@
-import QueryHandler from './query-handler';
+import QueryHandler from './query-handler-interface';
 import __logger from '../logger';
 import { QueryResult, QueryConfig } from 'pg';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';

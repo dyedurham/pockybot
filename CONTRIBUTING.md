@@ -4,11 +4,28 @@ Thanks for deciding to contribute to PockyBot. Here are a few things to get you 
 
 ## Code of Conduct
 
-While you participate in this project you are bound by our [Code of Conduct](https://github.com/Lauraducky/pockybot/blob/master/CODE_OF_CONDUCT.md). Please take the time to read it before you begin contributing. If you notice anyone not adhering to these guidelines or making other contributors uncomfortable, please report it to us at pockybotdeveloper@gmail.com.
+While you participate in this project you are bound by our [Code of Conduct](https://github.com/GlobalX/pockybot/blob/master/CODE_OF_CONDUCT.md). Please take the time to read it before you begin contributing. If you notice anyone not adhering to these guidelines or making other contributors uncomfortable, please report it to us at pockybotdeveloper@gmail.com.
 
 ## How do I contribute?
 
 If you would like to contribute to PockyBot, feel free to do so! Please note that master is a protected branch so all pull requests need to be approved by at least two contributors with push access to the repository. If you would like to work on new features then head on over to the Projects tab. Here we have a kanban board with upcoming work for the project, and you can see what's currently in progress as well as what needs to be done.
+
+### Environment setup
+
+Please install [Editor Config](http://editorconfig.org/) for your editor of choice.
+
+Here's a few links:
+
+* [Atom](https://atom.io/packages/editorconfig)
+* [VSCode](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+* [Sublime](https://packagecontrol.io/packages/EditorConfig)
+* [VisualStudio](https://github.com/editorconfig/editorconfig-visualstudio)
+* [Notepad++](https://github.com/editorconfig/editorconfig-notepad-plus-plus)
+* [Vim](https://www.vim.org/scripts/script.php?script_id=3934)
+
+1. Create a new branch or fork the repository.
+1. Commit your new code.
+1. Make a PR.
 
 ## I just want to report something
 

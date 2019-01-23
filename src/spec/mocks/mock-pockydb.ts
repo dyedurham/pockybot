@@ -8,12 +8,15 @@ export default class MockPockyDb implements PockyDB {
 	private givenPegsResponse : number;
 	private countSuccess : boolean;
 	private countResponse : number;
+	private results? : any;
+	private resultsSuccess? : boolean;
 
-	constructor(givePegSuccess : boolean, givePegResponse : number, countSuccess : boolean, countResponse : number) {
+	constructor(givePegSuccess : boolean, givePegResponse : number, countSuccess : boolean, countResponse : number, results? : any) {
 		this.givePegSuccess = givePegSuccess;
 		this.givenPegsResponse = givePegResponse;
 		this.countSuccess = countSuccess;
 		this.countResponse = countResponse;
+		this.results = results;
 	}
 
 	loadConfig(config : Config) : void {
@@ -24,7 +27,7 @@ export default class MockPockyDb implements PockyDB {
 		if (this.givePegSuccess) {
 			return this.givenPegsResponse;
 		} else {
-			Promise.reject();
+			return Promise.reject('Fail');
 		}
 	}
 
@@ -32,7 +35,7 @@ export default class MockPockyDb implements PockyDB {
 		if (this.countSuccess) {
 			return this.countResponse;
 		} else {
-			Promise.reject();
+			return Promise.reject('Fail');
 		}
 	}
 
@@ -41,11 +44,19 @@ export default class MockPockyDb implements PockyDB {
 	}
 
 	async returnResults() : Promise<ResultRow[]> {
-		throw new Error('Method not implemented.');
+		if (this.results) {
+			return this.results;
+		} else {
+			return Promise.reject('Fail');
+		}
 	}
 
 	async returnWinners() : Promise<ResultRow[]> {
-		throw new Error('Method not implemented.');
+		if (this.results) {
+			return this.results;
+		} else {
+			return Promise.reject('Fail');
+		}
 	}
 
 	async getPegsGiven(user : string) : Promise<PegGiven[]> {

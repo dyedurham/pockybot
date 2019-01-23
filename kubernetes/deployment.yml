@@ -66,11 +66,6 @@ items:
                     configMapKeyRef:
                         name: pocky-config
                         key: bot-name
-              - name: FILE_URL
-                valueFrom:
-                    configMapKeyRef:
-                        name: pocky-config
-                        key: file-url
               - name: POST_URL
                 valueFrom:
                     configMapKeyRef:
@@ -111,6 +106,43 @@ items:
                     secretKeyRef:
                         name: pocky-config
                         key: PGPASSWORD
+              - name: GCLOUD_PROJECT_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PROJECT_ID
+              - name: GCLOUD_PRIVATE_KEY_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PRIVATE_KEY_ID
+              - name: GCLOUD_PRIVATE_KEY
+                valueFrom:
+                    secretKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_PRIVATE_KEY
+              - name: GCLOUD_CLIENT_EMAIL
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_EMAIL
+              - name: GCLOUD_CLIENT_ID
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_ID
+              - name: GCLOUD_CLIENT_CERT_URL
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_CLIENT_CERT_URL
+              - name: GCLOUD_BUCKET_NAME
+                valueFrom:
+                    configMapKeyRef:
+                        name: pocky-config
+                        key: GCLOUD_BUCKET_NAME
+              - name: BUILD_NUMBER
+                value: <<version_placeholder>>
             livenessProbe:
               httpGet:
                 path: /

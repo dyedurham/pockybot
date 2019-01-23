@@ -1,17 +1,19 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/database/pocky-db';
+import { PockyDB } from '../lib/database/db-interfaces';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role, ResultRow } from '../models/database';
 import * as fs from 'fs';
+const storage = require('@google-cloud/storage');
+import MockConfig from './mocks/mock-config';
 
-const config = new Config(null);
+const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three']);
 const spark = new MockCiscoSpark();
 import sinon = require('sinon');
-import QueryHandler from '../lib/database/query-handler';
+import MockPockyDb from './mocks/mock-pockydb';
 
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
@@ -57,18 +59,7 @@ function createData() : ResultRow[] {
 }
 
 function createDatabase(success : boolean, data) : PockyDB {
-	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let queryHandler = new QueryHandler(client);
-	spyOn(queryHandler, 'readFile').and.returnValue('');
-	let db = new PockyDB(null, queryHandler, null);
-
-	if (success) {
-		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve(data)));
-	} else {
-		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => reject('Rejected!')));
-	}
-
+	let db = new MockPockyDb(true, 0, true, 2, success ? data : undefined);
 	return db;
 }
 
@@ -84,6 +75,24 @@ describe('creating results responses', () => {
 
 		sinon.replace(fs, 'existsSync', fakeExistsSync);
 		sinon.replace(fs, 'writeFileSync', fakeWriteFileSync);
+
+		var fakeStorage = sinon.fake.returns({
+			bucket: (name : string) => { return {
+				upload: (name : string) => {
+					return new Promise((resolve, reject) => {
+						resolve([{
+							makePublic: () => {
+								return new Promise((resolve, reject) => {resolve();})
+							}
+						}]);
+					});
+				}
+			}}
+		});
+
+		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
+
+		process.env.GCLOUD_BUCKET_NAME = 'pocky-bot';
 	});
 
 	afterEach(() => {
@@ -92,9 +101,7 @@ describe('creating results responses', () => {
 
 	it('should parse a proper message', async (done : DoneFn) => {
 		let message = await results.createResponse(data);
-		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
-		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
-		expect(message.files.length).toBe(1);
+		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
 	});
 });
@@ -118,6 +125,24 @@ describe('creating a results message', () => {
 
 		sinon.replace(fs, "existsSync", fakeExistsSync);
 		sinon.replace(fs, "writeFileSync", fakeWriteFileSync);
+
+		var fakeStorage = sinon.fake.returns({
+			bucket: (name : string) => { return {
+				upload: (name : string) => {
+					return new Promise((resolve, reject) => {
+						resolve([{
+							makePublic: () => {
+								return new Promise((resolve, reject) => {resolve();})
+							}
+						}]);
+					});
+				}
+			}}
+		});
+
+		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
+
+		process.env.GCLOUD_BUCKET_NAME = 'pocky-bot';
 	});
 
 	afterEach(() => {
@@ -126,9 +151,7 @@ describe('creating a results message', () => {
 
 	it('should create a proper message', async (done : DoneFn) => {
 		let message = await results.createMessage();
-		expect(message.markdown).toBe(`Here are all pegs given this fortnight ([beta html view](http://pocky-bot.storage.googleapis.com/pegs-${todayString}.html))`);
-		expect(message.files[0]).toBe(`${constants.fileURL}?filename=pegs-${todayString}.txt`);
-		expect(message.files.length).toBe(1);
+		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
 	});
 });
@@ -143,6 +166,9 @@ describe('failing at creating a results message', () => {
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
+		// expect(async () => {
+		// 	await results.createMessage();
+		// }).toThrowError('Error encountered; cannot display results.');
 		try {
 			await results.createMessage();
 			fail('should have thrown an error');

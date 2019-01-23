@@ -1,13 +1,14 @@
 import PockyDB from '../lib/database/pocky-db';
 import Config from '../lib/config';
-import { QueryConfig, Client } from 'pg';
+import { QueryConfig, Client, QueryResult } from 'pg';
 import { Role } from '../models/database';
-import { CiscoSpark } from 'ciscospark/env';
-import MockCiscoSpark from './mocks/mock-spark';
-import DbUsers from '../lib/database/db-users';
-import QueryHandler from '../lib/database/query-handler';
+import MockConfig from './mocks/mock-config';
+import QueryHandler from '../lib/database/query-handler-interface';
+import MockQueryHandler from './mocks/mock-query-handler';
+import MockDbUsers from './mocks/mock-dbusers';
 
 const config = new Config(null);
+
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockunmeteredID' && value === Role.Unmetered) {
@@ -34,97 +35,14 @@ beforeAll(() => {
 	});
 });
 
-function createPgClient(connectSuccess : boolean, pegCount : number) : Client {
-	let client = new Client();
-
-	if (connectSuccess) {
-		console.log('connect success');
-		spyOn(client, 'connect').and.returnValue(new Promise((resolve, reject) => resolve()));
-	} else {
-		console.log('connect fail');
-		spyOn(client, 'connect').and.returnValue(new Promise((resolve, reject) => reject()));
-	}
-
-	spyOn(client, 'query').and.callFake((statement : QueryConfig) => {
-		switch(statement.name) {
-			case 'returnResultsQuery':
-				return new Promise((resolve, reject) => {
-					resolve({rows: 'mock results'});
-				});
-			case 'returnWinnersQuery':
-				expect(statement.values[0]).toBe(5);
-				expect(statement.values[1]).toBe(3);
-				return new Promise((resolve, reject) => {
-					resolve({rows: 'mock name'});
-				});
-			case 'resetQuery':
-				return new Promise((resolve, reject) => {
-					resolve('reset return');
-				});
-			case 'createUserQuery':
-				expect(statement.values[0]).toBe('some_sender');
-				return new Promise((resolve, reject) => {
-					resolve('create return');
-				});
-			case 'givePegWithCommentQuery':
-				expect(statement.values[0]).toBe('some_sender');
-				expect(statement.values[1]).toBe('some_receiver');
-				expect(statement.values[2]).toBe('some comment here');
-				return new Promise((resolve, reject) => {
-					resolve();
-				});
-			case 'existsQuery':
-				expect(statement.values[0] === 'some_sender' || statement.values[0] === 'some_receiver').toBe(true);
-				return new Promise((resolve, reject) => {
-					resolve({
-						rows: [{exists:true}]
-					});
-				});
-			case 'pegsGiven':
-				return new Promise((resolve, reject) => {
-					resolve({
-						rows: [{count:pegCount}]
-					});
-				});
-		}
-	});
-
-	return client;
-}
-
-function createSparkMock() : CiscoSpark {
-	let spark = new MockCiscoSpark();
-
-	spyOn(spark.people, 'get').and.callFake((userid : string) => {
-		return new Promise((resolve, reject) => {
-			resolve({
-				displayName: userid + 'display'
-			});
-		});
-	});
-
-	return spark;
-}
-
-function createQueryHandlerMock(pgClient?: Client) : QueryHandler {
-	if (pgClient == null) {
-		pgClient = createPgClient(true, 0);
-	}
-
-	let queryHandler = new QueryHandler(pgClient);
-	spyOn(queryHandler, 'readFile').and.callFake((filename : string) => filename);
-
+function createQueryHandlerMock(result : any | QueryResult) : QueryHandler {
+	let queryHandler = new MockQueryHandler(result);
 	return queryHandler;
 }
 
 describe('return results', () => {
-	let queryHandler : QueryHandler;
-
-	beforeEach(() => {
-		queryHandler = createQueryHandlerMock();
-	});
-
 	it('should return the results from database as is', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock('mock results');
 		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.returnResults();
@@ -135,59 +53,34 @@ describe('return results', () => {
 });
 
 describe('return winners', () => {
-	let queryHandler : QueryHandler;
-
-	beforeEach(() => {
-		queryHandler = createQueryHandlerMock();
-	});
-
 	it('should return the results from database as is', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock('mock results');
 		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.returnWinners();
-		expect(results as any).toBe('mock name');
+		expect(results as any).toBe('mock results');
 		done();
 	});
 });
 
 describe('reset', () => {
-	let queryHandler : QueryHandler;
-
-	beforeEach(() => {
-		queryHandler = createQueryHandlerMock();
-	});
-
 	it('should call query and return the raw output', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock('mock result');
 		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.reset();
-		expect(results as any).toBe('reset return');
-		done();
-	});
-});
-
-describe('create user', () => {
-	let sparkMock : CiscoSpark;
-
-	beforeEach(() => {
-		sparkMock = createSparkMock();
-	});
-
-	it('should call query and return the raw output', async (done : DoneFn) => {
-		const database = new DbUsers(sparkMock, createQueryHandlerMock());
-		let results = await database.createUser('some_sender');
-		expect(results as any).toBe('create return');
+		expect(results as any).toBe('mock result');
 		done();
 	});
 });
 
 describe('has spare pegs', () => {
-	let pgClientMock : Client;
 	let queryHandler : QueryHandler;
 
 	beforeEach(() => {
-		pgClientMock = createPgClient(true, 99);
-		queryHandler = createQueryHandlerMock(pgClientMock);
+		queryHandler = createQueryHandlerMock(
+			[{count:0}]
+		);
 	})
 
 	it('should return true for default_user', async (done : DoneFn) => {
@@ -207,12 +100,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return false for other users', async (done : DoneFn) => {
-		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) =>
-			resolve({
-				rows: [{count:100}]
-			}
-		)));
-
+		let queryHandler = createQueryHandlerMock([{count:10}]);
 		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('some_sender');
@@ -221,13 +109,9 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return true for no pegs spent', async (done : DoneFn) => {
-		(pgClientMock.query as jasmine.Spy).and.returnValue(new Promise((resolve, reject) => {
-			resolve({
-				rows: [{count:0}]
-			})
-		}));
+		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], false);
 
-		const database = new PockyDB(null, createQueryHandlerMock(), null);
+		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('some_sender');
 		expect(result).toBe(true);
@@ -236,15 +120,8 @@ describe('has spare pegs', () => {
 });
 
 describe('count pegs', () => {
-	let pgClientMock : Client;
-	let queryHandler : QueryHandler;
-
-	beforeEach(() => {
-		pgClientMock = createPgClient(true, 125689);
-		queryHandler = createQueryHandlerMock(pgClientMock);
-	});
-
 	it('should return count of pegs', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock([{count:125689}]);
 		const database = new PockyDB(null, queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.countPegsGiven('some_sender');
@@ -253,45 +130,13 @@ describe('count pegs', () => {
 	});
 });
 
-describe('exists', () => {
-	let pgClientMock : Client;
-	let queryHandlerMock : QueryHandler;
-	let sparkMock : CiscoSpark;
-
-	beforeEach(() => {
-		pgClientMock = createPgClient(true, null);
-		queryHandlerMock = createQueryHandlerMock(pgClientMock);
-		sparkMock = new MockCiscoSpark();
-	})
-
-	it('should make return true if the user already exists', async (done : DoneFn) => {
-		const database = new DbUsers(sparkMock, queryHandlerMock);
-		let result = await database.existsOrCanBeCreated('some_sender');
-		expect(result).toBe(true);
-		done();
-	});
-
-	 it('should make create a user and return true', async (done : DoneFn) => {
-		const database = new DbUsers(sparkMock, queryHandlerMock);
-		let result = await database.existsOrCanBeCreated('some_sender');
-		expect(result).toBe(true);
-		done();
-	});
-});
-
 describe('give peg with comment', () => {
-	let queryHandler : QueryHandler;
-	let dbUsers : DbUsers;
-
-	beforeEach(() => {
-		queryHandler = createQueryHandlerMock();
-		dbUsers = new DbUsers(null, queryHandler);
-	});
-
 	it('should return 0', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock([{count:0}]);
+		let dbUsers = new MockDbUsers();
 		const database = new PockyDB(null, queryHandler, dbUsers);
 		database.loadConfig(config);
-		let result = await database.givePegWithComment('some comment here', 'some_receiver', 'some_sender');
+		let result = await database.givePegWithComment('one comment here', 'some_receiver', 'some_sender');
 		expect(result).toBe(0);
 		done();
 	});

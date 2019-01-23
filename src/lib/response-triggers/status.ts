@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import PockyDB from '../database/pocky-db';
+import { PockyDB}  from '../database/db-interfaces';
 import Config from '../config';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { PegGiven, Role } from '../../models/database';

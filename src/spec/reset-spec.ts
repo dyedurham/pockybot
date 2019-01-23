@@ -1,11 +1,11 @@
 import Reset from '../lib/response-triggers/reset';
 import constants from '../constants';
 import Config from '../lib/config';
-import PockyDB from '../lib/database/pocky-db';
+import { PockyDB } from '../lib/database/db-interfaces';
 import { Client } from 'pg';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
-import QueryHandler from '../lib/database/query-handler';
+import MockPockyDb from './mocks/mock-pockydb';
 
 const config = new Config(null);
 
@@ -44,11 +44,7 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 }
 
 function createDatabase(success : boolean) : PockyDB {
-	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let queryHandler = new QueryHandler(client);
-	spyOn(queryHandler, 'readFile').and.returnValue('');
-	let db = new PockyDB(null, queryHandler, null);
+	let db = new MockPockyDb(true, 0, true, 1);
 
 	if (success) {
 		spyOn(db, 'reset').and.returnValue(new Promise((resolve, reject) => resolve()));

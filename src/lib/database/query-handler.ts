@@ -2,8 +2,9 @@ import __logger from '../logger';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Client, QueryConfig, QueryResult } from 'pg';
+import QueryHandlerInterface from './query-handler-interface';
 
-export default class QueryHandler {
+export default class QueryHandler implements QueryHandlerInterface {
 	private client : Client;
 
 	constructor(client : Client) {

@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
-import PockyDB from '../database/pocky-db';
+import { PockyDB } from '../database/db-interfaces';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';

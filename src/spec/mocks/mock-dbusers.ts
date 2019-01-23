@@ -23,10 +23,10 @@ export default class MockDbUsers implements DbUsers {
 	}
 
 	async existsOrCanBeCreated(userid : string) : Promise<boolean> {
-		throw new Error('Method not implemented.');
+		return true;
 	}
 
 	async exists(userid : string) : Promise<boolean> {
-		throw new Error('Method not implemented.');
+		return true;
 	}
 }

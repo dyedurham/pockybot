@@ -35,7 +35,7 @@ My name is:
 
 ## Usage
 
-All commands related to PockyBot must begin with a mention of the bot.
+All commands related to PockyBot must begin with a mention of the bot, or be sent directly to the bot.
 In this readme, mentions will be identified by `@PockyBot`.
 
 ### Database
@@ -64,16 +64,33 @@ All other roles relate to the commands of the same name displayed below.
 
 ### Commands
 
+#### General commands
+
+Use any of these commands in a room PockyBot is participating in to perform commands.
+
+* `@PockyBot status` &mdash; get a list of pegs you have given this cycle.
 * `@PockyBot welcome` &mdash; display a welcome message.
 * `@PockyBot ping` &mdash; verify that the bot is alive.
 * `@PockyBot help` &mdash; display a list of available commands.
-* `@PockyBot peg @OtherPerson <reason>` &mdash; give a peg to `@OtherPerson` for `<reason>`.
-	* If comments are required, a reason **must** be given. Otherwise, reasons are optional.
-	* `<reason>` must include a keyword anywhere within it if keywords are required.
-* `@PockyBot keywords` &mdash; display the available keywords
-* `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`
+* `@PockyBot peg|to|at|for @OtherPerson <reason>` &mdash; give a peg to `@OtherPerson` for `<reason>`.
+  * If comments are required, a reason **must** be given. Otherwise, reasons are optional.
+  * `<reason>` must include a keyword anywhere within it if keywords are required.
+* `@PockyBot keywords` &mdash; display the available keywords.
+* `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`.
+
+##### Direct message commands
+
+PockyBot can be messaged directly with certain commands.
+
+* `status` &mdash; get a list of pegs you have given this cycle.
+* `welcome` &mdash; display a welcome message.
+* `ping` &mdash; verify that the bot is alive.
+* `help` &mdash; display a list of available commands.
+* `keywords` &mdash; display the available keywords
 
 #### Admin-only commands
+
+These commands can only be performed by users with the role of 'ADMIN' or users with a role corresponding to the name of the given command.
 
 * `@PockyBot winners` &mdash; display the current winners
 * `@PockyBot results` &mdash; display the current full results
@@ -83,20 +100,7 @@ All other roles relate to the commands of the same name displayed below.
 
 ## Contributing
 
-Please install [Editor Config](http://editorconfig.org/) for your editor of choice.
-
-Here's a few links:
-
-* [Atom](https://atom.io/packages/editorconfig)
-* [VSCode](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
-* [Sublime](https://packagecontrol.io/packages/EditorConfig)
-* [VisualStudio](https://github.com/editorconfig/editorconfig-visualstudio)
-* [Notepad++](https://github.com/editorconfig/editorconfig-notepad-plus-plus)
-* [Vim](https://www.vim.org/scripts/script.php?script_id=3934)
-
-1. Create a new branch
-1. Commit your branch
-1. And PR it
+For notes on how to contribute, please see our [Contribution Guidelines](https://github.com/GlobalX/pockybot/blob/master/CONTRIBUTING.md).
 
 ## Testing
 

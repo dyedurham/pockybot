@@ -2,10 +2,11 @@ import Winners from '../lib/response-triggers/winners';
 import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
-import PockyDB from '../lib/database/pocky-db';
+import { PockyDB } from '../lib/database/db-interfaces';
 import { Client } from 'pg';
 import { Role, ResultRow } from '../models/database';
 import QueryHandler from '../lib/database/query-handler';
+import MockPockyDb from './mocks/mock-pockydb';
 
 const config = new Config(null);
 
@@ -53,19 +54,7 @@ function createData() : ResultRow[] {
 }
 
 function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
-	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let queryHandler = new QueryHandler(client);
-	spyOn(queryHandler, 'readFile').and.returnValue('sql file');
-	spyOn(queryHandler, 'executeQuery').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(null, queryHandler, null);
-
-	if (success) {
-		spyOn(db, 'returnWinners').and.returnValue(new Promise(resolve => resolve(data)));
-	} else {
-		spyOn(db, 'returnWinners').and.returnValue(new Promise((resolve, reject) => reject(new Error('Rejected!'))));
-	}
-
+	let db = new MockPockyDb(true, 1, true, 1, success ? data : undefined);
 	return db;
 }
 
