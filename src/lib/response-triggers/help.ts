@@ -3,6 +3,7 @@ import Config from '../config';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
+import { ConfigAction } from '../../models/config-action';
 
 export default class Help extends Trigger {
 	readonly commandText : string = 'help';
@@ -77,6 +78,12 @@ export default class Help extends Trigger {
 			newMessage += `* Complete the cycle 🚲!
 	1. To display winners and results and clear the database, type \`@${constants.botName} finish\`.
 	1. I will respond in the room you messaged me in.\n`;
+		}
+
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
+			newMessage += `* Configure config values 📝!
+	1. To get/edit/refresh/delete config values, type \`@${constants.botName} ${Object.values(ConfigAction).join('|')} {name|userid} {value}\`
+	1. I will respond in the room you messaged me in.\n`
 		}
 
 		newMessage += `\nI am still being worked on, so [more features to come : )] (${constants.todoUrl})`;
