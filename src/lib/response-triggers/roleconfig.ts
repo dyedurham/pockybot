@@ -6,9 +6,9 @@ import { MessageObject } from 'ciscospark/env';
 import { Role, RolesRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 
-export default class Keywords extends Trigger {
+export default class RoleConfig extends Trigger {
 	readonly commandText : string = 'roleconfig';
-	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly roleConfigCommand : string = `(?: )*${this.commandText}(?: )*`;
 
 	config : Config;
 
@@ -22,7 +22,7 @@ export default class Keywords extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.roleConfigCommand, 'ui');
 		return pattern.test(message.html);
 	}
 
@@ -33,21 +33,35 @@ export default class Keywords extends Trigger {
 		return message.text.toLowerCase().trim().startsWith(this.commandText);
 	}
 
-	async createMessage(message) : Promise<MessageObject> {
-
+	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		message.text = message.text.toLowerCase();
-		message.text = message.text.trim(message.text.indexOf(this.commandText.toLowerCase()))
+		message.text = message.text.trim();
 
 		let words = message.text.split(' ');
 
-		let newMessage;
+		let newMessage : string;
+
+		if (words.length < 2) {
+			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
+		}
 
 		switch (words[1]) {
 			case ConfigAction.Get:
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
-				this.config.setRole(words[2], words[3]);
+				if (words.length < 4) {
+					newMessage = 'You must specify a user and a role to set.';
+					break;
+				}
+
+				words[3] = words[3].toUpperCase();
+				if (!Object.values(Role).includes(words[3])) {
+					newMessage = `Invalid role. Valid values are: ${Object.values(Role).join(', ')}`;
+					break;
+				}
+
+				this.config.setRole(words[2], words[3] as Role);
 				newMessage = 'Role has been set';
 				break;
 			case ConfigAction.Refresh:
@@ -55,11 +69,19 @@ export default class Keywords extends Trigger {
 				newMessage = 'Roles has been updated';
 				break;
 			case ConfigAction.Delete:
-				if (words[2] == null || words[3] == null) {
+				if (words.length < 4) {
 					newMessage = 'You must specify a user and a role to be deleted';
 					break;
 				}
-				this.config.deleteRole(words[2], words[3]);
+
+				words[3] = words[3].toUpperCase();
+				if (!Object.values(Role).includes(words[3])) {
+					newMessage = `Invalid role. Valid values are: ${Object.values(Role).join(', ')}`;
+					break;
+				}
+
+				// TODO check config exists first
+				this.config.deleteRole(words[2], words[3] as Role);
 				newMessage = 'Role has been deleted';
 				break;
 			default:
@@ -86,7 +108,7 @@ export default class Keywords extends Trigger {
 		});
 
 		return message;
-	} 
+	}
 
 	private getColumnWidths(configValues : RolesRow[]) : { name : number, value : number } {
 		const stringWidth = require('string-width');
@@ -98,7 +120,7 @@ export default class Keywords extends Trigger {
 			if (stringWidth(value.role) > longestname) {
 				longestname = stringWidth(value.role);
 			}
-			
+
 			if (stringWidth(value.userid) > longestvalue) {
 				longestvalue = stringWidth(value.userid);
 			}

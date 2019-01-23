@@ -54,8 +54,8 @@ function createData() : ResultRow[] {
 
 function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
 	let client = new Client();
-	let queryHandler = new QueryHandler(null);
-	//spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	let queryHandler = new QueryHandler(client);
 	spyOn(queryHandler, 'readFile').and.returnValue('sql file');
 	spyOn(queryHandler, 'executeQuery').and.returnValue(new Promise(resolve => resolve()));
 	let db = new PockyDB(null, queryHandler, null);

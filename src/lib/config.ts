@@ -114,8 +114,8 @@ export default class Config implements ConfigInterface {
 		await this.updateConfig();
 	}
 
-	async deleteStringConfig(config : string) : Promise<void> {
-		await this.database.deleteStringConfig(config);
+	async deleteStringConfig(config : string, value : string) : Promise<void> {
+		await this.database.deleteStringConfig(config, value);
 		await this.updateStringConfig();
 	}
 }

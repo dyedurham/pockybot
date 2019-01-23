@@ -6,9 +6,9 @@ import { MessageObject } from 'ciscospark/env';
 import { Role, StringConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 
-export default class Keywords extends Trigger {
+export default class StringConfig extends Trigger {
 	readonly commandText : string = 'stringconfig';
-	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly stringConfigCommand : string = `(?: )*${this.commandText}(?: )*`;
 
 	config : Config;
 
@@ -22,7 +22,7 @@ export default class Keywords extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.stringConfigCommand, 'ui');
 		return pattern.test(message.html);
 	}
 
@@ -33,14 +33,17 @@ export default class Keywords extends Trigger {
 		return message.text.toLowerCase().trim().startsWith(this.commandText);
 	}
 
-	async createMessage(message) : Promise<MessageObject> {
-
+	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		message.text = message.text.toLowerCase();
-		message.text = message.text.trim(message.text.indexOf(this.commandText.toLowerCase()))
+		message.text = message.text.trim();
 
 		let words = message.text.split(' ');
 
-		let newMessage;
+		let newMessage : string;
+
+		if (words.length < 2) {
+			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
+		}
 
 		switch (words[1]) {
 			case ConfigAction.Get:
@@ -55,11 +58,13 @@ export default class Keywords extends Trigger {
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
-				if (words[2] == null) {
-					newMessage = 'You must specify a config to be deleted';
+				if (words.length < 4) {
+					newMessage = 'You must specify a config name and value to be deleted';
 					break;
 				}
-				this.config.deleteStringConfig(words[2]);
+
+				// TODO check config exists first
+				this.config.deleteStringConfig(words[2], words[3]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:
@@ -86,7 +91,7 @@ export default class Keywords extends Trigger {
 		});
 
 		return message;
-	} 
+	}
 
 	private getColumnWidths(configValues : StringConfigRow[]) : { name : number, value : number } {
 		const stringWidth = require('string-width');
@@ -98,7 +103,7 @@ export default class Keywords extends Trigger {
 			if (stringWidth(value.name) > longestname) {
 				longestname = stringWidth(value.name);
 			}
-			
+
 			if (stringWidth(value.value) > longestvalue) {
 				longestvalue = stringWidth(value.value);
 			}

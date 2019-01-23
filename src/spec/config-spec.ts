@@ -95,7 +95,7 @@ describe('get all config', () => {
 		config = new Config(database);
 	});
 
-	it('should update role', async (done : DoneFn) => {
+	it('should update config', async (done : DoneFn) => {
 		await config.updateAll();
 		expect(config.getAllConfig()).toEqual([ { name: 'config', value: 1 } ]);
 		done();

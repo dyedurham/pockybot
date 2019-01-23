@@ -11,6 +11,7 @@ import * as fs from 'fs';
 const config = new Config(null);
 const spark = new MockCiscoSpark();
 import sinon = require('sinon');
+import QueryHandler from '../lib/database/query-handler';
 
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
@@ -58,7 +59,9 @@ function createData() : ResultRow[] {
 function createDatabase(success : boolean, data) : PockyDB {
 	let client = new Client();
 	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(null, null, null);
+	let queryHandler = new QueryHandler(client);
+	spyOn(queryHandler, 'readFile').and.returnValue('');
+	let db = new PockyDB(null, queryHandler, null);
 
 	if (success) {
 		spyOn(db, 'returnResults').and.returnValue(new Promise((resolve, reject) => resolve(data)));

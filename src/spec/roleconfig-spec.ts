@@ -53,6 +53,14 @@ beforeAll(() => {
 describe('configuration message parsing', () => {
 	const configuration = new Roleconfig(config);
 
+	beforeEach(() => {
+		(config.getAllRoles as jasmine.Spy).calls.reset();
+		(config.setRole as jasmine.Spy).calls.reset();
+		(config.updateRoles as jasmine.Spy).calls.reset();
+		(config.deleteRole as jasmine.Spy).calls.reset();
+		(config.checkRole as jasmine.Spy).calls.reset();
+	});
+
 	it('should create the get message', async (done : DoneFn) => {
 		const helpMessage = { text: 'roleconfig get'};
 		let response = await configuration.createMessage(helpMessage);
@@ -66,37 +74,40 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig set test 1'};
+		const helpMessage = { text: 'roleconfig set test admin'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Role has been set");
+		expect(config.setRole).toHaveBeenCalledWith('test', Role.Admin);
+		expect(response.markdown).toBe('Role has been set');
 		done();
 	});
 
-	it('should create with a string paramater', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig set test test'};
-		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Role has been set");
-		done();
-	});
-
-	it('should create with mixed input', async (done : DoneFn) => {
+	it('should reject an invalid role name', async (done : DoneFn) => {
 		const helpMessage = { text: 'roleconfig set test test123'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Role has been set");
+		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
 		const helpMessage = { text: 'roleconfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.updateRoles).toHaveBeenCalled();
 		expect(response.markdown).toBe("Roles has been updated");
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
+		const helpMessage = { text: 'roleconfig delete 1 unmetered'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(config.deleteRole).toHaveBeenCalledWith('1', Role.Unmetered)
+		expect(response.markdown).toBe('Role has been deleted');
+		done();
+	});
+
+	it('should reject deleting an invalid role', async (done : DoneFn) => {
 		const helpMessage = { text: 'roleconfig delete 1 test'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("Role has been deleted");
+		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 

@@ -53,6 +53,14 @@ beforeAll(() => {
 describe('configuration message parsing', () => {
 	const configuration = new Stringconfig(config);
 
+	beforeEach(() => {
+		(config.updateStringConfig as jasmine.Spy).calls.reset();
+		(config.getAllStringConfig as jasmine.Spy).calls.reset();
+		(config.setStringConfig as jasmine.Spy).calls.reset();
+		(config.deleteStringConfig as jasmine.Spy).calls.reset();
+		(config.checkRole as jasmine.Spy).calls.reset();
+	});
+
 	it('should create the get message', async (done : DoneFn) => {
 		const helpMessage = { text: 'config get'};
 		let response = await configuration.createMessage(helpMessage);
@@ -68,13 +76,15 @@ test | test
 	it('should create with a number paramater', async (done : DoneFn) => {
 		const helpMessage = { text: 'stringConfig set test 1'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.setStringConfig).toHaveBeenCalledWith('test', '1');
 		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
 
 	it('should create the set string message', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig set test test'};
+		const helpMessage = { text: 'stringConfig set test value'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'value');
 		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
@@ -82,6 +92,7 @@ test | test
 	it('should create the set string message with mixed input', async (done : DoneFn) => {
 		const helpMessage = { text: 'stringConfig set test test123'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'test123');
 		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
@@ -89,13 +100,15 @@ test | test
 	it('should create the refresh message', async (done : DoneFn) => {
 		const helpMessage = { text: 'stringConfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.updateStringConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe("Config has been updated");
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig delete test'};
+		const helpMessage = { text: 'stringConfig delete test value'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.deleteStringConfig).toHaveBeenCalledWith('test', 'value');
 		expect(response.markdown).toBe("Config has been deleted");
 		done();
 	});
@@ -103,7 +116,7 @@ test | test
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig delete'};
 		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("You must specify a config to be deleted");
+		expect(response.markdown).toBe("You must specify a config name and value to be deleted");
 		done();
 	});
 });

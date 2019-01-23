@@ -6,6 +6,7 @@ import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
+import QueryHandler from '../lib/database/query-handler';
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();
@@ -60,7 +61,9 @@ function createPrivateMessage(message : string) : MessageObject {
 function createDatabase(statusSuccess : boolean, statusResponse) : PockyDB {
 	let client = new Client();
 	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
-	let db = new PockyDB(null, null, null);
+	let queryHandler = new QueryHandler(client);
+	spyOn(queryHandler, 'readFile').and.returnValue('');
+	let db = new PockyDB(null, queryHandler, null);
 
 	if (statusSuccess) {
 		spyOn(db, 'getPegsGiven').and.returnValue(new Promise((resolve, reject) => resolve(statusResponse)));

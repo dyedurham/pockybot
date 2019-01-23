@@ -53,6 +53,14 @@ beforeAll(() => {
 describe('configuration message parsing', () => {
 	const configuration = new Numberconfig(config);
 
+	beforeEach(() => {
+		(config.getAllConfig as jasmine.Spy).calls.reset();
+		(config.setConfig as jasmine.Spy).calls.reset();
+		(config.updateConfig as jasmine.Spy).calls.reset();
+		(config.deleteConfig as jasmine.Spy).calls.reset();
+		(config.checkRole as jasmine.Spy).calls.reset();
+	});
+
 	it('should create the get message', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig get'};
 		let response = await configuration.createMessage(helpMessage);
@@ -68,6 +76,7 @@ test | 1
 	it('should create the set message', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig set test 1'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.setConfig).toHaveBeenCalledWith('test', 1);
 		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
@@ -89,6 +98,7 @@ test | 1
 	it('should create the refresh message', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig refresh'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.updateConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe("Config has been updated");
 		done();
 	});
@@ -96,6 +106,7 @@ test | 1
 	it('should create the delete message', async (done : DoneFn) => {
 		const helpMessage = { text: 'numberconfig delete test'};
 		let response = await configuration.createMessage(helpMessage);
+		expect(config.deleteConfig).toHaveBeenCalledWith('test');
 		expect(response.markdown).toBe("Config has been deleted");
 		done();
 	});
