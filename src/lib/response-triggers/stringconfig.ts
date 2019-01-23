@@ -63,7 +63,11 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				// TODO check config exists first
+				if (!this.config.getStringConfig(words[2]).includes(words[3])) {
+					newMessage = `Value "${words[3]}" does not exist in string config under name "${words[2]}"`;
+					break;
+				}
+
 				this.config.deleteStringConfig(words[2], words[3]);
 				newMessage = 'Config has been deleted';
 				break;

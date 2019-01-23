@@ -28,17 +28,9 @@ beforeAll(() => {
 		}];
 	});
 
-	spyOn(config, 'setRole').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'updateRoles').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'deleteRole').and.callFake(() => {
-		return;
-	});
+	spyOn(config, 'setRole').and.stub();
+	spyOn(config, 'updateRoles').and.stub();
+	spyOn(config, 'deleteRole').and.stub();
 
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockAdminID' && value === Role.Admin) {
@@ -48,6 +40,14 @@ beforeAll(() => {
 			return false;
 		}
 	});
+
+	spyOn(config, 'getRoles').and.callFake((userid : string) => {
+		if (userid === '1') {
+			return ['UNMETERED'];
+		}
+
+		return null;
+	})
 })
 
 describe('configuration message parsing', () => {
@@ -101,6 +101,13 @@ test | 1
 		let response = await configuration.createMessage(helpMessage);
 		expect(config.deleteRole).toHaveBeenCalledWith('1', Role.Unmetered)
 		expect(response.markdown).toBe('Role has been deleted');
+		done();
+	});
+
+	it('should not delete roles which don\'t exist', async (done : DoneFn) => {
+		const helpMessage = { text: 'roleconfig delete 1 admin'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe('Role "ADMIN" is not set for user "1"');
 		done();
 	});
 

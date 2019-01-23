@@ -28,17 +28,9 @@ beforeAll(() => {
 		}];
 	});
 
-	spyOn(config, 'setConfig').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'updateConfig').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'deleteConfig').and.callFake(() => {
-		return;
-	});
+	spyOn(config, 'setConfig').and.stub();
+	spyOn(config, 'updateConfig').and.stub();
+	spyOn(config, 'deleteConfig').and.stub();
 
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockAdminID' && value === Role.Admin) {
@@ -48,6 +40,14 @@ beforeAll(() => {
 			return false;
 		}
 	});
+
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
+		if (config === 'test') {
+			return 1;
+		}
+
+		return null;
+	})
 })
 
 describe('configuration message parsing', () => {
@@ -108,6 +108,13 @@ test | 1
 		let response = await configuration.createMessage(helpMessage);
 		expect(config.deleteConfig).toHaveBeenCalledWith('test');
 		expect(response.markdown).toBe("Config has been deleted");
+		done();
+	});
+
+	it('should not delete configs which don\'t exist', async (done : DoneFn) => {
+		const helpMessage = { text: 'numberconfig delete dummy'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe('Config value "dummy" does not exist');
 		done();
 	});
 

@@ -30,7 +30,12 @@ export default class Config implements ConfigInterface {
 			return null;
 		}
 
-		return this.config.find(x => x.name.toUpperCase() === config.toUpperCase()).value;
+		let configValue = this.config.find(x => x.name.toUpperCase() === config.toUpperCase());
+		if (configValue != null) {
+			return configValue.value;
+		}
+
+		return null;
 	}
 
 	getStringConfig(config : string) : string[] {

@@ -28,17 +28,9 @@ beforeAll(() => {
 		}];
 	});
 
-	spyOn(config, 'setStringConfig').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'updateStringConfig').and.callFake(() => {
-		return;
-	});
-
-	spyOn(config, 'deleteStringConfig').and.callFake(() => {
-		return;
-	});
+	spyOn(config, 'setStringConfig').and.stub();
+	spyOn(config, 'updateStringConfig').and.stub();
+	spyOn(config, 'deleteStringConfig').and.stub();
 
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockAdminID' && value === Role.Admin) {
@@ -48,6 +40,14 @@ beforeAll(() => {
 			return false;
 		}
 	});
+
+	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
+		if (config === 'test') {
+			return ['value'];
+		}
+
+		return [];
+	})
 })
 
 describe('configuration message parsing', () => {
@@ -110,6 +110,13 @@ test | test
 		let response = await configuration.createMessage(helpMessage);
 		expect(config.deleteStringConfig).toHaveBeenCalledWith('test', 'value');
 		expect(response.markdown).toBe("Config has been deleted");
+		done();
+	});
+
+	it('should not delete config values which do not exist', async (done : DoneFn) => {
+		const helpMessage = { text: 'stringConfig delete test dummy'};
+		let response = await configuration.createMessage(helpMessage);
+		expect(response.markdown).toBe('Value "dummy" does not exist in string config under name "test"');
 		done();
 	});
 

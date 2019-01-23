@@ -70,7 +70,11 @@ export default class NumberConfig extends Trigger {
 					break;
 				}
 
-				// TODO check config exists first
+				if (this.config.getConfig(words[2]) == null) {
+					newMessage = `Config value "${words[2]}" does not exist`;
+					break;
+				}
+
 				this.config.deleteConfig(words[2]);
 				newMessage = 'Config has been deleted';
 				break;
