@@ -50,6 +50,16 @@ export default class StringConfig extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
+				if (words.length < 4) {
+					newMessage = 'You must specify a config name and value to set';
+					break;
+				}
+
+				if (this.config.getStringConfig(words[2]).includes(words[3])) {
+					newMessage = `Config value "${words[3]}" already exists in string config under name "${words[2]}".`;
+					break;
+				}
+
 				this.config.setStringConfig(words[2], words[3]);
 				newMessage = 'Config has been set';
 				break;

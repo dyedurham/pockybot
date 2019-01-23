@@ -62,8 +62,8 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const helpMessage = { text: 'config get'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'config get'};
+		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
 Name | Value
@@ -74,56 +74,74 @@ test | test
 	});
 
 	it('should create with a number paramater', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig set test 1'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'stringConfig set test 1'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', '1');
-		expect(response.markdown).toBe("Config has been set");
+		expect(response.markdown).toBe('Config has been set');
 		done();
 	});
 
 	it('should create the set string message', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig set test value'};
-		let response = await configuration.createMessage(helpMessage);
-		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'value');
-		expect(response.markdown).toBe("Config has been set");
+		const configMessage = { text: 'stringConfig set test value2'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'value2');
+		expect(response.markdown).toBe('Config has been set');
 		done();
 	});
 
 	it('should create the set string message with mixed input', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig set test test123'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'stringConfig set test test123'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'test123');
-		expect(response.markdown).toBe("Config has been set");
+		expect(response.markdown).toBe('Config has been set');
+		done();
+	});
+
+	it('should fail to set the config if the config already exists', async (done: DoneFn) => {
+		const configMessage = { text: 'stringConfig set test value'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setStringConfig).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('Config value "value" already exists in string config under name "test".');
+		done();
+	});
+
+	it('should fail to set the config with no config specified', async (done: DoneFn) => {
+		const configMessage = { text: 'stringConfig set'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setStringConfig).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('You must specify a config name and value to set');
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig refresh'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'stringConfig refresh'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.updateStringConfig).toHaveBeenCalled();
-		expect(response.markdown).toBe("Config has been updated");
+		expect(response.markdown).toBe('Config has been updated');
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig delete test value'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'stringConfig delete test value'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).toHaveBeenCalledWith('test', 'value');
-		expect(response.markdown).toBe("Config has been deleted");
+		expect(response.markdown).toBe('Config has been deleted');
 		done();
 	});
 
 	it('should not delete config values which do not exist', async (done : DoneFn) => {
-		const helpMessage = { text: 'stringConfig delete test dummy'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'stringConfig delete test dummy'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Value "dummy" does not exist in string config under name "test"');
 		done();
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete'};
-		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("You must specify a config name and value to be deleted");
+		const configMessage = { text: 'numberconfig delete'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteStringConfig).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('You must specify a config name and value to be deleted');
 		done();
 	});
 });

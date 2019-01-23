@@ -61,6 +61,11 @@ export default class RoleConfig extends Trigger {
 					break;
 				}
 
+				if (this.config.getRoles(words[2]).includes(words[3] as Role)) {
+					newMessage = `Role "${words[3]}" is already set for user "${words[2]}".`;
+					break;
+				}
+
 				this.config.setRole(words[2], words[3] as Role);
 				newMessage = 'Role has been set';
 				break;

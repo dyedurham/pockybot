@@ -62,8 +62,8 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig get'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig get'};
+		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
 Name | Value
@@ -74,53 +74,57 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test 1'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig set test 1'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).toHaveBeenCalledWith('test', 1);
 		expect(response.markdown).toBe("Config has been set");
 		done();
 	});
 
 	it('should fail to create with a string paramater', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test test'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig set test test'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe("Config must be set to a number");
 		done();
 	});
 
 	it('should fail to create with mixed input', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig set test test123'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig set test test123'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe("Config must be set to a number");
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig refresh'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig refresh'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.updateConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe("Config has been updated");
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete test'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig delete test'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).toHaveBeenCalledWith('test');
 		expect(response.markdown).toBe("Config has been deleted");
 		done();
 	});
 
 	it('should not delete configs which don\'t exist', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete dummy'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig delete dummy'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config value "dummy" does not exist');
 		done();
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'numberconfig delete'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe("You must specify a config to be deleted");
 		done();
 	});

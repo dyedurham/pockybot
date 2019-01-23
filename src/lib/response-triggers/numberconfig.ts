@@ -50,6 +50,11 @@ export default class NumberConfig extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
+				if (words.length < 4) {
+					newMessage = 'You must specify a config name and value to set';
+					break;
+				}
+
 				const value = Number(words[3])
 
 				if (isNaN(value)) {
@@ -65,7 +70,7 @@ export default class NumberConfig extends Trigger {
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
-				if (words[2] == null) {
+				if (words.length < 3) {
 					newMessage = 'You must specify a config to be deleted';
 					break;
 				}

@@ -46,7 +46,7 @@ beforeAll(() => {
 			return ['UNMETERED'];
 		}
 
-		return null;
+		return [];
 	})
 })
 
@@ -62,8 +62,8 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig get'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig get'};
+		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
 Name | Value
@@ -74,61 +74,82 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig set test admin'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig set test admin' };
+		let response = await configuration.createMessage(configMessage);
 		expect(config.setRole).toHaveBeenCalledWith('test', Role.Admin);
 		expect(response.markdown).toBe('Role has been set');
 		done();
 	});
 
-	it('should reject an invalid role name', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig set test test123'};
-		let response = await configuration.createMessage(helpMessage);
+	it('should reject an invalid role name on create', async (done : DoneFn) => {
+		const configMessage = { text: 'roleconfig set test test123' };
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setRole).not.toHaveBeenCalled();
 		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 
+	it('should fail on no roles specified on create', async (done : DoneFn) => {
+		const configMessage = { text: 'roleconfig set' };
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('You must specify a user and a role to set.');
+		done();
+	});
+
+	it('should fail on create if the user is already set to the role', async (done : DoneFn) => {
+		const configMessage = { text: 'roleconfig set 1 unmetered' };
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('Role "UNMETERED" is already set for user "1".')
+		done();
+	});
+
 	it('should create the refresh message', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig refresh'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig refresh'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.updateRoles).toHaveBeenCalled();
-		expect(response.markdown).toBe("Roles has been updated");
+		expect(response.markdown).toBe('Roles has been updated');
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig delete 1 unmetered'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig delete 1 unmetered'};
+		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).toHaveBeenCalledWith('1', Role.Unmetered)
 		expect(response.markdown).toBe('Role has been deleted');
 		done();
 	});
 
 	it('should not delete roles which don\'t exist', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig delete 1 admin'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig delete 1 admin'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteRole).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Role "ADMIN" is not set for user "1"');
 		done();
 	});
 
 	it('should reject deleting an invalid role', async (done : DoneFn) => {
-		const helpMessage = { text: 'roleconfig delete 1 test'};
-		let response = await configuration.createMessage(helpMessage);
+		const configMessage = { text: 'roleconfig delete 1 test'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteRole).not.toHaveBeenCalled();
 		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 
 	it('should fail to create the delete message with no user specified', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete'};
-		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("You must specify a user and a role to be deleted");
+		const configMessage = { text: 'roleconfig delete'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('You must specify a user and a role to be deleted');
 		done();
 	});
 
 	it('should fail to create the delete message with no role specified', async (done : DoneFn) => {
-		const helpMessage = { text: 'numberconfig delete 1'};
-		let response = await configuration.createMessage(helpMessage);
-		expect(response.markdown).toBe("You must specify a user and a role to be deleted");
+		const configMessage = { text: 'roleconfig delete 1'};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('You must specify a user and a role to be deleted');
 		done();
 	});
 });
