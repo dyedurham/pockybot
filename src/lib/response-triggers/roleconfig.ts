@@ -128,12 +128,12 @@ export default class RoleConfig extends Trigger {
 
 		let columnWidths = tableHelper.getRolesColumnWidths(roles);
 
-		let message = 'Here is the current config:\n';
+		let message = 'Here is the current config:\n```\n';
 
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
 		roles.forEach((config : RolesRow) => {
-			message += config.role.padEnd(columnWidths.name) + ' | ' + config.userid + '\n';
+			message += config.role.padEnd(columnWidths.name) + ' | ' + config.userid + '\n```';
 		});
 
 		return message;

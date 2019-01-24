@@ -59,9 +59,10 @@ describe('configuration message parsing', () => {
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
+\`\`\`
 Name | Value
 test | 1
-`
+\`\`\``
 		);
 		done();
 	});

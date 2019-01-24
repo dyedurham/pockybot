@@ -2,7 +2,6 @@ import dbConstants from '../db-constants';
 import { QueryResult, QueryConfig } from 'pg';
 import Config from '../config-interface';
 import __logger from '../logger';
-import { CiscoSpark, } from 'ciscospark/env';
 import { PegGiven, ResultRow, Role } from '../../models/database';
 import { DbUsers } from './db-interfaces';
 import { PockyDB as PockyDbInterface } from './db-interfaces';

@@ -91,12 +91,12 @@ export default class StringConfig extends Trigger {
 
 		let columnWidths = tableHelper.getStringConfigColumnWidths(stringConfig);
 
-		let message = 'Here is the current config:\n';
+		let message = 'Here is the current config:\n```\n';
 
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
 		stringConfig.forEach((config : StringConfigRow) => {
-			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n';
+			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n```';
 		});
 
 		return message;
