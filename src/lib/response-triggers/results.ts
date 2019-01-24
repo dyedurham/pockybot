@@ -73,7 +73,7 @@ export default class Results extends Trigger {
 		__logger.information("File path: " + filePath);
 
 		let results : Receiver[] = TableHelper.mapResults(data);
-		let columnWidths = TableHelper.getColumnWidths(results);
+		let columnWidths = TableHelper.getReceiverColumnWidths(results);
 
 		// define table heading
 		let resultsTable = TableHelper.padString('Receiver', columnWidths.receiver) + ' | ' + TableHelper.padString('Sender', columnWidths.sender) + ' | Comments' + lineEnding;
@@ -173,7 +173,7 @@ ${htmlTables}
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha256-IeI0loa35pfuDxqZbGhQUiZmD2Cywv1/bdqiypGW46o=" crossorigin="anonymous"></script>
-	
+
 	</body>
 </html>`;
 

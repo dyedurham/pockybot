@@ -8,6 +8,7 @@ import { ConfigAction } from '../../models/config-action';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import DbUsers from '../database/db-users';
 import { Element } from 'libxmljs';
+import tableHelper from '../parsers/tableHelper';
 
 export default class RoleConfig extends Trigger {
 	readonly commandText : string = 'roleconfig';
@@ -125,7 +126,7 @@ export default class RoleConfig extends Trigger {
 	private getConfigMessage() : string {
 		const roles = this.config.getAllRoles();
 
-		let columnWidths = this.getColumnWidths(roles);
+		let columnWidths = tableHelper.getRolesColumnWidths(roles);
 
 		let message = 'Here is the current config:\n';
 
@@ -136,27 +137,5 @@ export default class RoleConfig extends Trigger {
 		});
 
 		return message;
-	}
-
-	private getColumnWidths(configValues : RolesRow[]) : { name : number, value : number } {
-		const stringWidth = require('string-width');
-
-		let longestname = stringWidth('name');
-		let longestvalue = stringWidth('value');
-
-		configValues.forEach((value : RolesRow) => {
-			if (stringWidth(value.role) > longestname) {
-				longestname = stringWidth(value.role);
-			}
-
-			if (stringWidth(value.userid) > longestvalue) {
-				longestvalue = stringWidth(value.userid);
-			}
-		});
-
-		return {
-			name: longestname,
-			value: longestvalue
-		}
 	}
 }

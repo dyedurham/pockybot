@@ -5,6 +5,7 @@ import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'ciscospark/env';
 import { Role, StringConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
+import tableHelper from '../parsers/tableHelper';
 
 export default class StringConfig extends Trigger {
 	readonly commandText : string = 'stringconfig';
@@ -88,7 +89,7 @@ export default class StringConfig extends Trigger {
 	private getConfigMessage() : string {
 		const stringConfig = this.config.getAllStringConfig();
 
-		let columnWidths = this.getColumnWidths(stringConfig);
+		let columnWidths = tableHelper.getStringConfigColumnWidths(stringConfig);
 
 		let message = 'Here is the current config:\n';
 
@@ -99,27 +100,5 @@ export default class StringConfig extends Trigger {
 		});
 
 		return message;
-	}
-
-	private getColumnWidths(configValues : StringConfigRow[]) : { name : number, value : number } {
-		const stringWidth = require('string-width');
-
-		let longestname = stringWidth('name');
-		let longestvalue = stringWidth('value');
-
-		configValues.forEach((value : StringConfigRow) => {
-			if (stringWidth(value.name) > longestname) {
-				longestname = stringWidth(value.name);
-			}
-
-			if (stringWidth(value.value) > longestvalue) {
-				longestvalue = stringWidth(value.value);
-			}
-		});
-
-		return {
-			name: longestname,
-			value: longestvalue
-		}
 	}
 }

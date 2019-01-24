@@ -54,7 +54,7 @@ export default class Results extends Trigger {
 
 	async createResponse(data : ResultRow[]) : Promise<string> {
 		let winners : Receiver[] = TableHelper.mapResults(data);
-		let columnWidths = TableHelper.getColumnWidths(winners);
+		let columnWidths = TableHelper.getReceiverColumnWidths(winners);
 
 		// define table heading
 		let winnersTable = TableHelper.padString('Receiver', columnWidths.receiver) + ' | ' + TableHelper.padString('Sender', columnWidths.sender) + ' | Comments\n';
