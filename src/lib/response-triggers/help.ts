@@ -81,8 +81,14 @@ export default class Help extends Trigger {
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
-			newMessage += `* Configure config values 📝!
-	1. To get/edit/refresh/delete config values, type \`@${constants.botName} ${Object.values(ConfigAction).join('|')} {name|userid} {value}\`
+			newMessage += `* Configure number config values 🔢!
+	1. To get/edit/refresh/delete number config values, type \`@${constants.botName} numberconfig ${Object.values(ConfigAction).join('|')} {name} {number}\`
+	1. I will respond in the room you messaged me in.
+* Configure string config values 🎻!
+	1. To get/edit/refresh/delete string config values, type \`@${constants.botName} stringconfig ${Object.values(ConfigAction).join('|')} {name} {value}\`
+	1. I will respond in the room you messaged me in.
+* Configure role config values 🗞️!
+	1. To get/edit/refresh/delete user roles, type \`@${constants.botName} roleconfig ${Object.values(ConfigAction).join('|')} {@User} {role}\`
 	1. I will respond in the room you messaged me in.\n`
 		}
 
