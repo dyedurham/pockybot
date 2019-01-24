@@ -47,7 +47,7 @@ export default class RoleConfig extends Trigger {
 		try {
 			switch (command) {
 				case ConfigAction.Get:
-					newMessage = this.getConfigMessage();
+					newMessage = await this.getConfigMessage();
 					break;
 				case ConfigAction.Set: {
 					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
@@ -123,7 +123,7 @@ export default class RoleConfig extends Trigger {
 		};
 	}
 
-	private getConfigMessage() : string {
+	private async getConfigMessage() : Promise<string> {
 		const roles = this.config.getAllRoles();
 
 		let columnWidths = tableHelper.getRolesColumnWidths(roles);
@@ -132,9 +132,10 @@ export default class RoleConfig extends Trigger {
 
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
-		roles.forEach((config : RolesRow) => {
-			message += config.role.padEnd(columnWidths.name) + ' | ' + config.userid + '\n';
-		});
+		for (const config of roles) {
+			const user = await this.dbUsers.getUser(config.userid);
+			message += config.role.padEnd(columnWidths.name) + ' | ' + user.username + '\n';
+		}
 
 		message += '```';
 

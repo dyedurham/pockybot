@@ -28,6 +28,7 @@ function createDbUsers() : DbUsers {
 
 	const dbUsers = new DbUsers(null, queryHandler);
 	spyOn(dbUsers, 'existsOrCanBeCreated').and.returnValue(new Promise((resolve, reject) => resolve(true)));
+	spyOn(dbUsers, 'getUser').and.returnValue(new Promise((resolve, reject) => resolve({username: 'Username'})));
 
 	return dbUsers;
 }
@@ -85,7 +86,7 @@ describe('configuration message parsing', () => {
 `Here is the current config:
 \`\`\`
 Name | Value
-test | 1
+test | Username
 \`\`\``
 		);
 		done();
