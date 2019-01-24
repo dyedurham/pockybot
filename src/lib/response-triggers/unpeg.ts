@@ -29,7 +29,7 @@ export default class  Unpeg extends Trigger {
 
 	isToTriggerOn(message : MessageObject) : boolean {
 		__logger.debug('entering the unpeg isToTriggerOn');
-		let parsedMessage : ParsedMessage = XmlMessageParser.parseMessage(message);
+		let parsedMessage : ParsedMessage = XmlMessageParser.parsePegMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
 

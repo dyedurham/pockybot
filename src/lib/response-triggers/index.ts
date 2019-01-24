@@ -20,9 +20,9 @@ import Welcome from './welcome';
 import Help from './help';
 import Ping from './ping';
 import Keywords from './keywords';
-import Numberconfig from './numberconfig';
-import Stringconfig from './stringconfig';
-import Rolecongfig from './roleconfig';
+import NumberConfig from './numberconfig';
+import StringConfig from './stringconfig';
+import RoleConfig from './roleconfig';
 import Default from './default';
 
 // Services
@@ -59,9 +59,9 @@ const update = new Update(spark, dbUsers, config);
 const finish = new Finish(winners, results, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
-const numberConfig = new Numberconfig(config);
-const stringConfig = new Stringconfig(config);
-const roleConfig = new Rolecongfig(config);
+const numberConfig = new NumberConfig(config);
+const stringConfig = new StringConfig(config);
+const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
 const defaultTrigger = new Default();

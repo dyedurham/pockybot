@@ -4,7 +4,7 @@ import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { ParsedMessage } from '../../models/parsed-message';
 
-function parseMessage(message : MessageObject) : ParsedMessage {
+function parsePegMessage(message : MessageObject) : ParsedMessage {
 	try {
 		let xmlMessage : xml.Document = this.getMessageXml(message);
 		let children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
@@ -12,7 +12,7 @@ function parseMessage(message : MessageObject) : ParsedMessage {
 			fromPerson: message.personId,
 			toPersonId: message.mentionedPeople[1],
 			botId: message.mentionedPeople[0],
-			children: children,
+			children,
 			comment: children.reduce((a, child, index) => {
 				// first three children should be mentions or command words
 				if (index > 2) {
@@ -27,6 +27,13 @@ function parseMessage(message : MessageObject) : ParsedMessage {
 		__logger.error(`Error in parseMessage:\n${e.message}`);
 		throw new Error('Error in parseMessage');
 	}
+}
+
+function parseXmlMessage(message : MessageObject) : xml.Element[] {
+	const xmlMessage : xml.Document = this.getMessageXml(message);
+	const children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
+
+	return children;
 }
 
 function getMessageXml(message : MessageObject) : xml.Document {
@@ -45,8 +52,9 @@ function getMessageXml(message : MessageObject) : xml.Document {
 }
 
 export default {
-	parseMessage,
+	parsePegMessage,
 	getMessageXml,
+	parseXmlMessage
 }
 
 export {

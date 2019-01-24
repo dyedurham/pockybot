@@ -26,16 +26,10 @@ export default class StringConfig extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	isToTriggerOnPM(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
-			return false;
-		}
-		return message.text.toLowerCase().trim().startsWith(this.commandText);
-	}
-
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		message.text = message.text.toLowerCase();
-		message.text = message.text.trim();
+		const pattern = new RegExp('^' + constants.botName, 'ui');
+		message.text = message.text.trim().replace(pattern, '').trim();
 
 		let words = message.text.split(' ');
 

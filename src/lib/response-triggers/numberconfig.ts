@@ -22,28 +22,23 @@ export default class NumberConfig extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.numberConfigCommand, 'ui');
-		return pattern.test(message.html);
-	}
 
-	isToTriggerOnPM(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
-			return false;
-		}
-		return message.text.toLowerCase().trim().startsWith(this.commandText);
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.numberConfigCommand, 'ui');
+		return pattern.test(message.html.trim());
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		message.text = message.text.toLowerCase();
-		message.text = message.text.trim();
+		let pattern = new RegExp('^' + constants.botName, 'ui');
+		message.text = message.text.trim().replace(pattern, '').trim();
 
 		let words = message.text.split(' ');
-
-		let newMessage : string;
 
 		if (words.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
 		}
+
+		let newMessage : string;
 
 		switch (words[1]) {
 			case ConfigAction.Get:

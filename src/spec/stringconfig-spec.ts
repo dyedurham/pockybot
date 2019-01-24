@@ -13,13 +13,6 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createPrivateMessage(message : string, person : string) : MessageObject {
-	return {
-		text: message,
-		personId: person
-	}
-}
-
 beforeAll(() => {
 	spyOn(config, 'getAllStringConfig').and.callFake(() => {
 		return [{
@@ -62,7 +55,7 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const configMessage = { text: 'config get'};
+		const configMessage = { text: `${constants.botName} stringconfig get` };
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -74,7 +67,7 @@ test | test
 	});
 
 	it('should create with a number paramater', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig set test 1'};
+		const configMessage = { text: `${constants.botName} stringConfig set test 1` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', '1');
 		expect(response.markdown).toBe('Config has been set');
@@ -82,7 +75,7 @@ test | test
 	});
 
 	it('should create the set string message', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig set test value2'};
+		const configMessage = { text: `${constants.botName} stringConfig set test value2` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'value2');
 		expect(response.markdown).toBe('Config has been set');
@@ -90,7 +83,7 @@ test | test
 	});
 
 	it('should create the set string message with mixed input', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig set test test123'};
+		const configMessage = { text: `${constants.botName} stringConfig set test test123` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'test123');
 		expect(response.markdown).toBe('Config has been set');
@@ -98,7 +91,7 @@ test | test
 	});
 
 	it('should fail to set the config if the config already exists', async (done: DoneFn) => {
-		const configMessage = { text: 'stringConfig set test value'};
+		const configMessage = { text: `${constants.botName} stringConfig set test value` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config value "value" already exists in string config under name "test".');
@@ -106,7 +99,7 @@ test | test
 	});
 
 	it('should fail to set the config with no config specified', async (done: DoneFn) => {
-		const configMessage = { text: 'stringConfig set'};
+		const configMessage = { text: `${constants.botName} stringConfig set` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config name and value to set');
@@ -114,7 +107,7 @@ test | test
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig refresh'};
+		const configMessage = { text: `${constants.botName} stringConfig refresh` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.updateStringConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe('Config has been updated');
@@ -122,7 +115,7 @@ test | test
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig delete test value'};
+		const configMessage = { text: `${constants.botName} stringConfig delete test value` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).toHaveBeenCalledWith('test', 'value');
 		expect(response.markdown).toBe('Config has been deleted');
@@ -130,7 +123,7 @@ test | test
 	});
 
 	it('should not delete config values which do not exist', async (done : DoneFn) => {
-		const configMessage = { text: 'stringConfig delete test dummy'};
+		const configMessage = { text: `${constants.botName} stringConfig delete test dummy` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Value "dummy" does not exist in string config under name "test"');
@@ -138,7 +131,7 @@ test | test
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig delete'};
+		const configMessage = { text: `${constants.botName} stringconfig delete`};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config name and value to be deleted');
@@ -202,52 +195,6 @@ describe('testing configuration triggers', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> config`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
-		expect(results).toBe(false);
-	});
-});
-
-describe('testing configuration PM triggers', () => {
-	const configuration = new Stringconfig(config);
-
-	it('should accept trigger', () => {
-		let message = createPrivateMessage('stringConfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should reject wrong command', () => {
-		let message = createPrivateMessage('helooo', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept whitespace around', () => {
-		let message = createPrivateMessage(' stringConfig ', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should accept capitalised command', () => {
-		let message = createPrivateMessage('stringConfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail for non admin PM', () => {
-		let message = createPrivateMessage('stringConfig', "mockID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept an additional parameter', () => {
-		let message = createPrivateMessage('stringConfig get', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail with only config', () => {
-		let message = createPrivateMessage('Config', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 });

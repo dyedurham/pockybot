@@ -3,6 +3,10 @@ import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
+import DbUsers from '../lib/database/db-users';
+import { Client } from 'pg';
+import QueryHandler from '../lib/database/query-handler';
+import RoleConfig from '../lib/response-triggers/roleconfig';
 
 const config = new Config(null);
 
@@ -13,11 +17,19 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createPrivateMessage(message : string, person : string) : MessageObject {
-	return {
-		text: message,
-		personId: person
-	}
+function createDbUsers() : DbUsers {
+	const client = new Client();
+	spyOn(client, 'connect').and.callFake(() => {
+		return new Promise((resolve, reject) => {resolve()});
+	});
+
+	const queryHandler = new QueryHandler(client);
+	spyOn(queryHandler, 'readFile').and.returnValue('');
+
+	const dbUsers = new DbUsers(null, queryHandler);
+	spyOn(dbUsers, 'existsOrCanBeCreated').and.returnValue(new Promise((resolve, reject) => resolve(true)));
+
+	return dbUsers;
 }
 
 beforeAll(() => {
@@ -47,11 +59,16 @@ beforeAll(() => {
 		}
 
 		return [];
-	})
+	});
 })
 
 describe('configuration message parsing', () => {
-	const configuration = new Roleconfig(config);
+	let configuration : RoleConfig;
+
+	beforeEach(() => {
+		let dbUsers = createDbUsers();
+		configuration = new Roleconfig(dbUsers, config);
+	})
 
 	beforeEach(() => {
 		(config.getAllRoles as jasmine.Spy).calls.reset();
@@ -62,7 +79,7 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig get'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig get</p>`, mentionedPeople: [constants.botId]};
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -74,39 +91,47 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig set test admin' };
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig set <spark-mention data-object-type="person" data-object-id="1">test</spark-mention> admin</p>`, mentionedPeople: [constants.botId, 'fakeUser'] };
 		let response = await configuration.createMessage(configMessage);
-		expect(config.setRole).toHaveBeenCalledWith('test', Role.Admin);
+		expect(config.setRole).toHaveBeenCalledWith('fakeUser', Role.Admin);
 		expect(response.markdown).toBe('Role has been set');
 		done();
 	});
 
 	it('should reject an invalid role name on create', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig set test test123' };
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig set <spark-mention data-object-type="person" data-object-id="1">test</spark-mention> test123</p>`, mentionedPeople: [constants.botId, 'fakeUser'] };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
+		expect(response.markdown).toBe(`Invalid role TEST123. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 
 	it('should fail on no roles specified on create', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig set' };
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig set</p>`, mentionedPeople: [constants.botId] };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe('You must specify a user and a role to set.');
+		expect(response.markdown).toBe('You must specify a user and a role to set/delete.');
 		done();
 	});
 
 	it('should fail on create if the user is already set to the role', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig set 1 unmetered' };
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig set <spark-mention data-object-type="person" data-object-id="1">test</spark-mention> unmetered`, mentionedPeople: [constants.botId, '1'] };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe('Role "UNMETERED" is already set for user "1".')
+		expect(response.markdown).toBe('Role "UNMETERED" is already set for user "test".')
+		done();
+	});
+
+	it('should fail on create with no proper spark mention', async (done : DoneFn) => {
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig set test admin</p>`, mentionedPeople: [constants.botId] };
+		let response = await configuration.createMessage(configMessage);
+		expect(config.setRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('Unknown config command');
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig refresh'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig refresh</p>`, mentionedPeople: [constants.botId]};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.updateRoles).toHaveBeenCalled();
 		expect(response.markdown).toBe('Roles has been updated');
@@ -114,7 +139,7 @@ test | 1
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig delete 1 unmetered'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete <spark-mention data-object-type="person" data-object-id="1">1</spark-mention> unmetered`, mentionedPeople: [constants.botId, '1']};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).toHaveBeenCalledWith('1', Role.Unmetered)
 		expect(response.markdown).toBe('Role has been deleted');
@@ -122,7 +147,7 @@ test | 1
 	});
 
 	it('should not delete roles which don\'t exist', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig delete 1 admin'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete <spark-mention data-object-type="person" data-object-id="1">1</spark-mention> admin`, mentionedPeople: [constants.botId, 'fakeUser']};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Role "ADMIN" is not set for user "1"');
@@ -130,32 +155,45 @@ test | 1
 	});
 
 	it('should reject deleting an invalid role', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig delete 1 test'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete <spark-mention data-object-type="person" data-object-id="1">1</spark-mention> test`, mentionedPeople: [constants.botId, 'fakeUser']};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe(`Invalid role. Valid values are: ${Object.values(Role).join(', ')}`);
+		expect(response.markdown).toBe(`Invalid role TEST. Valid values are: ${Object.values(Role).join(', ')}`);
 		done();
 	});
 
 	it('should fail to create the delete message with no user specified', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig delete'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete`, mentionedPeople: [constants.botId]};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe('You must specify a user and a role to be deleted');
+		expect(response.markdown).toBe('You must specify a user and a role to set/delete.');
 		done();
 	});
 
 	it('should fail to create the delete message with no role specified', async (done : DoneFn) => {
-		const configMessage = { text: 'roleconfig delete 1'};
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete <spark-mention data-object-type="person" data-object-id="1">1</spark-mention>`, mentionedPeople: [constants.botId, 'fakeUser']};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteRole).not.toHaveBeenCalled();
-		expect(response.markdown).toBe('You must specify a user and a role to be deleted');
+		expect(response.markdown).toBe('You must specify a user and a role to set/delete.');
+		done();
+	});
+
+	it('should fail on delete with no proper spark mention', async (done : DoneFn) => {
+		const configMessage = { html: `<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig delete test unmetered`, mentionedPeople: [constants.botId]};
+		let response = await configuration.createMessage(configMessage);
+		expect(config.deleteRole).not.toHaveBeenCalled();
+		expect(response.markdown).toBe('Unknown config command');
 		done();
 	});
 });
 
 describe('testing configuration triggers', () => {
-	const configuration = new Roleconfig(config);
+	let configuration : RoleConfig;
+
+	beforeEach(() => {
+		let dbUsers = createDbUsers();
+		configuration = new Roleconfig(dbUsers, config);
+	})
 
 	it('should accept trigger', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> roleconfig`,
@@ -210,52 +248,6 @@ describe('testing configuration triggers', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> config`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
-		expect(results).toBe(false);
-	});
-});
-
-describe('testing configuration PM triggers', () => {
-	const configuration = new Roleconfig(config);
-
-	it('should accept trigger', () => {
-		let message = createPrivateMessage('roleconfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should reject wrong command', () => {
-		let message = createPrivateMessage('helooo', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept whitespace around', () => {
-		let message = createPrivateMessage(' roleconfig ', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should accept capitalised command', () => {
-		let message = createPrivateMessage('roleconfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail for non admin PM', () => {
-		let message = createPrivateMessage('roleconfig', "mockID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept an additional parameter', () => {
-		let message = createPrivateMessage('roleconfig get', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail with only config', () => {
-		let message = createPrivateMessage('Config', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 });

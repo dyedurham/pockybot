@@ -13,13 +13,6 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createPrivateMessage(message : string, person : string) : MessageObject {
-	return {
-		text: message,
-		personId: person
-	}
-}
-
 beforeAll(() => {
 	spyOn(config, 'getAllConfig').and.callFake(() => {
 		return [{
@@ -62,7 +55,7 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig get'};
+		const configMessage = { text: `${constants.botName} numberconfig get` };
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -74,47 +67,47 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig set test 1'};
+		const configMessage = { text: `${constants.botName} numberconfig set test 1` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).toHaveBeenCalledWith('test', 1);
-		expect(response.markdown).toBe("Config has been set");
+		expect(response.markdown).toBe('Config has been set');
 		done();
 	});
 
 	it('should fail to create with a string paramater', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig set test test'};
+		const configMessage = { text: `${constants.botName} numberconfig set test test` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).not.toHaveBeenCalled();
-		expect(response.markdown).toBe("Config must be set to a number");
+		expect(response.markdown).toBe('Config must be set to a number');
 		done();
 	});
 
 	it('should fail to create with mixed input', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig set test test123'};
+		const configMessage = { text: `${constants.botName} numberconfig set test test123` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).not.toHaveBeenCalled();
-		expect(response.markdown).toBe("Config must be set to a number");
+		expect(response.markdown).toBe('Config must be set to a number');
 		done();
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig refresh'};
+		const configMessage = { text: `${constants.botName} numberconfig refresh` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.updateConfig).toHaveBeenCalled();
-		expect(response.markdown).toBe("Config has been updated");
+		expect(response.markdown).toBe('Config has been updated');
 		done();
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig delete test'};
+		const configMessage = { text: `${constants.botName} numberconfig delete test` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).toHaveBeenCalledWith('test');
-		expect(response.markdown).toBe("Config has been deleted");
+		expect(response.markdown).toBe('Config has been deleted');
 		done();
 	});
 
 	it('should not delete configs which don\'t exist', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig delete dummy'};
+		const configMessage = { text: `${constants.botName} numberconfig delete dummy` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config value "dummy" does not exist');
@@ -122,10 +115,10 @@ test | 1
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const configMessage = { text: 'numberconfig delete'};
+		const configMessage = { text: `${constants.botName} numberconfig delete` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).not.toHaveBeenCalled();
-		expect(response.markdown).toBe("You must specify a config to be deleted");
+		expect(response.markdown).toBe('You must specify a config to be deleted');
 		done();
 	});
 });
@@ -186,52 +179,6 @@ describe('testing configuration triggers', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> config`,
 			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
-		expect(results).toBe(false);
-	});
-});
-
-describe('testing configuration PM triggers', () => {
-	const configuration = new Numberconfig(config);
-
-	it('should accept trigger', () => {
-		let message = createPrivateMessage('numberconfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should reject wrong command', () => {
-		let message = createPrivateMessage('helooo', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept whitespace around', () => {
-		let message = createPrivateMessage(' numberconfig ', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should accept capitalised command', () => {
-		let message = createPrivateMessage('numberconfig', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail for non admin PM', () => {
-		let message = createPrivateMessage('numberconfig', "mockID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(false);
-	});
-
-	it('should accept an additional parameter', () => {
-		let message = createPrivateMessage('numberconfig get', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
-		expect(results).toBe(true);
-	});
-
-	it('should fail with only config', () => {
-		let message = createPrivateMessage('Config', "mockAdminID");
-		let results = configuration.isToTriggerOnPM(message)
 		expect(results).toBe(false);
 	});
 });
