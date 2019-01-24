@@ -133,8 +133,10 @@ export default class RoleConfig extends Trigger {
 		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
 
 		roles.forEach((config : RolesRow) => {
-			message += config.role.padEnd(columnWidths.name) + ' | ' + config.userid + '\n```';
+			message += config.role.padEnd(columnWidths.name) + ' | ' + config.userid + '\n';
 		});
+
+		message += '```';
 
 		return message;
 	}
