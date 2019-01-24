@@ -19,15 +19,15 @@ export default class DbConfig  implements DbConfigInterface {
 	constructor(queryHandler : QueryHandler) {
 		this.queryHandler = queryHandler;
 
-		this.sqlGetConfig = this.queryHandler.readFile('../../database/queries/get_config.sql');
-		this.sqlGetStringConfig = this.queryHandler.readFile('../../database/queries/get_string_config.sql');
-		this.sqlGetRoles = this.queryHandler.readFile('../../database/queries/get_roles.sql');
-		this.sqlSetConfig = this.queryHandler.readFile('../../database/queries/set_config.sql');
-		this.sqlSetStringConfig = this.queryHandler.readFile('../../database/queries/set_string_config.sql');
-		this.sqlSetRoles = this.queryHandler.readFile('../../database/queries/set_roles.sql');
-		this.sqlDeleteConfig = this.queryHandler.readFile('../../database/queries/delete_config.sql');
-		this.sqlDeleteRoles = this.queryHandler.readFile('../../database/queries/delete_roles.sql');
-		this.sqlDeleteStringConfig = this.queryHandler.readFile('../../database/queries/delete_string_config.sql');
+		this.sqlGetConfig = this.queryHandler.readFile('../../../database/queries/get_config.sql');
+		this.sqlGetStringConfig = this.queryHandler.readFile('../../../database/queries/get_string_config.sql');
+		this.sqlGetRoles = this.queryHandler.readFile('../../../database/queries/get_roles.sql');
+		this.sqlSetConfig = this.queryHandler.readFile('../../../database/queries/set_config.sql');
+		this.sqlSetStringConfig = this.queryHandler.readFile('../../../database/queries/set_string_config.sql');
+		this.sqlSetRoles = this.queryHandler.readFile('../../../database/queries/set_roles.sql');
+		this.sqlDeleteConfig = this.queryHandler.readFile('../../../database/queries/delete_config.sql');
+		this.sqlDeleteRoles = this.queryHandler.readFile('../../../database/queries/delete_roles.sql');
+		this.sqlDeleteStringConfig = this.queryHandler.readFile('../../../database/queries/delete_string_config.sql');
 	}
 
 	async getRoles() : Promise<RolesRow[]> {

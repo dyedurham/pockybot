@@ -42,7 +42,7 @@ const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
-const database = new PockyDB(spark, queryHandler,dbUsers);
+const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
 
 database.loadConfig(config);
