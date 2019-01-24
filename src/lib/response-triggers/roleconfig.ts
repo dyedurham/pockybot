@@ -73,7 +73,7 @@ export default class RoleConfig extends Trigger {
 						break;
 					}
 
-					this.config.deleteRole(username, role);
+					this.config.deleteRole(userId, role);
 					newMessage = 'Role has been deleted';
 					break;
 				}
