@@ -13,8 +13,7 @@ beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
 		if (userid === 'mockunmeteredID' && value === Role.Unmetered) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	});
@@ -44,7 +43,7 @@ function createQueryHandlerMock(result : any | QueryResult) : QueryHandler {
 describe('return results', () => {
 	it('should return the results from database as is', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock results');
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.returnResults();
 		console.log(results);
@@ -56,7 +55,7 @@ describe('return results', () => {
 describe('return winners', () => {
 	it('should return the results from database as is', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock results');
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.returnWinners();
 		expect(results as any).toBe('mock results');
@@ -67,7 +66,7 @@ describe('return winners', () => {
 describe('reset', () => {
 	it('should call query and return the raw output', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock result');
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let results = await database.reset();
 		expect(results as any).toBe('mock result');
@@ -85,7 +84,7 @@ describe('has spare pegs', () => {
 	})
 
 	it('should return true for default_user', async (done : DoneFn) => {
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('default_user');
 		expect(result).toBe(true);
@@ -93,7 +92,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return true for mockunmeteredID', async (done : DoneFn) => {
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('mockunmeteredID');
 		expect(result).toBe(true);
@@ -102,7 +101,7 @@ describe('has spare pegs', () => {
 
 	it('should return false for other users', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock([{count:10}]);
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('some_sender');
 		expect(result).toBe(false);
@@ -112,7 +111,7 @@ describe('has spare pegs', () => {
 	it('should return true for no pegs spent', async (done : DoneFn) => {
 		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], false);
 
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('some_sender');
 		expect(result).toBe(true);
@@ -123,7 +122,7 @@ describe('has spare pegs', () => {
 describe('count pegs', () => {
 	it('should return count of pegs', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock([{count:125689}]);
-		const database = new PockyDB(null, queryHandler, null);
+		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.countPegsGiven('some_sender');
 		expect(result).toBe(125689);
@@ -135,7 +134,7 @@ describe('give peg with comment', () => {
 	it('should return 0', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock([{count:0}]);
 		let dbUsers = new MockDbUsers();
-		const database = new PockyDB(null, queryHandler, dbUsers);
+		const database = new PockyDB(queryHandler, dbUsers);
 		database.loadConfig(config);
 		let result = await database.givePegWithComment('one comment here', 'some_receiver', 'some_sender');
 		expect(result).toBe(0);

@@ -3,6 +3,7 @@ import Config from '../config';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
+import { ConfigAction } from '../../models/config-action';
 
 export default class Help extends Trigger {
 	readonly commandText : string = 'help';
@@ -77,6 +78,18 @@ export default class Help extends Trigger {
 			newMessage += `* Complete the cycle 🚲!
 	1. To display winners and results and clear the database, type \`@${constants.botName} finish\`.
 	1. I will respond in the room you messaged me in.\n`;
+		}
+
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
+			newMessage += `* Configure number config values 🔢!
+	1. To get/edit/refresh/delete number config values, type \`@${constants.botName} numberconfig ${Object.values(ConfigAction).join('|')} {name} {number}\`
+	1. I will respond in the room you messaged me in.
+* Configure string config values 🎻!
+	1. To get/edit/refresh/delete string config values, type \`@${constants.botName} stringconfig ${Object.values(ConfigAction).join('|')} {name} {value}\`
+	1. I will respond in the room you messaged me in.
+* Configure role config values 🗞️!
+	1. To get/edit/refresh/delete user roles, type \`@${constants.botName} roleconfig ${Object.values(ConfigAction).join('|')} {@User} {role}\`
+	1. I will respond in the room you messaged me in.\n`
 		}
 
 		newMessage += `\nI am still being worked on, so [more features to come : )] (${constants.todoUrl})`;

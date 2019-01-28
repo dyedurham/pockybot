@@ -35,7 +35,7 @@ export default class Peg extends Trigger {
 
 	isToTriggerOn(message : MessageObject) : boolean {
 		__logger.debug('entering the peg isToTriggerOn');
-		let parsedMessage : ParsedMessage = xmlMessageParser.parseMessage(message);
+		let parsedMessage : ParsedMessage = xmlMessageParser.parsePegMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
 
@@ -43,7 +43,7 @@ export default class Peg extends Trigger {
 	//  peg <spark-mention data-object-type="person" data-object-id="aoei">PersonName</spark-mention>
 	//  for some reasons
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		let parsedMessage : ParsedMessage = xmlMessageParser.parseMessage(message);
+		let parsedMessage : ParsedMessage = xmlMessageParser.parsePegMessage(message);
 
 		if (!this.validateMessage(parsedMessage)) {
 			return {

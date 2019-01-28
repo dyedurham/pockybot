@@ -5,5 +5,6 @@ export enum Role {
 	Finish = 'FINISH',
 	Reset = 'RESET',
 	Update = 'UPDATE',
-	Winners = 'WINNERS'
+	Winners = 'WINNERS',
+	Config = 'CONFIG'
 }

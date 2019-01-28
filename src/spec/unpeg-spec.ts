@@ -1,6 +1,5 @@
 import Unpeg from '../lib/response-triggers/unpeg';
 import constants from '../constants';
-import PockyDB from '../lib/database/pocky-db';
 import Utilities from '../lib/utilities';
 import { Client } from 'pg';
 import MockCiscoSpark from './mocks/mock-spark';

@@ -97,6 +97,9 @@ These commands can only be performed by users with the role of 'ADMIN' or users 
 * `@PockyBot reset` &mdash; remove all pegs from the database
 * `@PockyBot update` &mdash; update names stored in the database with users' current display names
 * `@PockyBot finish` &mdash; complete the cycle by displaying the winners and results before wiping the database
+* `@PockyBot numberconfig get|set|refresh|delete {name} {number}` &mdash; get or change config values
+* `@PockyBot stringconfig get|set|refresh|delete {name} {value}` &mdash; get or change string config values
+* `@PockyBot roleconfig get|set|refresh|delete {@User} {role}` &mdash; get or change user roles
 
 ## Contributing
 

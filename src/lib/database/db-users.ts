@@ -20,11 +20,11 @@ export default class DbUsers implements DbUsersInterface {
 		this.spark = sparkService;
 		this.queryHandler = queryHandler;
 
-		this.sqlUpdate = this.queryHandler.readFile('../../database/queries/update_pocky_user.sql');
-		this.sqlGetUsers = this.queryHandler.readFile('../../database/queries/select_all_users.sql');
-		this.sqlGetUser = this.queryHandler.readFile('../../database/queries/select_user.sql');
-		this.sqlCreateUser = this.queryHandler.readFile('../../database/queries/create_pocky_user.sql');
-		this.sqlExists = this.queryHandler.readFile('../../database/queries/exists.sql');
+		this.sqlUpdate = this.queryHandler.readFile('../../../database/queries/update_pocky_user.sql');
+		this.sqlGetUsers = this.queryHandler.readFile('../../../database/queries/select_all_users.sql');
+		this.sqlGetUser = this.queryHandler.readFile('../../../database/queries/select_user.sql');
+		this.sqlCreateUser = this.queryHandler.readFile('../../../database/queries/create_pocky_user.sql');
+		this.sqlExists = this.queryHandler.readFile('../../../database/queries/exists.sql');
 	}
 
 

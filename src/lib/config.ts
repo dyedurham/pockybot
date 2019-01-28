@@ -30,7 +30,12 @@ export default class Config implements ConfigInterface {
 			return null;
 		}
 
-		return this.config.find(x => x.name.toUpperCase() === config.toUpperCase()).value;
+		let configValue = this.config.find(x => x.name.toUpperCase() === config.toUpperCase());
+		if (configValue != null) {
+			return configValue.value;
+		}
+
+		return null;
 	}
 
 	getStringConfig(config : string) : string[] {
@@ -54,6 +59,10 @@ export default class Config implements ConfigInterface {
 
 	getAllConfig() : ConfigRow[] {
 		return this.config;
+	}
+
+	getAllStringConfig() : StringConfigRow[] {
+		return this.stringConfig;
 	}
 
 	async updateAll() : Promise<void> {
@@ -97,6 +106,21 @@ export default class Config implements ConfigInterface {
 
 	async setStringConfig(config : string, value : string) : Promise<void> {
 		await this.database.setStringConfig(config, value);
+		await this.updateStringConfig();
+	}
+
+	async deleteRole(userid : string, role : Role) : Promise<void> {
+		await this.database.deleteRole(userid, role);
+		await this.updateRoles();
+	}
+
+	async deleteConfig(config : string) : Promise<void> {
+		await this.database.deleteConfig(config);
+		await this.updateConfig();
+	}
+
+	async deleteStringConfig(config : string, value : string) : Promise<void> {
+		await this.database.deleteStringConfig(config, value);
 		await this.updateStringConfig();
 	}
 }

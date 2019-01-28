@@ -29,7 +29,7 @@ items:
       name: <<namespace_placeholder>>-deployment
       namespace: <<namespace_placeholder>>
     spec:
-      replicas: 2
+      replicas: 1
       template:
         metadata:
           name: <<namespace_placeholder>>

@@ -32,7 +32,7 @@ import DbConfig from '../database/db-config';
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
-const database = new PockyDB(spark, queryHandler, dbUsers);
+const database = new PockyDB(queryHandler, dbUsers);
 const config = new configService(dbConfig);
 
 database.loadConfig(config);
