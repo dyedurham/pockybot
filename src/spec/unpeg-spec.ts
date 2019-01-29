@@ -82,8 +82,9 @@ describe('unpeg messages', () => {
 	type UnpegTestData = {
 		case : number,
 		twoStage : boolean,
+		senderId?: string,
 		firstResponse ?: string,
-		response : string
+		response : string,
 	}
 
 	const testCases : UnpegTestData[] = [
@@ -125,11 +126,12 @@ Unable to brew coffee. Or pegs.`
 		{
 			case: 6,
 			twoStage: false,
+			senderId: 'Ke$ha *6*',
 			response:
 `\`\`\`
-Error: Access Denied user MockSender Name does not have the correct privileges
+Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 	at UnPeg (unpeg.js:126)
-	at EveryoneButMockSenderName (unpeg.js:4253)
+	at EveryoneButKeha6Name (unpeg.js:4253)
 	at ExecuteBadCode (pockybot.js:1467)
 	at DecrementPegs (pockybot.js:1535)
 \`\`\``
@@ -145,7 +147,7 @@ Error: Access Denied user MockSender Name does not have the correct privileges
 
 			spyOn(spark.messages, 'create').and.callThrough();
 
-			let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
+			let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>', test.senderId);
 			let roomId = 'abc';
 
 			let result = await unpeg.createMessage(message, roomId);

@@ -125,11 +125,17 @@ export default class  Unpeg extends Trigger {
 `### HTTP Status Code 418: I'm a teapot.
 Unable to brew coffee. Or pegs.`);
 			case 6:
+				let nonAlphanumericRegex = new RegExp('[^0-9a-z]', 'gi');
+				let safeName = fromUser.replace(nonAlphanumericRegex, '');
+				if (safeName.length === 0) {
+					safeName = 'ThatPerson';
+				}
+
 				return this.sendResponse(
 `\`\`\`
 Error: Access Denied user ${fromUser} does not have the correct privileges
 	at UnPeg (unpeg.js:126)
-	at EveryoneBut${fromUser.replace(' ', '')} (unpeg.js:4253)
+	at EveryoneBut${safeName} (unpeg.js:4253)
 	at ExecuteBadCode (pockybot.js:1467)
 	at DecrementPegs (pockybot.js:1535)
 \`\`\``
