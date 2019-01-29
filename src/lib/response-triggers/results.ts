@@ -143,10 +143,12 @@ ${pegsReceived[receiver]}
 				</thead>
 				<tbody>`;
 
+				result.pegs.sort((a,b) => a.sender.localeCompare(b.sender));
+
 				result.pegs.forEach((peg : PegReceivedData) => {
 					htmlTables +=
 `
-					<tr><td>${peg.sender.toString()}</td><td>${peg.comment}</td></tr>
+					<tr><td>${peg.sender}</td><td>${peg.comment}</td></tr>
 `;
 				});
 
