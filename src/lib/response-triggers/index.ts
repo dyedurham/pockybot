@@ -36,6 +36,7 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
+import WinnersService from '../services/winners-service';
 
 // Service instantiation
 const utilities = new Utilities();
@@ -44,6 +45,7 @@ const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
 const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
+const winnersService = new WinnersService(database);
 
 database.loadConfig(config);
 config.updateAll();
@@ -52,7 +54,7 @@ config.updateAll();
 const peg = new Peg(spark, database, dbUsers, config);
 const unpeg = new Unpeg(spark, dbUsers, utilities);
 const reset = new Reset(database, config);
-const winners = new Winners(database, config);
+const winners = new Winners(winnersService, config);
 const results = new Results(spark, database, config);
 const status = new Status(spark, database, config);
 const update = new Update(spark, dbUsers, config);
