@@ -2,10 +2,8 @@ import Winners from '../lib/response-triggers/winners';
 import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
-import { PockyDB } from '../lib/database/db-interfaces';
-import { Role, ResultRow } from '../models/database';
-import MockPockyDb from './mocks/mock-pockydb';
-import WinnersService, { IWinnersService } from '../lib/services/winners-service';
+import { Role } from '../models/database';
+import { IWinnersService } from '../lib/services/winners-service';
 import MockWinnersService from './mocks/mock-winners-service';
 
 const config = new Config(null);
@@ -44,46 +42,15 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createData() : ResultRow[] {
-	return [{
-		'receiver': 'mock receiver',
-		'receiverid': 'mockID',
-		'sender': 'mock sender',
-		'comment': ' test'
-	}];
-}
-
 function createWinnersService(success : boolean, message: string) : IWinnersService {
 	let winnersService = new MockWinnersService(success, message);
 	return winnersService;
 }
 
-// describe('creating winners responses', () => {
-// 	let data : ResultRow[];
-// 	let winners : Winners;
-
-// 	beforeEach(() => {
-// 		data = createData();
-// 		winners = new Winners(null, config);
-// 	})
-
-// 	it('should parse a proper message', async (done : DoneFn) => {
-// 		let message = await winners.createResponse(data);
-// 		expect(message).toBe('```\n' +
-// '  Receiver    |   Sender    | Comments\n' +
-// 'Total         |             | \n' +
-// '--------------+-------------+---------\n' +
-// 'mock receiver |             | \n' +
-// '1             | mock sender |  test\n' +
-// '```');
-// 		done();
-// 	});
-// });
-
 describe('creating a winners message', () => {
 	let winnersService : IWinnersService;
 	let winners : Winners;
-	const expectedMarkdown: string = "test message for success";
+	const expectedMarkdown: string = 'test message for success';
 
 	beforeEach(() => {
 		winnersService = createWinnersService(true, expectedMarkdown);
@@ -93,13 +60,6 @@ describe('creating a winners message', () => {
 	it('should create a proper message', async (done : DoneFn) => {
 		let message = await winners.createMessage();
 		expect(message.markdown).toBe(expectedMarkdown);
-// 		expect(message.markdown).toBe('```\n' +
-// '  Receiver    |   Sender    | Comments\n' +
-// 'Total         |             | \n' +
-// '--------------+-------------+---------\n' +
-// 'mock receiver |             | \n' +
-// '1             | mock sender |  test\n' +
-// '```');
 		done();
 	});
 });
@@ -109,7 +69,7 @@ describe('failing at creating a winners message', () => {
 	let winners: Winners;
 
 	beforeEach(() => {
-		winnersService = createWinnersService(false, "");
+		winnersService = createWinnersService(false, '');
 		winners = new Winners(winnersService, config);
 	});
 

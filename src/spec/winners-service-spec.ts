@@ -1,45 +1,7 @@
-import Config from "../lib/config";
-import { Role, ResultRow } from "../models/database";
-import { MessageObject } from "ciscospark/env";
+import { ResultRow } from "../models/database";
 import { PockyDB } from "../lib/database/db-interfaces";
 import MockPockyDb from "./mocks/mock-pockydb";
-
-const config = new Config(null);
-
-beforeAll(() => {
-	spyOn(config, 'checkRole').and.callFake((userid: string, value: Role) => {
-		if (userid === 'goodID' && value === Role.Admin) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	});
-
-	spyOn(config, 'getConfig').and.callFake((config: string) => {
-		if (config === 'limit') {
-			return 10;
-		} else if (config === 'minimum') {
-			return 5;
-		} else if (config === 'winners') {
-			return 3;
-		} else if (config === 'commentsRequired') {
-			return 1;
-		} else if (config === 'pegWithoutKeyword') {
-			return 0;
-		}
-
-		throw new Error('bad config');
-	})
-});
-
-
-function createMessage(htmlMessage: string, person: string): MessageObject {
-	return {
-		html: htmlMessage,
-		personId: person
-	}
-}
+import WinnersService, { IWinnersService } from '../lib/services/winners-service';
 
 function createData(): ResultRow[] {
 	return [{
@@ -54,3 +16,27 @@ function createDatabase(success: boolean, data: ResultRow[]): PockyDB {
 	let db = new MockPockyDb(true, 1, true, 1, success ? data : undefined);
 	return db;
 }
+
+describe('winners service', () => {
+	let winnersService: IWinnersService;
+	let database: PockyDB;
+	let data: ResultRow[];
+
+	beforeEach(() => {
+		data = createData();
+		database = createDatabase(true, data);
+		winnersService = new WinnersService(database);
+	});
+
+	it('should parse a proper message', async (done : DoneFn) => {
+		let message = await winnersService.returnWinnersResponse();
+		expect(message).toBe('```\n' +
+'  Receiver    |   Sender    | Comments\n' +
+'Total         |             | \n' +
+'--------------+-------------+---------\n' +
+'mock receiver |             | \n' +
+'1             | mock sender |  test\n' +
+'```');
+		done();
+	});
+});
