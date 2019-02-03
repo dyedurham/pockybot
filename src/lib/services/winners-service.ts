@@ -4,7 +4,11 @@ import TableHelper from "../parsers/tableHelper";
 import __logger from "../logger";
 import { Receiver } from "../../models/receiver";
 
-export default class WinnersService {
+export interface IWinnersService {
+	returnWinnersResponse(): Promise<string>
+}
+
+export default class WinnersService implements IWinnersService {
 	readonly cannotDisplayResults: string = 'Error encountered; cannot display winners.';
 	database: PockyDB;
 
@@ -12,7 +16,7 @@ export default class WinnersService {
 		this.database = database;
 	}
 
-	async returnWinnersResponse(): Promise<string> {
+	async returnWinnersResponse() : Promise<string> {
 		const data: ResultRow[] = await this.database.returnWinners();
 
 		let winners: Receiver[] = TableHelper.mapResults(data);

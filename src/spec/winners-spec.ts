@@ -3,10 +3,10 @@ import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
 import { PockyDB } from '../lib/database/db-interfaces';
-import { Client } from 'pg';
 import { Role, ResultRow } from '../models/database';
-import QueryHandler from '../lib/database/query-handler';
 import MockPockyDb from './mocks/mock-pockydb';
+import WinnersService, { IWinnersService } from '../lib/services/winners-service';
+import MockWinnersService from './mocks/mock-winners-service';
 
 const config = new Config(null);
 
@@ -53,64 +53,64 @@ function createData() : ResultRow[] {
 	}];
 }
 
-function createDatabase(success : boolean, data : ResultRow[]) : PockyDB {
-	let db = new MockPockyDb(true, 1, true, 1, success ? data : undefined);
-	return db;
+function createWinnersService(success : boolean, message: string) : IWinnersService {
+	let winnersService = new MockWinnersService(success, message);
+	return winnersService;
 }
 
-describe('creating winners responses', () => {
-	let data : ResultRow[];
-	let winners : Winners;
+// describe('creating winners responses', () => {
+// 	let data : ResultRow[];
+// 	let winners : Winners;
 
-	beforeEach(() => {
-		data = createData();
-		winners = new Winners(null, config);
-	})
+// 	beforeEach(() => {
+// 		data = createData();
+// 		winners = new Winners(null, config);
+// 	})
 
-	it('should parse a proper message', async (done : DoneFn) => {
-		let message = await winners.createResponse(data);
-		expect(message).toBe('```\n' +
-'  Receiver    |   Sender    | Comments\n' +
-'Total         |             | \n' +
-'--------------+-------------+---------\n' +
-'mock receiver |             | \n' +
-'1             | mock sender |  test\n' +
-'```');
-		done();
-	});
-});
+// 	it('should parse a proper message', async (done : DoneFn) => {
+// 		let message = await winners.createResponse(data);
+// 		expect(message).toBe('```\n' +
+// '  Receiver    |   Sender    | Comments\n' +
+// 'Total         |             | \n' +
+// '--------------+-------------+---------\n' +
+// 'mock receiver |             | \n' +
+// '1             | mock sender |  test\n' +
+// '```');
+// 		done();
+// 	});
+// });
 
 describe('creating a winners message', () => {
-	let data : ResultRow[];
-	let database : PockyDB;
+	let winnersService : IWinnersService;
 	let winners : Winners;
+	const expectedMarkdown: string = "test message for success";
 
 	beforeEach(() => {
-		data = createData();
-		database = createDatabase(true, data);
-		winners = new Winners(database, config);
+		winnersService = createWinnersService(true, expectedMarkdown);
+		winners = new Winners(winnersService, config);
 	});
 
 	it('should create a proper message', async (done : DoneFn) => {
 		let message = await winners.createMessage();
-		expect(message.markdown).toBe('```\n' +
-'  Receiver    |   Sender    | Comments\n' +
-'Total         |             | \n' +
-'--------------+-------------+---------\n' +
-'mock receiver |             | \n' +
-'1             | mock sender |  test\n' +
-'```');
+		expect(message.markdown).toBe(expectedMarkdown);
+// 		expect(message.markdown).toBe('```\n' +
+// '  Receiver    |   Sender    | Comments\n' +
+// 'Total         |             | \n' +
+// '--------------+-------------+---------\n' +
+// 'mock receiver |             | \n' +
+// '1             | mock sender |  test\n' +
+// '```');
 		done();
 	});
 });
 
 describe('failing at creating a winners message', () => {
-	let database : PockyDB;
-	let winners : Winners;
+	let winnersService: IWinnersService;
+	let winners: Winners;
 
 	beforeEach(() => {
-		database = createDatabase(false, null);
-		winners = new Winners(database, config);
+		winnersService = createWinnersService(false, "");
+		winners = new Winners(winnersService, config);
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
