@@ -1,69 +1,63 @@
-// const winnersData = await this.database.returnWinners();
-// const resultsData = await this.database.returnResults();
-// const results: Receiver[] = TableHelper.mapResults(resultsData);
-// const winners: Receiver[] = TableHelper.mapResults(winnersData);
+import { PockyDB } from '../database/db-interfaces';
+import { ResultRow } from '../../models/database';
+import { Receiver } from '../../models/receiver';
+import TableHelper from "../parsers/tableHelper";
+import __logger from "../logger";
+import { PegReceivedData } from '../../models/peg-received-data';
+import { CiscoSpark } from 'ciscospark/env';
 
-// let today = new Date();
-// let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+const lineEnding = "\r\n";
 
-// let filePath = `${__dirname}/../../../pegs-${todayString}`;
-// if (fs.existsSync(filePath + '.txt')) {
-// 	fs.unlinkSync(filePath + '.txt');
-// }
-// __logger.information("File path: " + filePath);
+export interface IPmResultsService {
+	pmResults(): Promise<void>
+}
 
-// let columnWidths = TableHelper.getReceiverColumnWidths(results);
+export default class PmResultsService implements IPmResultsService {
+	database: PockyDB;
+	spark: CiscoSpark;
 
-// // define table heading
-// let resultsTable = TableHelper.padString('Receiver', columnWidths.receiver) + ' | ' + TableHelper.padString('Sender', columnWidths.sender) + ' | Comments' + lineEnding;
-// resultsTable += 'Total'.padEnd(columnWidths.receiver) + ' | ' + ' '.padEnd(columnWidths.sender) + ' | ' + lineEnding;
-// resultsTable += ''.padEnd(columnWidths.receiver, '-') + '-+-' + ''.padEnd(columnWidths.sender, '-') + '-+-' + ''.padEnd(columnWidths.comment, '-') + lineEnding;
+	constructor(database: PockyDB, spark: CiscoSpark){
+		this.database = database;
+		this.spark = spark;
+	}
 
-// let pegsReceived = {};
+	async pmResults(): Promise<void> {
+		const data: ResultRow[] = await this.database.returnResults();
+		const results: Receiver[] = TableHelper.mapResults(data);
 
-// // map table data
-// results.forEach((result: Receiver) => {
-// 	pegsReceived[result.id] = ''
-// 	pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
-// 	let firstPeg = true;
-// 	let pegCount = result.pegs.length;
-// 	result.pegs.forEach((peg: PegReceivedData) => {
-// 		if (firstPeg) {
-// 			pegsReceived[result.id] += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
-// 			firstPeg = false;
-// 		} else {
-// 			pegsReceived[result.id] += ''.padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
-// 		}
-// 	});
-// 	resultsTable += pegsReceived[result.id];
-// });
-// __logger.information('Results table fully mapped');
+		let columnWidths = TableHelper.getReceiverColumnWidths(results);
 
-// for (let receiver in pegsReceived) {
-// 	this.spark.messages.create(
-// 		{
-// 			markdown:
-// 				`Here are the pegs your have received this cycle:
-// \`\`\`
-// ${pegsReceived[receiver]}
-// \`\`\``,
-// 			toPersonId: receiver
-// 		});
-// }
+		let pegsReceived = {};
 
-// let html = this.generateHtml(results, todayString);
+		// map table data
+		results.forEach((result: Receiver) => {
+			result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
-// fs.writeFileSync(filePath + '.txt', resultsTable);
-// fs.writeFileSync(filePath + '.html', html);
+			pegsReceived[result.id] = ''
+			pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
+			let firstPeg = true;
+			let pegCount = result.pegs.length;
+			result.pegs.forEach((peg: PegReceivedData) => {
+				if (firstPeg) {
+					pegsReceived[result.id] += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
+					firstPeg = false;
+				} else {
+					pegsReceived[result.id] += ''.padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
+				}
+			});
+		});
+		__logger.information('Results table fully mapped');
 
-// const client = new storage.Storage();
-// let response = await client.bucket(process.env.GCLOUD_BUCKET_NAME).upload(filePath + '.html');
-// let file = response[0];
-// await file.makePublic();
-
-// let fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
-// let markdown = `[Here are all pegs given this cycle](${fileUrl})`;
-
-// return {
-// 	markdown: markdown
-// }
+		for (let receiver in pegsReceived) {
+			this.spark.messages.create(
+				{
+					markdown:
+						`Here are the pegs your have received this cycle:
+\`\`\`
+${pegsReceived[receiver]}
+\`\`\``,
+					toPersonId: receiver
+				});
+		}
+	}
+}
