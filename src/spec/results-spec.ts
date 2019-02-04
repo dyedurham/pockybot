@@ -1,19 +1,12 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
-import Config from '../lib/config';
-import { PockyDB } from '../lib/database/db-interfaces';
-import { Client } from 'pg';
-import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
-import { Role, ResultRow } from '../models/database';
-import * as fs from 'fs';
-const storage = require('@google-cloud/storage');
+import { Role } from '../models/database';
 import MockConfig from './mocks/mock-config';
 
 const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three']);
-const spark = new MockCiscoSpark();
-import sinon = require('sinon');
-import MockPockyDb from './mocks/mock-pockydb';
+import MockResultsService from './mocks/mock-results-service';
+import { IResultsService } from '../lib/services/results-service';
 
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
@@ -49,133 +42,40 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createData() : ResultRow[] {
-	return [{
-		receiver: 'mock receiver',
-		sender: 'mock sender',
-		comment: ' test',
-		receiverid: 'mockID'
-	}];
-}
-
-function createDatabase(success : boolean, data) : PockyDB {
-	let db = new MockPockyDb(true, 0, true, 2, success ? data : undefined);
-	return db;
-}
-
-describe('creating results responses', () => {
-	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	let data = createData();
-	let results = new Results(spark, null, config);
-
-	beforeEach(() => {
-		var fakeExistsSync = sinon.fake.returns(false);
-		var fakeWriteFileSync = sinon.fake();
-
-		sinon.replace(fs, 'existsSync', fakeExistsSync);
-		sinon.replace(fs, 'writeFileSync', fakeWriteFileSync);
-
-		var fakeStorage = sinon.fake.returns({
-			bucket: (name : string) => { return {
-				upload: (name : string) => {
-					return new Promise((resolve, reject) => {
-						resolve([{
-							makePublic: () => {
-								return new Promise((resolve, reject) => {resolve();})
-							}
-						}]);
-					});
-				}
-			}}
-		});
-
-		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
-
-		process.env.GCLOUD_BUCKET_NAME = 'pocky-bot';
-	});
-
-	afterEach(() => {
-		sinon.restore();
-	});
-
-	it('should parse a proper message', async (done : DoneFn) => {
-		let message = await results.createResponse(data);
-		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
-		done();
-	});
-});
-
 describe('creating a results message', () => {
-	let today : Date;
-	let todayString : string;
-	let data : ResultRow[];
-	let database : PockyDB;
+	const markdownResponse : string = 'Test Markdown Response';
+	let resultsService: IResultsService;
 	let results : Results;
 
 	beforeEach(() => {
-		today = new Date();
-		todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-		data = createData();
-		database = createDatabase(true, data);
-		results = new Results(spark, database, config);
-
-		var fakeExistsSync = sinon.fake.returns(false);
-		var fakeWriteFileSync = sinon.fake();
-
-		sinon.replace(fs, "existsSync", fakeExistsSync);
-		sinon.replace(fs, "writeFileSync", fakeWriteFileSync);
-
-		var fakeStorage = sinon.fake.returns({
-			bucket: (name : string) => { return {
-				upload: (name : string) => {
-					return new Promise((resolve, reject) => {
-						resolve([{
-							makePublic: () => {
-								return new Promise((resolve, reject) => {resolve();})
-							}
-						}]);
-					});
-				}
-			}}
-		});
-
-		sinon.stub(storage, 'Storage').callsFake(fakeStorage);
-
-		process.env.GCLOUD_BUCKET_NAME = 'pocky-bot';
-	});
-
-	afterEach(() => {
-		sinon.restore();
+		resultsService = new MockResultsService(true, markdownResponse)
+		results = new Results(resultsService, config);
 	});
 
 	it('should create a proper message', async (done : DoneFn) => {
 		let message = await results.createMessage();
-		expect(message.markdown).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
+		expect(message.markdown).toBe(markdownResponse);
 		done();
 	});
 });
 
 describe('failing at creating a results message', () => {
-	let database : PockyDB;
-	let results : Results;
+	const markdownResponse: string = 'Test Markdown Response';
+	let resultsService: IResultsService;
+	let results: Results;
 
 	beforeEach(() => {
-		database = createDatabase(false, null);
-		results = new Results(null, database, config);
+		resultsService = new MockResultsService(false, markdownResponse)
+		results = new Results(resultsService, config);
 	});
 
 	it('should create a proper message on fail', async (done : DoneFn) => {
-		// expect(async () => {
-		// 	await results.createMessage();
-		// }).toThrowError('Error encountered; cannot display results.');
 		try {
 			await results.createMessage();
 			fail('should have thrown an error');
 		} catch (error) {
 			expect(error.message).toBe('Error encountered; cannot display results.')
 		}
-
 		done();
 	});
 });
@@ -184,7 +84,7 @@ describe('testing results triggers', () => {
 	let results : Results;
 
 	beforeEach(() => {
-		results = new Results(null, null, config);
+		results = new Results(null, config);
 	});
 
 	it('should accept trigger', () => {
