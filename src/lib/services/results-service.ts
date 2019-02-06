@@ -90,14 +90,14 @@ ${resultsTable}
 		}
 	}
 
-	generateTable(receivers: Receiver[]){
+	generateTable(receivers: Receiver[]) {
 		let htmlTable =
 '			<table class="table">';
 
 		receivers.forEach((result: Receiver) => {
 
-			htmlTable +=
-				`				<thead class="thead-light">
+			htmlTable += `
+				<thead class="thead-light">
 					<tr><th colspan="2">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
 				</thead>
 				<tbody>`;
@@ -105,8 +105,7 @@ ${resultsTable}
 			result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
 			result.pegs.forEach((peg: PegReceivedData) => {
-				htmlTable +=
-					`
+				htmlTable += `
 					<tr><td>${peg.sender}</td><td>${peg.comment}</td></tr>
 `;
 			});
@@ -116,7 +115,7 @@ ${resultsTable}
 `;
 		});
 		htmlTable +=
-`			</table>`;
+`			<!-- end table --></table>`;
 
 		return htmlTable;
 	}
