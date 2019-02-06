@@ -115,7 +115,7 @@ ${resultsTable}
 `;
 		});
 		htmlTable +=
-`			<!-- end table --></table>`;
+`			</table>`;
 
 		return htmlTable;
 	}
