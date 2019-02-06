@@ -113,9 +113,11 @@ ${resultsTable}
 
 			htmlTable +=
 `				</tbody>
-			</table>
 `;
 		});
+		htmlTable +=
+`			</table>`;
+
 		return htmlTable;
 	}
 
