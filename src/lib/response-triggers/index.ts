@@ -38,6 +38,7 @@ import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
 import WinnersService from '../services/winners-service';
 import { ResultsService } from '../services/results-service';
+import PmResultsService from '../services/pm-results-service';
 
 // Service instantiation
 const utilities = new Utilities();
@@ -48,6 +49,7 @@ const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
 const winnersService = new WinnersService(database);
 const resultsService = new ResultsService(database);
+const pmResultsService = new PmResultsService(database, spark);
 
 database.loadConfig(config);
 config.updateAll();
@@ -60,7 +62,7 @@ const winners = new Winners(winnersService, config);
 const results = new Results(resultsService, config);
 const status = new Status(spark, database, config);
 const update = new Update(spark, dbUsers, config);
-const finish = new Finish(winners, results, reset, config);
+const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const numberConfig = new NumberConfig(config);
