@@ -1,7 +1,7 @@
-import { IResultsService } from '../../lib/services/results-service';
+import { ResultsService } from '../../lib/services/results-service';
 import { Receiver } from '../../models/receiver';
 
-export default class MockResultsService implements IResultsService {
+export default class MockResultsService implements ResultsService {
 
 	success: boolean;
 	resultString: string;

@@ -1,19 +1,19 @@
 import { Receiver } from '../../models/receiver';
-import constants from "../../constants";
-import __logger from "../logger";
-import { PegReceivedData } from "../../models/peg-received-data";
-import * as fs from "fs";
-import TableHelper from "../parsers/tableHelper";
+import constants from '../../constants';
+import __logger from '../logger';
+import { PegReceivedData } from '../../models/peg-received-data';
+import * as fs from 'fs';
+import TableHelper from '../parsers/tableHelper';
 import { PockyDB } from '../database/db-interfaces';
 import { ResultRow } from '../../models/database';
-const storage = require("@google-cloud/storage");
+const storage = require('@google-cloud/storage');
 
-export interface IResultsService {
+export interface ResultsService {
 	returnResultsMarkdown(): Promise<string>
 	generateHtml(winners: Receiver[], results: Receiver[], todayString: string): string
 }
 
-export class ResultsService implements IResultsService {
+export class DefaultResultsService implements ResultsService {
 	database: PockyDB;
 
 	constructor(database: PockyDB){

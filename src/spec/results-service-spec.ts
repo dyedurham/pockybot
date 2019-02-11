@@ -5,7 +5,7 @@ const storage = require('@google-cloud/storage');
 
 import sinon = require('sinon');
 import MockPockyDb from './mocks/mock-pockydb';
-import { ResultsService, IResultsService } from '../lib/services/results-service';
+import { DefaultResultsService, ResultsService } from '../lib/services/results-service';
 import { Receiver } from '../models/receiver';
 
 function createData(): ResultRow[] {
@@ -41,12 +41,12 @@ describe('results service', () => {
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data: ResultRow[];
 	let database: PockyDB;
-	let resultsService: IResultsService;
+	let resultsService: ResultsService;
 
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
-		resultsService = new ResultsService(database);
+		resultsService = new DefaultResultsService(database);
 
 		var fakeExistsSync = sinon.fake.returns(false);
 		var fakeWriteFileSync = sinon.fake();
@@ -91,12 +91,12 @@ describe('results service generate html', () => {
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let winners: Receiver[];
 	let results: Receiver[];
-	let resultsService: IResultsService;
+	let resultsService: ResultsService;
 
 	beforeEach(() => {
 		winners = createReceiver('winners');
 		results = createReceiver('results');
-		resultsService = new ResultsService(null);
+		resultsService = new DefaultResultsService(null);
 	});
 
 	it('should generate the correct html', () => {

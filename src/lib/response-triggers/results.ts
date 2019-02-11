@@ -4,16 +4,16 @@ import Config from '../config-interface';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
-import { IResultsService } from '../services/results-service';
+import { ResultsService } from '../services/results-service';
 
 const resultsCommand = '(?: )*results(?: )*';
 
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';
 	config : Config;
-	resultsService: IResultsService;
+	resultsService: ResultsService;
 
-	constructor(resultsService: IResultsService, config : Config) {
+	constructor(resultsService: ResultsService, config : Config) {
 		super();
 
 		this.resultsService = resultsService;

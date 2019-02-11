@@ -1,6 +1,6 @@
 import { PockyDB } from '../lib/database/db-interfaces';
 import { CiscoSpark } from 'ciscospark/env';
-import PmResultsService, { IPmResultsService } from '../lib/services/pm-results-service';
+import { DefaultPmResultsService, PmResultsService } from '../lib/services/pm-results-service';
 import { ResultRow } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
 import MockCiscoSpark from './mocks/mock-spark';
@@ -23,13 +23,13 @@ describe('pm results service', () => {
 	let data: ResultRow[];
 	let database: PockyDB;
 	let spark: CiscoSpark;
-	let pmResultsService: IPmResultsService;
+	let pmResultsService: PmResultsService;
 
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
 		spark = new MockCiscoSpark();
-		pmResultsService = new PmResultsService(database, spark);
+		pmResultsService = new DefaultPmResultsService(database, spark);
 	});
 
 	it('should pm users with their results', async(done: DoneFn) => {

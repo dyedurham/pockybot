@@ -3,7 +3,7 @@ import constants from '../constants';
 import Config from '../lib/config';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
-import { IWinnersService } from '../lib/services/winners-service';
+import { WinnersService } from '../lib/services/winners-service';
 import MockWinnersService from './mocks/mock-winners-service';
 
 const config = new Config(null);
@@ -42,13 +42,13 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 	}
 }
 
-function createWinnersService(success : boolean, message: string) : IWinnersService {
+function createWinnersService(success : boolean, message: string) : WinnersService {
 	let winnersService = new MockWinnersService(success, message);
 	return winnersService;
 }
 
 describe('creating a winners message', () => {
-	let winnersService : IWinnersService;
+	let winnersService : WinnersService;
 	let winners : Winners;
 	const expectedMarkdown: string = 'test message for success';
 
@@ -65,7 +65,7 @@ describe('creating a winners message', () => {
 });
 
 describe('failing at creating a winners message', () => {
-	let winnersService: IWinnersService;
+	let winnersService: WinnersService;
 	let winners: Winners;
 
 	beforeEach(() => {

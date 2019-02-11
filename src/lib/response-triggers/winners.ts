@@ -4,16 +4,16 @@ import Config from '../config';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
-import { IWinnersService } from '../services/winners-service';
+import { WinnersService } from '../services/winners-service';
 
 const resultsCommand = '(?: )*winners(?: )*';
 
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = 'Error encountered; cannot display winners.';
-	winnersService : IWinnersService;
+	winnersService : WinnersService;
 	config : Config;
 
-	constructor(winnersService : IWinnersService, config : Config) {
+	constructor(winnersService : WinnersService, config : Config) {
 		super();
 
 		this.winnersService = winnersService;

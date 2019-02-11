@@ -1,18 +1,18 @@
 import { PockyDB } from '../database/db-interfaces';
 import { ResultRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
-import TableHelper from "../parsers/tableHelper";
-import __logger from "../logger";
+import TableHelper from '../parsers/tableHelper';
+import __logger from '../logger';
 import { PegReceivedData } from '../../models/peg-received-data';
 import { CiscoSpark } from 'ciscospark/env';
 
-const lineEnding = "\r\n";
+const lineEnding = '\r\n';
 
-export interface IPmResultsService {
+export interface PmResultsService {
 	pmResults(): Promise<void>
 }
 
-export default class PmResultsService implements IPmResultsService {
+export class DefaultPmResultsService implements PmResultsService {
 	database: PockyDB;
 	spark: CiscoSpark;
 

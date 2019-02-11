@@ -1,6 +1,6 @@
-import { IWinnersService } from '../../lib/services/winners-service';
+import { WinnersService } from '../../lib/services/winners-service';
 
-export default class MockWinnersService implements IWinnersService {
+export default class MockWinnersService implements WinnersService {
 	success: boolean;
 	resultString: string;
 

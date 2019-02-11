@@ -27,7 +27,7 @@ import Default from './default';
 
 // Services
 import { MessageObject } from 'ciscospark/env';
-const spark = require("ciscospark/env");
+const spark = require('ciscospark/env');
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
@@ -36,9 +36,9 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
-import WinnersService from '../services/winners-service';
-import { ResultsService } from '../services/results-service';
-import PmResultsService from '../services/pm-results-service';
+import { DefaultWinnersService } from '../services/winners-service';
+import { DefaultResultsService } from '../services/results-service';
+import { DefaultPmResultsService } from '../services/pm-results-service';
 
 // Service instantiation
 const utilities = new Utilities();
@@ -47,9 +47,9 @@ const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
 const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
-const winnersService = new WinnersService(database);
-const resultsService = new ResultsService(database);
-const pmResultsService = new PmResultsService(database, spark);
+const winnersService = new DefaultWinnersService(database);
+const resultsService = new DefaultResultsService(database);
+const pmResultsService = new DefaultPmResultsService(database, spark);
 
 database.loadConfig(config);
 config.updateAll();

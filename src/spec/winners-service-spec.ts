@@ -1,7 +1,7 @@
-import { ResultRow } from "../models/database";
-import { PockyDB } from "../lib/database/db-interfaces";
-import MockPockyDb from "./mocks/mock-pockydb";
-import WinnersService, { IWinnersService } from '../lib/services/winners-service';
+import { ResultRow } from '../models/database';
+import { PockyDB } from '../lib/database/db-interfaces';
+import MockPockyDb from './mocks/mock-pockydb';
+import { DefaultWinnersService, WinnersService } from '../lib/services/winners-service';
 
 function createData(): ResultRow[] {
 	return [{
@@ -18,14 +18,14 @@ function createDatabase(success: boolean, data: ResultRow[]): PockyDB {
 }
 
 describe('winners service', () => {
-	let winnersService: IWinnersService;
+	let winnersService: WinnersService;
 	let database: PockyDB;
 	let data: ResultRow[];
 
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
-		winnersService = new WinnersService(database);
+		winnersService = new DefaultWinnersService(database);
 	});
 
 	it('should parse a proper message', async (done : DoneFn) => {

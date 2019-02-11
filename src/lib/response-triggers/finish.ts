@@ -5,20 +5,20 @@ import constants from '../../constants';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
-import { IPmResultsService } from '../services/pm-results-service';
-import { IResultsService } from '../services/results-service';
-import { IWinnersService } from '../services/winners-service';
+import { PmResultsService } from '../services/pm-results-service';
+import { ResultsService } from '../services/results-service';
+import { WinnersService } from '../services/winners-service';
 
 const finishCommand = '(?: )*finish(?: )*';
 
 export default class Finish extends Trigger {
-	winnersService: IWinnersService;
-	resultsService: IResultsService;
-	pmResultsService: IPmResultsService;
+	winnersService: WinnersService;
+	resultsService: ResultsService;
+	pmResultsService: PmResultsService;
 	reset : Reset;
 	config : Config;
 
-	constructor(winnersService : IWinnersService, resultsService : IResultsService, pmResultsService: IPmResultsService,
+	constructor(winnersService : WinnersService, resultsService : ResultsService, pmResultsService: PmResultsService,
 		resetService : Reset, config : Config) {
 		super();
 

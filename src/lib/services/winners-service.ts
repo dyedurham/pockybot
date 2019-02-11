@@ -1,14 +1,14 @@
 import { ResultRow } from '../../models/database';
 import { PockyDB } from '../database/db-interfaces';
-import TableHelper from "../parsers/tableHelper";
-import __logger from "../logger";
-import { Receiver } from "../../models/receiver";
+import TableHelper from '../parsers/tableHelper';
+import __logger from '../logger';
+import { Receiver } from '../../models/receiver';
 
-export interface IWinnersService {
+export interface WinnersService {
 	returnWinnersResponse(): Promise<string>
 }
 
-export default class WinnersService implements IWinnersService {
+export class DefaultWinnersService implements WinnersService {
 	readonly cannotDisplayResults: string = 'Error encountered; cannot display winners.';
 	database: PockyDB;
 

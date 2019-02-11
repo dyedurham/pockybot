@@ -6,7 +6,7 @@ import MockConfig from './mocks/mock-config';
 
 const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three']);
 import MockResultsService from './mocks/mock-results-service';
-import { IResultsService } from '../lib/services/results-service';
+import { ResultsService } from '../lib/services/results-service';
 
 beforeAll(() => {
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
@@ -44,7 +44,7 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 
 describe('creating a results message', () => {
 	const markdownResponse : string = 'Test Markdown Response';
-	let resultsService: IResultsService;
+	let resultsService: ResultsService;
 	let results : Results;
 
 	beforeEach(() => {
@@ -61,7 +61,7 @@ describe('creating a results message', () => {
 
 describe('failing at creating a results message', () => {
 	const markdownResponse: string = 'Test Markdown Response';
-	let resultsService: IResultsService;
+	let resultsService: ResultsService;
 	let results: Results;
 
 	beforeEach(() => {
