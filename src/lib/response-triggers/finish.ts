@@ -54,7 +54,8 @@ export default class Finish extends Trigger {
 		try {
 			await this.pmResultsService.pmResults();
 		} catch(error) {
-
+			__logger.error(`Error PMing results:\n${error.message}`);
+			return { markdown: `error while trying to PM results` };
 		}
 
 		var reset = await this.reset.createMessage();
