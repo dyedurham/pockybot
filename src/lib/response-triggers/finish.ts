@@ -42,13 +42,16 @@ export default class Finish extends Trigger {
 		let winnersMarkdown: string;
 		let resultsMarkdown: string;
 
-		try {
-			winnersMarkdown = await this.winnersService.returnWinnersResponse();
-			resultsMarkdown = await this.resultsService.returnResultsMarkdown();
-		} catch(error) {
-			__logger.error(`Error returning winners or results:\n${error.message}`);
-			return { markdown: `error returning winners or results` };
-		}
+		const winnersPromise = this.winnersService.returnWinnersResponse();
+		const resultsPromise = this.resultsService.returnResultsMarkdown();
+		await Promise.all([winnersPromise, resultsPromise])
+			.then(function(values) {
+				winnersMarkdown = values[0];
+				resultsMarkdown = values[1];
+			}).catch(function(error){
+				__logger.error(`Error returning winners or results:\n${error.message}`);
+				return { markdown: `error returning winners or results` };
+			});
 		__logger.debug('Got winners and responses');
 
 		try {
