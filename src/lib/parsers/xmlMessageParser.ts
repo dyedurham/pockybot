@@ -24,7 +24,7 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 
 		return parsedMessage;
 	} catch (e) {
-		__logger.error(`Error in parseMessage:\n${e.message}`);
+		__logger.error(`[xmlMessageParser.parsePegMessage] Error parsing message as XML: ${e.message}`);
 		throw new Error('Error in parseMessage');
 	}
 }
