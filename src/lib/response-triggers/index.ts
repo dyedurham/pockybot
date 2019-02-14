@@ -27,7 +27,7 @@ import Default from './default';
 
 // Services
 import { MessageObject } from 'ciscospark/env';
-const spark = require("ciscospark/env");
+const spark = require('ciscospark/env');
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
@@ -36,6 +36,9 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
+import { DefaultWinnersService } from '../services/winners-service';
+import { DefaultResultsService } from '../services/results-service';
+import { DefaultPmResultsService } from '../services/pm-results-service';
 
 // Service instantiation
 const utilities = new Utilities();
@@ -44,6 +47,9 @@ const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
 const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
+const winnersService = new DefaultWinnersService(database);
+const resultsService = new DefaultResultsService(database);
+const pmResultsService = new DefaultPmResultsService(database, spark);
 
 database.loadConfig(config);
 config.updateAll();
@@ -52,11 +58,11 @@ config.updateAll();
 const peg = new Peg(spark, database, dbUsers, config);
 const unpeg = new Unpeg(spark, dbUsers, utilities);
 const reset = new Reset(database, config);
-const winners = new Winners(database, config);
-const results = new Results(spark, database, config);
+const winners = new Winners(winnersService, config);
+const results = new Results(resultsService, config);
 const status = new Status(spark, database, config);
 const update = new Update(spark, dbUsers, config);
-const finish = new Finish(winners, results, reset, config);
+const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const numberConfig = new NumberConfig(config);
