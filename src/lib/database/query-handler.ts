@@ -12,7 +12,7 @@ export default class QueryHandler implements QueryHandlerInterface {
 
 		this.client.connect()
 		.catch(function(e) {
-			__logger.error(`Error connecting to database:\n${e.message}`);
+			__logger.error(`[QueryHandler.constructor] Error connecting to database: ${e.message}`);
 		});
 	}
 
@@ -26,8 +26,8 @@ export default class QueryHandler implements QueryHandlerInterface {
 			let data = await this.client.query(query);
 			return data['rows'];
 		} catch (error) {
-			__logger.error(`Error executing query ${query.name}:\n${error.message}`);
-			throw new Error('Error executing query');
+			__logger.error(`[QueryHandler.executeQuery] Error executing query ${query.name}: ${error.message}`);
+			throw new Error(`Error executing query ${query.name}`);
 		}
 	}
 
@@ -35,8 +35,8 @@ export default class QueryHandler implements QueryHandlerInterface {
 		try {
 			return await this.client.query(query);
 		} catch (error) {
-			__logger.error(`Error executing non query ${query.name}:\n${error.message}`);
-			throw new Error('Error executing non query');
+			__logger.error(`[QueryHandler.executeNonQuery] Error executing query ${query.name}: ${error.message}`);
+			throw new Error(`Error executing non query ${query.name}`);
 		}
 	}
 }
