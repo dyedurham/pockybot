@@ -44,7 +44,6 @@ export default class PockyDB implements PockyDbInterface {
 		try {
 			await Promise.all([this.dbUsers.existsOrCanBeCreated(sender), this.dbUsers.existsOrCanBeCreated(receiver)]);
 		} catch (error) {
-			__logger.error(`Error in one of the sender/receiver exists queries:\n${error.message}`);
 			return dbConstants.pegError;
 		}
 
@@ -52,12 +51,11 @@ export default class PockyDB implements PockyDbInterface {
 		try {
 			senderHasPegs = await this.hasSparePegs(sender);
 		} catch (error) {
-			__logger.error(`Error after hasSparePegs ${sender}:\n${error.message}`);
 			return dbConstants.pegError;
 		}
 
 		if (!senderHasPegs) {
-			__logger.information(`Sender ${sender} has no spare pegs`);
+			__logger.information(`[PockyDb.givePegWithComment] Sender ${sender} has no spare pegs`);
 			return dbConstants.pegAllSpent;
 		}
 
@@ -71,7 +69,7 @@ export default class PockyDB implements PockyDbInterface {
 			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.pegSuccess;
 		} catch (e) {
-			__logger.error(`Error after givePegWithCommentQuery:\n${e.message}`);
+			__logger.error(`[PockyDb.givePegWithComment] Error executing the givePegWithComment query: ${e.message}`);
 			return dbConstants.pegError;
 		}
 	}
@@ -83,13 +81,18 @@ export default class PockyDB implements PockyDbInterface {
 			values: [user]
 		};
 
-		let data = await this.queryHandler.executeQuery(query);
-		return data[0]['count'];
+		try {
+			let data = await this.queryHandler.executeQuery(query);
+			return data[0]['count'];
+		} catch (error) {
+			__logger.error(`[PockyDb.countPegsGiven] Error executing query to count pegs given by user ${user}`);
+			throw error;
+		}
 	}
 
 	async hasSparePegs(user : string) : Promise<boolean> {
 		let count = this.countPegsGiven(user);
-		__logger.debug(`Checking if user ${user} has spare pegs`);
+		__logger.debug(`[PockyDb.hasSparePegs] Checking if user ${user} has spare pegs`);
 
 		if (user === 'default_user' || this.config.checkRole(user, Role.Unmetered)) {
 			return true;
@@ -118,7 +121,7 @@ export default class PockyDB implements PockyDbInterface {
 		};
 
 		let results : ResultRow[] = await this.queryHandler.executeQuery(query);
-		__logger.debug('returning results: ' + JSON.stringify(results));
+		__logger.debug('[PockyDb.returnResults] returning results: ' + JSON.stringify(results));
 		return results;
 	}
 
@@ -130,7 +133,7 @@ export default class PockyDB implements PockyDbInterface {
 		};
 
 		let winners : ResultRow[] = await this.queryHandler.executeQuery(query);
-		__logger.debug('returning winners: ' + JSON.stringify(winners));
+		__logger.debug('[PockyDb.returnWinners] returning winners: ' + JSON.stringify(winners));
 		return winners;
 	}
 

@@ -33,11 +33,11 @@ export default class DbUsers implements DbUsersInterface {
 		try {
 			user = await this.spark.people.get(userid);
 		} catch (error) {
-			__logger.error(`Error getting user from userid:\n${error.message}`);
-			throw new Error('Error getting user in createUser');
+			__logger.error(`[DbUsers.createUser] Error getting user from userid ${userid}: ${error.message}`);
+			throw new Error(`Error getting ${userid} user in createUser`);
 		}
 
-		__logger.information(`Creating a new user with userid ${userid} and username ${user.displayName}`);
+		__logger.information(`[DbUsers.createUser] Creating a new user with userid ${userid} and username ${user.displayName}`);
 		let query : QueryConfig = {
 			name: 'createUserQuery',
 			text: this.sqlCreateUser,
@@ -47,18 +47,16 @@ export default class DbUsers implements DbUsersInterface {
 		try {
 			return await this.queryHandler.executeNonQuery(query);
 		} catch (error) {
-			__logger.error(`Error creating new user:\n${error.message}`);
-			throw new Error('Error creating new user');
+			__logger.error(`[DbUsers.createUser] Error creating new user ${user.displayName}: ${error.message}`);
+			throw new Error(`Error creating new user ${user.displayName}`);
 		}
 	}
 
 	async updateUser(username : string, userid : string) : Promise<number> {
-		__logger.information(`Updating user ${userid} with username ${username}`);
-
 		try {
 			await this.existsOrCanBeCreated(userid);
 		} catch (error) {
-			__logger.error(`Error after 'exists' in updateUser for ${userid}:\n${error.message}`);
+			__logger.error(`[DbUsers.updateUser] Error checking if user exists or can be created for ${userid}: ${error.message}`);
 			return dbConstants.updateUserError;
 		}
 
@@ -72,7 +70,7 @@ export default class DbUsers implements DbUsersInterface {
 			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.updateUserSuccess;
 		} catch (error) {
-			__logger.error(`Error after updateUserQuery in updateUser for ${userid}:\n${error.message}`);
+			__logger.error(`[DbUsers.updateUser] Error executing update query for ${userid}: ${error.message}`);
 			return dbConstants.updateUserError;
 		}
 	}
@@ -99,10 +97,11 @@ export default class DbUsers implements DbUsersInterface {
 			return user[0];
 		} else if (user.length === 0) {
 			// should not occur in normal circumstances
+			__logger.error(`[DbUsers.getUser] Query returned no users for userid ${userid}`);
 			throw new Error(`No user entities returned by getUser ${userid}`);
 		} else {
 			// should NEVER occur but shouldn't be harmful if it does
-			__logger.error(`More than one user returned by getUser ${userid}`);
+			__logger.warn(`[DbUsers.getUser] More than one user returned by getUser ${userid}`);
 			return user[0];
 		}
 	}
@@ -110,20 +109,14 @@ export default class DbUsers implements DbUsersInterface {
 	async existsOrCanBeCreated(userid : string) : Promise<boolean> {
 		let exists : boolean = await this.exists(userid);
 		if (exists) {
-			__logger.debug(`User ${userid} already exists`);
+			__logger.debug(`[DbUsers.existsOrCanBeCreated] User ${userid} already exists`);
 			return true;
 		}
 
-		let newUser : QueryResult;
-		try {
-			newUser = await this.createUser(userid);
-		} catch (error) {
-			__logger.error(`Error caught from createUser for user ${userid}:\n${error.message}`);
-			throw new Error('Error caught from createUser');
-		}
+		let newUser : QueryResult = await this.createUser(userid);
 
-		__logger.information(`User ${userid} created`);
-		__logger.debug(`Creation data for ${userid}: ${newUser}`);
+		__logger.information(`[DbUsers.existsOrCanBeCreated] User ${userid} created`);
+		__logger.debug(`[DbUsers.existsOrCanBeCreated] Created user ${userid} with data: ${newUser}`);
 		return true;
 	}
 
@@ -134,7 +127,7 @@ export default class DbUsers implements DbUsersInterface {
 			values: [userid]
 		};
 
-		__logger.debug(`Checking if user ${userid} exists`);
+		__logger.debug(`[DbUsers.exists] Checking if user ${userid} exists`);
 		let existingUser = await this.queryHandler.executeQuery(query);
 		return existingUser[0]['exists'];
 	}

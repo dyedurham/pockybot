@@ -49,15 +49,15 @@ export default class Finish extends Trigger {
 				winnersMarkdown = values[0];
 				resultsMarkdown = values[1];
 			}).catch(function(error){
-				__logger.error(`Error returning winners or results:\n${error.message}`);
+				__logger.error(`[Finish.createMessage] Error returning winners or results: ${error.message}`);
 				return { markdown: `error returning winners or results` };
 			});
-		__logger.debug('Got winners and responses');
+		__logger.debug('[Finish.createMessage] Got winners and responses');
 
 		try {
 			await this.pmResultsService.pmResults();
 		} catch(error) {
-			__logger.error(`Error PMing results:\n${error.message}`);
+			__logger.error(`[Finish.createMessage] Error PMing results:\n${error.message}`);
 			return { markdown: `error while trying to PM results` };
 		}
 
