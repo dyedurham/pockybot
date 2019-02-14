@@ -6,7 +6,6 @@ import { PegReceivedData } from '../../models/peg-received-data';
 
 function mapResults(data : ResultRow[]) : Receiver[] {
 	let results : Receiver[] = [];
-	__logger.debug('Mapping response data');
 	data.forEach((row) => {
 		if (!results.map(person => person.id).includes(row.receiverid)) {
 			results.push({
@@ -21,7 +20,7 @@ function mapResults(data : ResultRow[]) : Receiver[] {
 			comment: row.comment
 		});
 	});
-	__logger.debug('Response mapped');
+
 	return results;
 }
 
