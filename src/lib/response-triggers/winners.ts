@@ -41,5 +41,4 @@ export default class Results extends Trigger {
 			markdown: response
 		}
 	}
-
 }

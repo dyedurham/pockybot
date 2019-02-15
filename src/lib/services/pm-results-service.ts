@@ -9,21 +9,21 @@ import { CiscoSpark } from 'ciscospark/env';
 const lineEnding = '\r\n';
 
 export interface PmResultsService {
-	pmResults(): Promise<void>
+	pmResults() : Promise<void>
 }
 
 export class DefaultPmResultsService implements PmResultsService {
-	database: PockyDB;
-	spark: CiscoSpark;
+	database : PockyDB;
+	spark : CiscoSpark;
 
-	constructor(database: PockyDB, spark: CiscoSpark){
+	constructor(database : PockyDB, spark : CiscoSpark) {
 		this.database = database;
 		this.spark = spark;
 	}
 
-	async pmResults(): Promise<void> {
-		const data: ResultRow[] = await this.database.returnResults();
-		const results: Receiver[] = TableHelper.mapResults(data);
+	async pmResults() : Promise<void> {
+		const data : ResultRow[] = await this.database.returnResults();
+		const results : Receiver[] = TableHelper.mapResults(data);
 
 		let columnWidths = TableHelper.getReceiverColumnWidths(results);
 
@@ -46,11 +46,12 @@ export class DefaultPmResultsService implements PmResultsService {
 				}
 			});
 		});
-		__logger.information('Results table fully mapped');
+
+		let fullSuccess : boolean = true;
 
 		for (let receiver in pegsReceived) {
-			this.spark.messages.create(
-				{
+			try {
+				this.spark.messages.create({
 					markdown:
 						`Here are the pegs your have received this cycle:
 \`\`\`
@@ -58,6 +59,14 @@ ${pegsReceived[receiver]}
 \`\`\``,
 					toPersonId: receiver
 				});
+			} catch(error) {
+				__logger.error(`[PmResultsService.pmResults] Error sending PM to user ${receiver}: ${error.message}`);
+				fullSuccess = false;
+			}
+		}
+
+		if (!fullSuccess) {
+			throw new Error('Some users were unable to be PMed their results.');
 		}
 	}
 }
