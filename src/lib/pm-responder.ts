@@ -8,7 +8,7 @@ async function respond(messageEvent : any): Promise<void> {
 	try {
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 
-		__logger.debug('processing message: ' + JSON.stringify(message));
+		__logger.debug('[PmResponder.respond] processing message: ' + JSON.stringify(message));
 		let room = message.roomId;
 
 		if (message.personId !== constants.botId){
@@ -17,7 +17,7 @@ async function respond(messageEvent : any): Promise<void> {
 				responseMessage = await responseFactory(message, room);
 				__logger.information(responseMessage);
 			} catch (e) {
-				__logger.error(`Error in direct responder:\n${e.message}`);
+				__logger.error(`[PmResponder.respond] Error in direct responder: ${e.message}`);
 			}
 
 			if (responseMessage) {
@@ -28,12 +28,12 @@ async function respond(messageEvent : any): Promise<void> {
 					});
 					__logger.debug(data);
 				} catch (e) {
-					__logger.error(`Error in sending direct message:\n${e.message}`);
+					__logger.error(`[PmResponder.respond] Error in sending direct message: ${e.message}`);
 				}
 			}
 		}
 	} catch (e) {
-		__logger.error(`Uncaught error in direct responder:\n${e.message}`);
+		__logger.error(`[PmResponder.respond] Uncaught error in direct responder: ${e.message}`);
 	}
 };
 

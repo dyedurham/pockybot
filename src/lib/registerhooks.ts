@@ -34,7 +34,7 @@ function setGcloudCredentials(){
 try {
 	setGcloudCredentials();
 } catch(e){
-	__logger.error(`Unable to create google cloud credentials:\n${e.message}`);
+	__logger.error(`[RegisterHooks.base] Unable to create google cloud credentials: ${e.message}`);
 }
 
 try {
@@ -56,7 +56,7 @@ try {
 				spark.webhooks.remove(hook);
 			});
 
-			__logger.debug('successfully cleaned up old hooks');
+			__logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
 		}).then(() => {
 			spark.webhooks.create({
 				resource: 'messages',
@@ -75,8 +75,8 @@ try {
 			})
 		})
 		.catch(function(e) {
-			__logger.error(`Error registering hooks:\n${e.message}`);
+			__logger.error(`[RegisterHooks.base] Error registering hooks: ${e.message}`);
 		});
 } catch (e) {
-	__logger.error(`Uncaught error registerhooks:\n${e.message}`);
+	__logger.error(`[RegisterHooks.base] Uncaught error registerhooks: ${e.message}`);
 }
