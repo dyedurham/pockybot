@@ -29,24 +29,13 @@ export default class Reset extends Trigger {
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		let data : ResultRow[];
-		try {
-			data = await this.database.returnResults();
-		} catch (error) {
-			__logger.error(`Error getting results:\n${error.message}`);
-			return {
-				markdown: `Error clearing pegs`
-			};
-		}
-
-		__logger.debug('About to reset pegs, current state: ' + JSON.stringify(data));
 		try {
 			await this.database.reset();
 			return {
 				markdown: `Pegs cleared`
 			};
 		} catch (e) {
-			__logger.error(`Error clearing pegs:\n${e.message}`);
+			__logger.error(`[Reset.createMessage] Error clearing pegs: ${e.message}`);
 			return {
 				markdown: `Error clearing pegs`
 			};

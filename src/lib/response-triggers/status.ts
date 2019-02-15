@@ -73,7 +73,7 @@ You have not given any pegs so far.`;
 		let remaining = '';
 
 		if (this.config.checkRole(fromPerson, Role.Unmetered)) {
-			remaining ='unlimited';
+			remaining = 'unlimited';
 		} else {
 			remaining = (this.config.getConfig('limit') - data.length).toString();
 		}
