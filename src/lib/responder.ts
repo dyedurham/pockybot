@@ -13,7 +13,7 @@ async function respond(messageEvent : {data : {id : string}}) {
 		try {
 			responseMessage = await responseFactory(message, room);
 		} catch (e) {
-			__logger.error(`Error in responder:\n${e.message}`);
+			__logger.error(`[Responder.respond] Error in responder: ${e.message}`);
 		}
 
 		if (responseMessage) {
@@ -24,11 +24,11 @@ async function respond(messageEvent : {data : {id : string}}) {
 				});
 				__logger.debug(data);
 			} catch (e) {
-				__logger.error(`Error in sending message:\n${e.message}`);
+				__logger.error(`[Responder.respond] Error in sending message: ${e.message}`);
 			}
 		}
 	} catch (e) {
-		__logger.error(`Uncaught error in responder:\n${e.message}`);
+		__logger.error(`[Responder.respond] Uncaught error in responder: ${e.message}`);
 	}
 };
 

@@ -27,7 +27,7 @@ app.post('/respond', async (req, res) => {
 		await responder.respond(req.body);
 		res.status(200).end();
 	} catch (e) {
-		__logger.error(`Error in server /respond:\n${e.message}`);
+		__logger.error(`[Server.respond] Error in server /respond: ${e.message}`);
 		res.status(400).end();
 	}
 });
@@ -37,7 +37,7 @@ app.post('/pm', async (req, res) => {
 		await pmResponder.respond(req.body);
 		res.status(200).end();
 	} catch (e) {
-		__logger.error(`Error in server /pm:\n${e.message}`);
+		__logger.error(`[Server.pm] Error in server /pm: ${e.message}`);
 		res.status(400).end();
 	}
 });
@@ -50,11 +50,11 @@ app.get('/test', (req, res) => {
 			throw err;
 		}
 
-        __logger.debug(data);
+        __logger.debug(`[Server.test] Data: ${data}`);
         return res.send('<p style="font-family:monospace">' + data.replace(new RegExp('\r\n', 'g'), '<br/>').replace(new RegExp(' ', 'g'), '&nbsp;') + '</p>');
       })
 });
 
 app.listen(PORT, HOST);
 
-__logger.debug(`Running on http://${HOST}:${PORT}`);
+__logger.debug(`[Server.base] Running on http://${HOST}:${PORT}`);
