@@ -9,20 +9,20 @@ import { ResultRow } from '../../models/database';
 const storage = require('@google-cloud/storage');
 
 export interface ResultsService {
-	returnResultsMarkdown(): Promise<string>
-	generateHtml(winners: Receiver[], results: Receiver[], todayString: string): string
+	returnResultsMarkdown() : Promise<string>
+	generateHtml(winners : Receiver[], results : Receiver[], todayString : string) : string
 }
 
 export class DefaultResultsService implements ResultsService {
-	database: PockyDB;
+	database : PockyDB;
 
-	constructor(database: PockyDB){
+	constructor(database : PockyDB){
 		this.database = database;
 	}
 
 	async returnResultsMarkdown(): Promise<string> {
-		const winnersData: ResultRow[] = await this.database.returnWinners();
-		let resultsData: ResultRow[] = await this.database.returnResults();
+		const winnersData : ResultRow[] = await this.database.returnWinners();
+		let resultsData : ResultRow[] = await this.database.returnResults();
 
 		//Get only people who didn't win in the general results so there are no double ups
 		resultsData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
@@ -37,7 +37,7 @@ export class DefaultResultsService implements ResultsService {
 		if (fs.existsSync(filePath + '.txt')) {
 			fs.unlinkSync(filePath + '.txt');
 		}
-		__logger.information("File path: " + filePath);
+		__logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
 
 		let html = this.generateHtml(winners, results, todayString);
 
@@ -54,8 +54,7 @@ export class DefaultResultsService implements ResultsService {
 		return markdown;
 	}
 
-	generateHtml(winners: Receiver[], results: Receiver[], todayString: string): string {
-		__logger.information('generating html');
+	generateHtml(winners : Receiver[], results : Receiver[], todayString : string) : string {
 		try {
 
 			var winnersTable = this.generateTable(winners);
@@ -83,14 +82,13 @@ ${resultsTable}
 	</body>
 </html>`;
 
-			__logger.information("finished generating html");
 			return html;
 		} catch (e) {
-			__logger.error(`Error in generating html:\n${e.message}`);
+			__logger.error(`[ResultsService.generateHtml] Error in generating html: ${e.message}`);
 		}
 	}
 
-	generateTable(receivers: Receiver[]) {
+	generateTable(receivers : Receiver[]) {
 		let htmlTable =
 '			<table class="table">';
 
@@ -104,7 +102,7 @@ ${resultsTable}
 
 			result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
-			result.pegs.forEach((peg: PegReceivedData) => {
+			result.pegs.forEach((peg : PegReceivedData) => {
 				htmlTable += `
 					<tr><td>${peg.sender}</td><td>${peg.comment}</td></tr>
 `;

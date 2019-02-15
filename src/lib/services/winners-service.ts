@@ -10,24 +10,22 @@ export interface WinnersService {
 
 export class DefaultWinnersService implements WinnersService {
 	readonly cannotDisplayResults: string = 'Error encountered; cannot display winners.';
-	database: PockyDB;
+	database : PockyDB;
 
-	constructor(database: PockyDB) {
+	constructor(database : PockyDB) {
 		this.database = database;
 	}
 
 	async returnWinnersResponse() : Promise<string> {
-		const data: ResultRow[] = await this.database.returnWinners();
+		const data : ResultRow[] = await this.database.returnWinners();
 
-		let winners: Receiver[] = TableHelper.mapResults(data);
+		let winners : Receiver[] = TableHelper.mapResults(data);
 		let columnWidths = TableHelper.getReceiverColumnWidths(winners);
 
 		// define table heading
 		let winnersTable = TableHelper.padString('Receiver', columnWidths.receiver) + ' | ' + TableHelper.padString('Sender', columnWidths.sender) + ' | Comments\n';
 		winnersTable += 'Total'.padEnd(columnWidths.receiver) + ' | ' + ' '.padEnd(columnWidths.sender) + ' | \n';
 		winnersTable += ''.padEnd(columnWidths.receiver, '-') + '-+-' + ''.padEnd(columnWidths.sender, '-') + '-+-' + ''.padEnd(columnWidths.comment, '-') + '\n';
-
-		__logger.debug('Building winners table');
 
 		// put in table data
 		winners.forEach((winner: Receiver) => {
@@ -44,7 +42,6 @@ export class DefaultWinnersService implements WinnersService {
 			});
 		});
 
-		__logger.information(`########### Winners table:\n\n${winnersTable}`);
 		return '```\n' + winnersTable + '```';
 	}
 }
