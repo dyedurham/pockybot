@@ -33,7 +33,7 @@ export default class Results extends Trigger {
 		try {
 			response = await this.winnersService.returnWinnersResponse();
 		} catch (error) {
-			__logger.error(`Error in createResponse from returnWinners:\n${error.message}`);
+			__logger.error(`[Winners.createMessage] Error retrieving winners response: ${error.message}`);
 			throw new Error(this.cannotDisplayResults);
 		}
 
