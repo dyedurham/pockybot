@@ -101,12 +101,12 @@ const triggers : Trigger[] = [
 export default async (message : MessageObject, room : string) => {
 	try {
 		const responder : Trigger = triggers.find(x => x.isToTriggerOn(message));
-		__logger.information(`Found a trigger: ${responder.constructor.name}`);
+		__logger.information(`[Index.default] Found a trigger: ${responder.constructor.name}`);
 		return await responder.createMessage(message, room);
 	} catch (e) {
-		__logger.error(`Error selecting trigger:\n${e.message}`);
+		__logger.error(`[Index.default] Error selecting trigger: ${e.message}`);
 		return {
-				markdown: 'An error occurred in selecting the trigger.',
+			markdown: 'An error occurred in selecting the trigger.',
 		};
 	}
 };
