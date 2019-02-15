@@ -35,7 +35,7 @@ export default class RoleConfig extends Trigger {
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		const parsedMessage = xmlMessageParser.parseXmlMessage(message);
 
-		let newMessage : string;
+		let response : string;
 
 		if (parsedMessage.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
@@ -47,38 +47,38 @@ export default class RoleConfig extends Trigger {
 		try {
 			switch (command) {
 				case ConfigAction.Get:
-					newMessage = await this.getConfigMessage();
+					response = await this.getConfigMessage();
 					break;
 				case ConfigAction.Set: {
 					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
 
 					if (this.config.getRoles(userId).includes(role)) {
-						newMessage = `Role "${role}" is already set for user "${username}".`;
+						response = `Role "${role}" is already set for user "${username}".`;
 						break;
 					}
 
 					this.config.setRole(userId, role);
-					newMessage = 'Role has been set';
+					response = 'Role has been set';
 					break;
 				}
 				case ConfigAction.Refresh:
 					this.config.updateRoles();
-					newMessage = 'Roles has been updated';
+					response = 'Roles has been updated';
 					break;
 				case ConfigAction.Delete: {
 					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
 
 					if (!this.config.getRoles(userId).includes(role)) {
-						newMessage = `Role "${role}" is not set for user "${username}"`;
+						response = `Role "${role}" is not set for user "${username}"`;
 						break;
 					}
 
 					this.config.deleteRole(userId, role);
-					newMessage = 'Role has been deleted';
+					response = 'Role has been deleted';
 					break;
 				}
 				default:
-					newMessage = 'Unknown config command';
+					response = 'Unknown config command';
 					break;
 			}
 		} catch (error) {
@@ -86,7 +86,7 @@ export default class RoleConfig extends Trigger {
 		}
 
 		return {
-				markdown: newMessage
+			markdown: response
 		};
 	}
 

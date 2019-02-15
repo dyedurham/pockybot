@@ -9,7 +9,7 @@ import { ResultsService } from '../services/results-service';
 const resultsCommand = '(?: )*results(?: )*';
 
 export default class Results extends Trigger {
-	readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';
+	private readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';
 	config : Config;
 	resultsService: ResultsService;
 
@@ -17,7 +17,6 @@ export default class Results extends Trigger {
 		super();
 
 		this.resultsService = resultsService;
-		this.cannotDisplayResults = 'Error encountered; cannot display results.';
 		this.config = config;
 	}
 
@@ -37,7 +36,7 @@ export default class Results extends Trigger {
 				markdown: response
 			};
 		} catch (error) {
-			__logger.error(`Error in createResponse from returnResults:\n${error.message}`);
+			__logger.error(`[Results.createMessage] Error obtaining results: ${error.message}`);
 			throw new Error(this.cannotDisplayResults);
 		}
 	}

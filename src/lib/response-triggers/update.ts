@@ -35,31 +35,36 @@ export default class Update extends Trigger {
 		try {
 			users = await this.database.getUsers();
 		} catch (error) {
-			__logger.error(`Error in getting users:\n${error.message}`);
+			__logger.error(`[Update.createMessage] Error in getting users: ${error.message}`);
 			return {
 				markdown: `Error occurred, some or all users may not have been updated.`
 			};
 		}
 
 		try {
-			await Promise.all(users.map(async (user : UserRow) => {
+			let usersUpdated = await Promise.all(users.map(async (user : UserRow) : Promise<number> => {
 				let username = await this.getUsername(user.userid);
 				let response = await this.database.updateUser(username, user.userid);
 
 				if (response === 0) {
 					return 0;
 				} else {
-					__logger.error(`user ${username}, ${user.userid} failed to update`);
+					__logger.error(`[Update.createMessage] User ${username}, ${user.userid} failed to update`);
 					return 1;
 				}
 			}));
 
-			__logger.debug('Update completed. Returning markdown.');
+			if (usersUpdated.includes(1)) {
+				return {
+					markdown: 'Error occurred, some or all users may not have been updated'
+				};
+			}
+
 			return {
 				markdown: `Users successfully updated.`
 			};
 		} catch (error) {
-			__logger.error(`Error in the createMessage promise.all:\n${error.message}`);
+			__logger.error(`[Update.createMessage] Error mapping users into usernames: ${error.message}`);
 			return {
 				markdown: `Error occurred, some or all users may not have been updated.`
 			};
@@ -72,7 +77,7 @@ export default class Update extends Trigger {
 			return data.displayName;
 		}
 		catch (error) {
-			__logger.error(`Error getting username for ${personId}:\n${error.message}`);
+			__logger.error(`[Update.getUsername] Error getting username for ${personId}: ${error.message}`);
 			throw new Error('Error getting username');
 		}
 	}
