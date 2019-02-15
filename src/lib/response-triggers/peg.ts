@@ -34,7 +34,6 @@ export default class Peg extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		__logger.debug('entering the peg isToTriggerOn');
 		let parsedMessage : ParsedMessage = xmlMessageParser.parsePegMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
@@ -98,30 +97,28 @@ export default class Peg extends Trigger {
 
 			return this.validateTrigger(message);
 		} catch (e) {
-			__logger.error(`Error in validateMessage peg:\n${e.message}`);
-			throw new Error('Error in validateMessage peg');
+			__logger.error(`[Peg.validateMessage] Error validating peg message: ${e.message}`);
+			throw new Error('Error validating peg message');
 		}
 	}
 
 	async givePegWithComment(comment : string, toPersonId : string, fromPerson : string) : Promise<MessageObject> {
-		let result : number;
-		try {
-			result = await this.database.givePegWithComment(comment, toPersonId, fromPerson);
-		} catch(e) {
-			__logger.error(`Uncaught error in give peg:\n${e.message}`);
-			return {
-				markdown: `Exception encountered, peg not given`
-			};
-		}
+		let result : number = await this.database.givePegWithComment(comment, toPersonId, fromPerson);
 
 		if (result === dbConstants.pegSuccess) {
 			try {
-				await this.pmReceiver(comment, toPersonId, fromPerson);
-			} catch (error) {
-				__logger.error(`Error messaging receiver ${toPersonId} about peg from ${fromPerson}:\n${error.message}`);
-			}
+				let pms = await Promise.all([
+					this.pmReceiver(comment, toPersonId, fromPerson),
+					this.pmSender(toPersonId, fromPerson)
+				]);
 
-			return await this.pmSender(toPersonId, fromPerson);
+				return pms[1];
+			} catch (error) {
+				__logger.error(`[Peg.givePegWithComment] Error in pmReceiver or pmSender: ${error.message}`);
+				return {
+					markdown: 'Peg has been given but I was unable to successfully send PMs acknowledging this to both the sender and receiver.'
+				};
+			}
 		} else if (result === dbConstants.pegAllSpent) {
 			return {
 				markdown: 'Sorry, but you have already spent all of your pegs for this fortnight.'
@@ -133,13 +130,13 @@ export default class Peg extends Trigger {
 		}
 	}
 
-	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject>{
+	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject> {
 		let count : number;
 
 		try {
 			count = await this.database.countPegsGiven(fromPerson);
 		} catch (error) {
-			__logger.error(`Error counting pegsGiven from ${fromPerson}:\n${error.message}`);
+			__logger.error(`[Peg.pmSender] Error counting pegsGiven from ${fromPerson}: ${error.message}`);
 			return {
 				markdown: 'Giving user\'s count of previously given pegs could not be found. Peg not given.'
 			};
@@ -149,14 +146,10 @@ export default class Peg extends Trigger {
 		try {
 			data = await this.dbUsers.getUser(toPersonId);
 		} catch (error) {
-			__logger.error(`Error in getting receiver in pmSender:\n${error.message}`);
+			__logger.error(`[Peg.pmSender] Error in getting receiver in pmSender: ${error.message}`);
 			return {
 				markdown: 'User could not be found or created. Peg not given.'
 			}
-		}
-
-		if (!data.userid) {
-			throw new Error('No person was obtained');
 		}
 
 		return {
@@ -167,26 +160,33 @@ export default class Peg extends Trigger {
 	}
 
 	async pmReceiver(comment : string, toPersonId : string, fromPerson : string) : Promise<void> {
-		let data : UserRow;
+		let fromUser : UserRow;
 		try {
-			data = await this.dbUsers.getUser(fromPerson);
+			fromUser = await this.dbUsers.getUser(fromPerson);
 		} catch (error) {
-			__logger.error(`Error in creating PM notifying user ${toPersonId} of peg from ${fromPerson}:\n${error.message}`);
+			__logger.error(`[Peg.pmReceiver] Error getting username of user ${fromPerson} to send peg to ${toPersonId}: ${error.message}`);
+			fromUser = {
+				userid: '',
+				username: 'someone'
+			};
 		}
-
-		__logger.debug('sending pm to: ' + toPersonId);
 
 		let msg : string;
 		if (comment.startsWith('for ')) {
-			msg = `You have received a new peg from ${data.username}: "${comment}"`;
+			msg = `You have received a new peg from ${fromUser.username}: "${comment}"`;
 		} else {
-			msg = `You have received a new peg from ${data.username} for: "${comment}"`;
+			msg = `You have received a new peg from ${fromUser.username} for: "${comment}"`;
 		}
 
-		this.spark.messages.create(
-		{
-			markdown: msg,
-			toPersonId: toPersonId
-		});
+		try {
+			this.spark.messages.create(
+			{
+				markdown: msg,
+				toPersonId: toPersonId
+			});
+		} catch (error) {
+			__logger.error(`[Peg.pmReceiver] Sending PM to ${toPersonId} with message ${msg} failed`);
+			throw error;
+		}
 	}
 };
