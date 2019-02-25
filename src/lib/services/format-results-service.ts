@@ -71,7 +71,6 @@ ${winnersTable}
 ${resultsTable}
 				</div>
 				<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
-					<h2>Category Results:</h2>
 ${categoryResultsTable}
 				</div>
 			</div>
