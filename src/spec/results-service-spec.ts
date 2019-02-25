@@ -1,52 +1,20 @@
-import { PockyDB } from '../lib/database/db-interfaces';
-import { ResultRow } from '../models/database';
 import * as fs from 'fs';
 const storage = require('@google-cloud/storage');
 
 import sinon = require('sinon');
-import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultResultsService, ResultsService } from '../lib/services/results-service';
-import { Receiver } from '../models/receiver';
-
-function createData(): ResultRow[] {
-	return [{
-		receiver: 'mock receiver',
-		sender: 'mock sender',
-		comment: 'test',
-		receiverid: 'mockID'
-	}];
-}
-
-function createReceiver(receiver: string): Receiver[]{
-	return [{
-		id: receiver,
-		person: receiver,
-		pegs: [{
-			sender: 'mock sender ' + receiver,
-			comment: 'test'
-		},{
-			sender: 'mock sender 2 ' + receiver,
-			comment: 'test 2'
-		}]
-	}];
-}
-
-function createDatabase(success: boolean, data): PockyDB {
-	let db = new MockPockyDb(true, 0, true, 2, success ? data : undefined);
-	return db;
-}
+import { FormatResultsService } from '../lib/services/format-results-service';
+import MockFormatResultsService from './mocks/mock-format-results-service';
 
 describe('results service', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	let data: ResultRow[];
-	let database: PockyDB;
+	let formatResultsService: FormatResultsService;
 	let resultsService: ResultsService;
 
 	beforeEach(() => {
-		data = createData();
-		database = createDatabase(true, data);
-		resultsService = new DefaultResultsService(database);
+		formatResultsService = new MockFormatResultsService(true, 'test');
+		resultsService = new DefaultResultsService(formatResultsService);
 
 		var fakeExistsSync = sinon.fake.returns(false);
 		var fakeWriteFileSync = sinon.fake();
@@ -83,32 +51,5 @@ describe('results service', () => {
 		let message = await resultsService.returnResultsMarkdown();
 		expect(message).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
-	});
-});
-
-describe('results service generate html', () => {
-	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	let winners: Receiver[];
-	let results: Receiver[];
-	let resultsService: ResultsService;
-
-	beforeEach(() => {
-		winners = createReceiver('winners');
-		results = createReceiver('results');
-		resultsService = new DefaultResultsService(null);
-	});
-
-	it('should generate the correct html', () => {
-		var html = resultsService.generateHtml(winners, results, todayString);
-		expect(html).toContain('<tr><th colspan="2">winners &mdash; 2 peg(s) total</th></tr>');
-		expect(html).toContain('<tr><td>mock sender winners</td><td>test</td></tr>');
-		expect(html).toContain('<tr><td>mock sender 2 winners</td><td>test 2</td></tr>');
-
-		expect(html).toContain('<tr><th colspan="2">results &mdash; 2 peg(s) total</th></tr>');
-		expect(html).toContain('<tr><td>mock sender results</td><td>test</td></tr>');
-		expect(html).toContain('<tr><td>mock sender 2 results</td><td>test 2</td></tr>');
-
-		expect(html).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
 	});
 });

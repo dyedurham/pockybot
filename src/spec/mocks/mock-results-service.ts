@@ -1,5 +1,4 @@
 import { ResultsService } from '../../lib/services/results-service';
-import { Receiver } from '../../models/receiver';
 
 export default class MockResultsService implements ResultsService {
 
@@ -16,13 +15,6 @@ export default class MockResultsService implements ResultsService {
 			return Promise.reject("failed to return winners");
 		} else {
 			return Promise.resolve(this.resultString);
-		}
-	}
-	generateHtml(winners: Receiver[], results: Receiver[], todayString: string): string {
-		if (!this.success) {
-			throw new Error("Unable to generate html");
-		} else {
-			return this.resultString;
 		}
 	}
 }
