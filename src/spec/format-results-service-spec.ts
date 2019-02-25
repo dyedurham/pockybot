@@ -43,7 +43,7 @@ function createConfig(): Config{
 	return config;
 }
 
-describe('format results service generate html', () => {
+describe('format results service', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 	let data: ResultRow[];

@@ -3,7 +3,7 @@ import { PegReceivedData } from '../../models/peg-received-data';
 
 function generateTable(receivers: Receiver[]) {
 	let htmlTable =
-		'			<table class="table">';
+'			<table class="table">';
 
 	receivers.forEach((result: Receiver) => {
 
@@ -22,15 +22,20 @@ function generateTable(receivers: Receiver[]) {
 		});
 
 		htmlTable +=
-			`				</tbody>
+`				</tbody>
 `;
 	});
 	htmlTable +=
-		`			</table>`;
+`			</table>`;
 
 	return htmlTable;
 }
 
+function uppercaseFirstChar(word: string): string {
+	return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 export default {
-	generateTable
+	generateTable,
+	uppercaseFirstChar
 }
