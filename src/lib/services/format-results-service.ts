@@ -4,6 +4,7 @@ import { Receiver } from '../../models/receiver';
 import TableHelper from '../parsers/tableHelper';
 import HtmlHelper from '../parsers/htmlHelper';
 import __logger from '../logger';
+import Config from '../config-interface';
 
 export interface FormatResultsService {
 	returnResultsHtml(): Promise<string>
@@ -12,9 +13,11 @@ export interface FormatResultsService {
 export class DefaultFormatResultsService implements FormatResultsService {
 
 	database: PockyDB;
+	config: Config;
 
-	constructor(database: PockyDB){
+	constructor(database: PockyDB, config: Config){
 		this.database = database;
+		this.config = config;
 	}
 
 	async returnResultsHtml(): Promise<string> {
@@ -27,8 +30,10 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		//Get only people who didn't win in the general results so there are no double ups
 		resultsData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
 
-		const results: Receiver[] = TableHelper.mapResults(resultsData);
-		const winners: Receiver[] = TableHelper.mapResults(winnersData);
+		var categories = this.config.getStringConfig('keyword');
+
+		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
+		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
 		var winnersTable = HtmlHelper.generateTable(winners);
 		var resultsTable = HtmlHelper.generateTable(results);
 

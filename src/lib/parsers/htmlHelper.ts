@@ -9,7 +9,7 @@ function generateTable(receivers: Receiver[]) {
 
 		htmlTable += `
 				<thead class="thead-light">
-					<tr><th colspan="2">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
+					<tr><th colspan="3">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
 				</thead>
 				<tbody>`;
 
@@ -17,7 +17,7 @@ function generateTable(receivers: Receiver[]) {
 
 		result.pegs.forEach((peg: PegReceivedData) => {
 			htmlTable += `
-					<tr><td>${peg.sender}</td><td>${peg.comment}</td></tr>
+					<tr><td>${peg.sender}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
 `;
 		});
 

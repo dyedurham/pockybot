@@ -4,7 +4,7 @@ import { ResultRow, RolesRow, StringConfigRow, ConfigRow } from '../../models/da
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
 
-function mapResults(data : ResultRow[]) : Receiver[] {
+function mapResults(data : ResultRow[], categories: string[] = null) : Receiver[] {
 	let results : Receiver[] = [];
 	data.forEach((row) => {
 		if (!results.map(person => person.id).includes(row.receiverid)) {
@@ -17,11 +17,16 @@ function mapResults(data : ResultRow[]) : Receiver[] {
 
 		results[results.findIndex(winner => winner.id === row.receiverid)].pegs.push({
 			sender: row.sender,
-			comment: row.comment
+			comment: row.comment,
+			categories: categories ? parseCategories(row.comment, categories) : null
 		});
 	});
 
 	return results;
+}
+
+function parseCategories(comment: string, categories: string[]): string[]{
+	return categories.filter(category => comment.includes(category));
 }
 
 function getReceiverColumnWidths(results : Receiver[]) : { receiver : number, sender : number, comment : number } {
