@@ -65,13 +65,13 @@ export class DefaultFormatResultsService implements FormatResultsService {
 
 			<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
 				<div class="tab-pane fade show active" id="generalResults" role="tabpanel" aria-labelledby="generalResults-tab">
-					<h2>Winners</h2>
+					<h2>Winners:</h2>
 ${winnersTable}
 					<h2>Other Pegs Received:</h2>
 ${resultsTable}
 				</div>
 				<div class="tab-pane fade show active" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
-					<h2>Category Results</h2>
+					<h2>Category Results:</h2>
 ${categoryResultsTable}
 				</div>
 			</div>

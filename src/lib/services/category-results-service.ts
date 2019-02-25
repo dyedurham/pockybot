@@ -14,7 +14,7 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		var tables = '';
 		categories.forEach(category => {
 			tables += `
-					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
+					<h3>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h3>
 `;
 			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
 			tables += HtmlHelper.generateTable(categoryResults);
