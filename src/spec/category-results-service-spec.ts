@@ -33,7 +33,7 @@ function createData(): Receiver[] {
 }
 
 function createCategoriesData(): string[]{
-	return ['brave', 'awesome', 'shame'];
+	return ['brave', 'awesome', 'shame', 'customer'];
 }
 
 describe('category service', () => {
@@ -51,8 +51,8 @@ describe('category service', () => {
 		var html = await categoryResultsService.returnCategoryResultsTable(results, categories);
 		html = html.replace(/>\s+</g, '><'); //remove whitespace to make testing easier
 
-		expect(html).toContain('<h3>Category: Brave</h3>' +
-			'<table class="table">' +
+		expect(html).toContain('<h2>Category: Brave</h2>' +
+			'<table class="table pb-3">' +
 			'<thead class="thead-light">' +
 			'<tr><th colspan="3">receiver 2 &mdash; 2 peg(s) total</th></tr>' +
 			'</thead><tbody>' +
@@ -65,8 +65,8 @@ describe('category service', () => {
 			'<tr><td>sender 2</td><td>test awesome brave</td><td>awesome, brave</td></tr>' +
 			'</tbody></table>');
 
-		expect(html).toContain('<h3>Category: Awesome</h3>' +
-			'<table class="table">' +
+		expect(html).toContain('<h2>Category: Awesome</h2>' +
+			'<table class="table pb-3">' +
 			'<thead class="thead-light">' +
 			'<tr><th colspan="3">receiver 1 &mdash; 2 peg(s) total</th></tr>' +
 			'</thead><tbody>' +
@@ -74,13 +74,16 @@ describe('category service', () => {
 			'<tr><td>sender 2</td><td>test awesome brave</td><td>awesome, brave</td></tr>' +
 			'</tbody></table>');
 
-		expect(html).toContain('<h3>Category: Shame</h3>' +
-			'<table class="table">' +
+		expect(html).toContain('<h2>Category: Shame</h2>' +
+			'<table class="table pb-3">' +
 			'<thead class="thead-light">' +
 			'<tr><th colspan="3">receiver 2 &mdash; 1 peg(s) total</th></tr>' +
 			'</thead><tbody>' +
 			'<tr><td>sender 2</td><td>test shame brave</td><td>shame, brave</td></tr>' +
 			'</tbody></table>');
+
+		expect(html).toContain('<h2>Category: Customer</h2>' +
+			'<p class="pb-3">There were no pegs given for this keyword</p>');
 
 		done();
 	});

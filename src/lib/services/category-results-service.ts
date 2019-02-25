@@ -14,10 +14,15 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		var tables = '';
 		categories.forEach(category => {
 			tables += `
-					<h3>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h3>
+					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
 `;
 			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
-			tables += HtmlHelper.generateTable(categoryResults);
+			if (categoryResults.length > 0) {
+				tables += HtmlHelper.generateTable(categoryResults);
+			} else {
+				tables +=
+`					<p class="pb-3">There were no pegs given for this keyword</p>`;
+			}
 		});
 		return tables;
 	}

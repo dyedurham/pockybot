@@ -3,7 +3,7 @@ import { PegReceivedData } from '../../models/peg-received-data';
 
 function generateTable(receivers: Receiver[]) {
 	let htmlTable =
-'					<table class="table">';
+'					<table class="table pb-3">';
 
 	receivers.forEach((result: Receiver) => {
 

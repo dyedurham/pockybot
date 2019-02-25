@@ -70,7 +70,7 @@ ${winnersTable}
 					<h2>Other Pegs Received:</h2>
 ${resultsTable}
 				</div>
-				<div class="tab-pane fade show active" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
+				<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
 					<h2>Category Results:</h2>
 ${categoryResultsTable}
 				</div>
