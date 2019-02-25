@@ -3,30 +3,30 @@ import { PegReceivedData } from '../../models/peg-received-data';
 
 function generateTable(receivers: Receiver[]) {
 	let htmlTable =
-'			<table class="table">';
+'					<table class="table">';
 
 	receivers.forEach((result: Receiver) => {
 
 		htmlTable += `
-				<thead class="thead-light">
-					<tr><th colspan="3">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
-				</thead>
-				<tbody>`;
+						<thead class="thead-light">
+							<tr><th colspan="3">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
+						</thead>
+						<tbody>`;
 
 		result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
 		result.pegs.forEach((peg: PegReceivedData) => {
 			htmlTable += `
-					<tr><td>${peg.sender}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.sender}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
 `;
 		});
 
 		htmlTable +=
-`				</tbody>
+`						</tbody>
 `;
 	});
 	htmlTable +=
-`			</table>`;
+`					</table>`;
 
 	return htmlTable;
 }

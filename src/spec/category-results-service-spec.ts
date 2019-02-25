@@ -1,6 +1,5 @@
 import { CategoryResultsService, DefaultCategoryResultsService } from '../lib/services/category-results-service';
 import { Receiver } from '../models/receiver';
-import __logger from '../lib/logger';
 
 function createData(): Receiver[] {
 	return [{
@@ -51,7 +50,7 @@ describe('category service', () => {
 	it('should generate the correct html', async (done: DoneFn) => {
 		var html = await categoryResultsService.returnCategoryResultsTable(results, categories);
 		html = html.replace(/>\s+</g, '><'); //remove whitespace to make testing easier
-		__logger.debug(html);
+
 		expect(html).toContain('<h2>Category: Brave</h2>' +
 			'<table class="table">' +
 			'<thead class="thead-light">' +

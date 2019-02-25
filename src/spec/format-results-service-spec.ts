@@ -5,6 +5,8 @@ import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultFormatResultsService, FormatResultsService } from '../lib/services/format-results-service';
 import MockConfig from './mocks/mock-config';
 import Config from '../lib/config-interface';
+import { CategoryResultsService } from '../lib/services/category-results-service';
+import MockCategoryResultsService from './mocks/mock-category-results-service';
 
 function createData(): ResultRow[] {
 	return [{
@@ -49,6 +51,7 @@ describe('format results service', () => {
 	let data: ResultRow[];
 	let database: PockyDB;
 	let formatResultsService: FormatResultsService;
+	let categoryResultsService: CategoryResultsService;
 	let config: Config;
 	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -56,7 +59,8 @@ describe('format results service', () => {
 		data = createData();
 		database = createDatabase(true, data);
 		config = createConfig();
-		formatResultsService = new DefaultFormatResultsService(database, config);
+		categoryResultsService = new MockCategoryResultsService();
+		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService);
 	});
 
 	it('should generate the correct html', async (done: DoneFn) => {

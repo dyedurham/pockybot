@@ -14,16 +14,16 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		var tables = '';
 		categories.forEach(category => {
 			tables += `
-			<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
+					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
 `;
-			const categoryResults: Receiver[] = this.sortCategoryWinners(results, category);
+			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
 			tables += HtmlHelper.generateTable(categoryResults);
 		});
 		return tables;
 	}
 
-	sortCategoryWinners(results: Receiver[], category: string): Receiver[] {
-		var categoryResults: Receiver[] = JSON.parse(JSON.stringify(results));
+	sortCategoryPegs(results: Receiver[], category: string): Receiver[] {
+		var categoryResults: Receiver[] = results.map(x => Object.assign({}, x)); //deep copy array
 		categoryResults.forEach(result => {
 			result.pegs = result.pegs.filter(x => x.categories.includes(category));
 		});

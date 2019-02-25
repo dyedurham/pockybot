@@ -40,6 +40,7 @@ import { DefaultWinnersService } from '../services/winners-service';
 import { DefaultResultsService } from '../services/results-service';
 import { DefaultPmResultsService } from '../services/pm-results-service';
 import { DefaultFormatResultsService } from '../services/format-results-service';
+import { DefaultCategoryResultsService } from '../services/category-results-service';
 
 // Service instantiation
 const utilities = new Utilities();
@@ -48,7 +49,8 @@ const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
 const database = new PockyDB(queryHandler,dbUsers);
 const config = new Config(dbConfig);
-const formatResultsService = new DefaultFormatResultsService(database, config);
+const categoryResultsService = new DefaultCategoryResultsService();
+const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService);
 const winnersService = new DefaultWinnersService(database);
 const resultsService = new DefaultResultsService(formatResultsService);
 const pmResultsService = new DefaultPmResultsService(database, spark);
