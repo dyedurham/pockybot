@@ -11,21 +11,21 @@ export interface ResultsService {
 export class DefaultResultsService implements ResultsService {
 	formatResultsService: FormatResultsService;
 
-	constructor(formatResultsService: FormatResultsService){
+	constructor(formatResultsService: FormatResultsService) {
 		this.formatResultsService = formatResultsService;
 	}
 
-	async returnResultsMarkdown(): Promise<string> {
-		let today = new Date();
-		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+	async returnResultsMarkdown() : Promise<string> {
+		const today = new Date();
+		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-		let filePath = `${__dirname}/../../../pegs-${todayString}`;
+		const filePath = `${__dirname}/../../../pegs-${todayString}`;
 		if (fs.existsSync(filePath + '.txt')) {
 			fs.unlinkSync(filePath + '.txt');
 		}
 		__logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
 
-		let html = await this.formatResultsService.returnResultsHtml();
+		const html = await this.formatResultsService.returnResultsHtml();
 
 		fs.writeFileSync(filePath + '.html', html);
 
@@ -34,8 +34,8 @@ export class DefaultResultsService implements ResultsService {
 		let file = response[0];
 		await file.makePublic();
 
-		let fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
-		let markdown = `[Here are all pegs given this cycle](${fileUrl})`;
+		const fileUrl = `${constants.googleUrl}${process.env.GCLOUD_BUCKET_NAME}/pegs-${todayString}.html`;
+		const markdown = `[Here are all pegs given this cycle](${fileUrl})`;
 
 		return markdown;
 	}

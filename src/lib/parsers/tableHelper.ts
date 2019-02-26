@@ -25,7 +25,7 @@ function mapResults(data : ResultRow[], categories: string[] = null) : Receiver[
 	return results;
 }
 
-function parseCategories(comment: string, categories: string[]): string[]{
+function parseCategories(comment: string, categories: string[]) : string[] {
 	return categories.filter(category => comment.includes(category));
 }
 

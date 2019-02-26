@@ -8,7 +8,7 @@ import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 
 export interface FormatResultsService {
-	returnResultsHtml(): Promise<string>
+	returnResultsHtml() : Promise<string>
 }
 
 export class DefaultFormatResultsService implements FormatResultsService {
@@ -17,15 +17,15 @@ export class DefaultFormatResultsService implements FormatResultsService {
 	config: Config;
 	categoryResultsService: CategoryResultsService;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService){
+	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService) {
 		this.database = database;
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
 	}
 
-	async returnResultsHtml(): Promise<string> {
-		let today = new Date();
-		let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+	async returnResultsHtml() : Promise<string> {
+		const today = new Date();
+		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
 		const winnersData: ResultRow[] = await this.database.returnWinners();
 		let resultsData: ResultRow[] = await this.database.returnResults();
@@ -33,21 +33,21 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		//Get only people who didn't win in the general results so there are no double ups
 		resultsData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
 
-		var categories = this.config.getStringConfig('keyword');
+		const categories = this.config.getStringConfig('keyword');
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
-		var winnersTable = HtmlHelper.generateTable(winners);
-		var resultsTable = HtmlHelper.generateTable(results);
-		var categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
+		const winnersTable = HtmlHelper.generateTable(winners);
+		const resultsTable = HtmlHelper.generateTable(results);
+		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
 
 		const html = this.generateHtml(winnersTable, resultsTable, categoryResultsTable, todayString);
 		return html;
 	}
 
-	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, todayString: string): string {
+	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, todayString: string) : string {
 		try {
-			let html =
+			const html =
 `<!doctype html><html>
 	<head>
 	    <meta charset="utf-8">

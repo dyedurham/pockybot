@@ -3,15 +3,13 @@ import HtmlHelper from '../parsers/htmlHelper';
 import { Receiver } from '../../models/receiver';
 
 export interface CategoryResultsService {
-	returnCategoryResultsTable(results: Receiver[], categories: string[]): string
+	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string
 }
 
 export class DefaultCategoryResultsService implements CategoryResultsService {
 
-	constructor() {}
-
-	returnCategoryResultsTable(results: Receiver[], categories: string[]): string {
-		var tables = '';
+	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string {
+		let tables = '';
 		categories.forEach(category => {
 			tables += `
 					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
@@ -27,13 +25,14 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		return tables;
 	}
 
-	sortCategoryPegs(results: Receiver[], category: string): Receiver[] {
-		var categoryResults: Receiver[] = results.map(x => Object.assign({}, x)); //deep copy array
-		categoryResults.forEach(result => {
-			result.pegs = result.pegs.filter(x => x.categories.includes(category));
+	sortCategoryPegs(results: Receiver[], category: string) : Receiver[] {
+		let categoryResults: Receiver[] = results.map(x => Object.assign({}, x)); // deep copy array
+		categoryResults.forEach(catResult => {
+			catResult.pegs = catResult.pegs.filter(x => x.categories.includes(category));
 		});
+
 		categoryResults = categoryResults.filter(x => x.pegs.length > 0);
-		categoryResults.sort((a, b) => b.pegs.length - a.pegs.length); //sort from most to least pegs
+		categoryResults.sort((a, b) => b.pegs.length - a.pegs.length); // sort from most to least pegs
 		return categoryResults;
 	}
 }

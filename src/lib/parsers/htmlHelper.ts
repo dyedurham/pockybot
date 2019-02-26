@@ -1,7 +1,7 @@
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
 
-function generateTable(receivers: Receiver[]) {
+function generateTable(receivers: Receiver[]) : string {
 	let htmlTable =
 '					<table class="table pb-3">';
 
@@ -31,7 +31,7 @@ function generateTable(receivers: Receiver[]) {
 	return htmlTable;
 }
 
-function uppercaseFirstChar(word: string): string {
+function uppercaseFirstChar(word: string) : string {
 	return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
