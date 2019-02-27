@@ -1,5 +1,7 @@
 # Pockybot 📍👏🏆🤖
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/GlobalX/pockybot.svg)](https://greenkeeper.io/)
+
 > Spark bot that handles team recognition. A chatbot for [pegs & pocky](#what-is-pegs--pocky).
 
 ## What is Pegs & Pocky?
