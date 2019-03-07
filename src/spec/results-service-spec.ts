@@ -6,18 +6,20 @@ import { DefaultResultsService, ResultsService } from '../lib/services/results-s
 import { FormatResultsService } from '../lib/services/format-results-service';
 import MockFormatResultsService from './mocks/mock-format-results-service';
 
-let clock : sinon.SinonFakeTimers;
-
 describe('results service', () => {
+	let clock : sinon.SinonFakeTimers;
 	let today = new Date();
-
-	clock = sinon.useFakeTimers({now: today, shouldAdvanceTime: false});
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
 	+ '-' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds();
 	let formatResultsService: FormatResultsService;
 	let resultsService: ResultsService;
 
 	beforeEach(() => {
+		clock = sinon.useFakeTimers({
+			now: today,
+			shouldAdvanceTime: true
+		});
+
 		formatResultsService = new MockFormatResultsService(true, 'test');
 		resultsService = new DefaultResultsService(formatResultsService);
 
