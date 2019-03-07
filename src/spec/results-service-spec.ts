@@ -8,7 +8,8 @@ import MockFormatResultsService from './mocks/mock-format-results-service';
 
 describe('results service', () => {
 	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
+	+ '-' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 	let formatResultsService: FormatResultsService;
 	let resultsService: ResultsService;
 

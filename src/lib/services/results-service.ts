@@ -18,7 +18,7 @@ export class DefaultResultsService implements ResultsService {
 	async returnResultsMarkdown() : Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
-		 + '-' + today.getHours + ':' + today.getMinutes + ':' + today.getSeconds;
+		 + '-' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 
 		const filePath = `${__dirname}/../../../pegs-${todayString}`;
 		if (fs.existsSync(filePath + '.txt')) {
