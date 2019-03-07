@@ -17,9 +17,10 @@ export default class Finish extends Trigger {
 	pmResultsService: PmResultsService;
 	reset : Reset;
 	config : Config;
+	spark : CiscoSpark;
 
 	constructor(winnersService : WinnersService, resultsService : ResultsService, pmResultsService: PmResultsService,
-		resetService : Reset, config : Config) {
+		resetService : Reset, config : Config, spark : CiscoSpark) {
 		super();
 
 		this.winnersService = winnersService;
@@ -27,6 +28,7 @@ export default class Finish extends Trigger {
 		this.pmResultsService = pmResultsService;
 		this.reset = resetService;
 		this.config = config;
+		this.spark = spark;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -38,7 +40,7 @@ export default class Finish extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() : Promise<MessageObject> {
+	async createMessage(commandMessage :MessageObject, room : string) : Promise<MessageObject> {
 		let winnersMarkdown: string;
 		let resultsMarkdown: string;
 
@@ -54,6 +56,11 @@ export default class Finish extends Trigger {
 			});
 		__logger.debug('[Finish.createMessage] Got winners and responses');
 
+		this.spark.messages.create({
+			markdown: resultsMarkdown,
+			roomId: room
+		});
+
 		try {
 			await this.pmResultsService.pmResults();
 		} catch(error) {
@@ -64,7 +71,6 @@ export default class Finish extends Trigger {
 		var reset = await this.reset.createMessage();
 
 		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
-		message += resultsMarkdown;
 		message += '\n\n' + reset.markdown;
 		return {
 			markdown: message
