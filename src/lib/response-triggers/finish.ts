@@ -3,7 +3,7 @@ import Reset from './reset';
 import Config from '../config';
 import constants from '../../constants';
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
@@ -56,8 +56,11 @@ export default class Finish extends Trigger {
 			});
 		__logger.debug('[Finish.createMessage] Got winners and responses');
 
+		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
+		message += resultsMarkdown;
+
 		this.spark.messages.create({
-			markdown: resultsMarkdown,
+			markdown: message,
 			roomId: room
 		});
 
@@ -68,12 +71,10 @@ export default class Finish extends Trigger {
 			return { markdown: `Error while trying to PM results` };
 		}
 
-		var reset = await this.reset.createMessage();
+		//var reset = await this.reset.createMessage();
 
-		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
-		message += '\n\n' + reset.markdown;
 		return {
-			markdown: message
+			markdown: 'PMs successfully sent.'
 		};
 	}
 }
