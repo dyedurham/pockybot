@@ -134,7 +134,7 @@ export default class Peg extends Trigger {
 		let keywords = this.config.getStringConfig('keyword');
 
 		keywords.forEach(keyword => {
-			markdown += `[${keyword}]()`
+			markdown += `[${keyword}](${constants.serverUrl}/keyword?keyword=${keyword}&sender=${fromPerson}&receiver=${toPersonId}&message=${message})`
 		});
 
 		return {

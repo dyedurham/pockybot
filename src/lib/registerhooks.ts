@@ -62,7 +62,7 @@ try {
 				resource: 'messages',
 				event: 'created',
 				filter: 'mentionedPeople=me',
-				targetUrl: constants.postUrl,
+				targetUrl: constants.serverUrl + '/respond',
 				name: constants.botName + ' webhook'
 			});
 
@@ -70,7 +70,7 @@ try {
 				resource: 'messages',
 				event: 'created',
 				filter: 'roomType=direct',
-				targetUrl: constants.pmUrl,
+				targetUrl: constants.serverUrl + '/pm',
 				name: constants.botName + ' direct webhook'
 			})
 		})

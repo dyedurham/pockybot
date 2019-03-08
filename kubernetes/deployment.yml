@@ -66,16 +66,11 @@ items:
                     configMapKeyRef:
                         name: pocky-config
                         key: bot-name
-              - name: POST_URL
+              - name: SERVER_URL
                 valueFrom:
                     configMapKeyRef:
                         name: pocky-config
-                        key: post-url
-              - name: PM_URL
-                valueFrom:
-                    configMapKeyRef:
-                        name: pocky-config
-                        key: pm-url
+                        key: server-url
               - name: VERSION_BRANCH
                 valueFrom:
                     configMapKeyRef:

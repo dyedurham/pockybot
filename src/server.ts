@@ -42,6 +42,16 @@ app.post('/pm', async (req, res) => {
 	}
 });
 
+app.get('/keyword', async (req, res) => {
+	try {
+		//await pmResponder.respond(req.body, req.params);
+		res.status(200).end();
+	} catch (e) {
+		__logger.error(`[Server.pm] Error in server /keyword: ${e.message}`);
+		res.status(400).end();
+	}
+});
+
 app.get('/test', (req, res) => {
 	let url_parts = url.parse(req.url, true);
 	let query = url_parts.query;
