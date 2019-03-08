@@ -40,7 +40,7 @@ export default class Finish extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage(commandMessage :MessageObject, room : string) : Promise<MessageObject> {
+	async createMessage(commandMessage : MessageObject, room : string) : Promise<MessageObject> {
 		let winnersMarkdown: string;
 		let resultsMarkdown: string;
 
@@ -66,15 +66,12 @@ export default class Finish extends Trigger {
 
 		try {
 			await this.pmResultsService.pmResults();
+			__logger.information(`[Finish.createMessage] Finished sending PMs.`);
 		} catch(error) {
 			__logger.error(`[Finish.createMessage] Error PMing results: ${error.message}`);
 			return { markdown: `Error while trying to PM results` };
 		}
 
-		//var reset = await this.reset.createMessage();
-
-		return {
-			markdown: 'PMs successfully sent.'
-		};
+		return undefined;
 	}
 }

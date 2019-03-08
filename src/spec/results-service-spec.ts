@@ -8,15 +8,15 @@ import MockFormatResultsService from './mocks/mock-format-results-service';
 
 describe('results service', () => {
 	let clock : sinon.SinonFakeTimers;
-	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
-	+ '-' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds();
+	let now = new Date();
+	let todayString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
+	+ '-' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
 	let formatResultsService: FormatResultsService;
 	let resultsService: ResultsService;
 
 	beforeEach(() => {
 		clock = sinon.useFakeTimers({
-			now: today,
+			now: now,
 			shouldAdvanceTime: true
 		});
 
