@@ -53,11 +53,7 @@ export default class Peg extends Trigger {
 		}
 
 		if (this.config.getConfig('requireValues') && !this.validateValues(parsedMessage)) {
-			return {
-				markdown:
-`I'm sorry, you have to include a keyword in your comment. Please include one of the below keywords in your comment:\n`
- + this.config.getStringConfig('keyword').join(', ')
-			};
+			this.pmKeywordCorrection(parsedMessage.toPersonId, parsedMessage.fromPerson, parsedMessage.comment)
 		}
 
 		return await this.givePegWithComment(parsedMessage.comment, parsedMessage.toPersonId, parsedMessage.fromPerson);
@@ -128,6 +124,24 @@ export default class Peg extends Trigger {
 				markdown: 'Error encountered, peg not given'
 			};
 		}
+	}
+
+	async pmKeywordCorrection(toPersonId : string, fromPerson : string, message : string) : Promise<MessageObject> {
+
+		//TODO generate one time key
+
+		let markdown = "Unfortunately I couldn't find a keyword in your recent peg request. If you select the keyword below I'll fix up your message for you :)\n\n";
+		let keywords = this.config.getStringConfig('keyword');
+
+		keywords.forEach(keyword => {
+			markdown += `[${keyword}]()`
+		});
+
+		return {
+			markdown: markdown,
+			toPersonId: fromPerson,
+			roomId: null
+		};
 	}
 
 	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject> {
