@@ -7,12 +7,19 @@ import { FormatResultsService } from '../lib/services/format-results-service';
 import MockFormatResultsService from './mocks/mock-format-results-service';
 
 describe('results service', () => {
-	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+	let clock : sinon.SinonFakeTimers;
+	let now = new Date();
+	let todayString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
+	+ '-' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
 	let formatResultsService: FormatResultsService;
 	let resultsService: ResultsService;
 
 	beforeEach(() => {
+		clock = sinon.useFakeTimers({
+			now: now,
+			shouldAdvanceTime: true
+		});
+
 		formatResultsService = new MockFormatResultsService(true, 'test');
 		resultsService = new DefaultResultsService(formatResultsService);
 
@@ -45,6 +52,7 @@ describe('results service', () => {
 
 	afterEach(() => {
 		sinon.restore();
+		clock.restore();
 	});
 
 	it('should parse a proper message', async (done: DoneFn) => {

@@ -3,7 +3,7 @@ import Reset from './reset';
 import Config from '../config';
 import constants from '../../constants';
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
@@ -17,9 +17,10 @@ export default class Finish extends Trigger {
 	pmResultsService: PmResultsService;
 	reset : Reset;
 	config : Config;
+	spark : CiscoSpark;
 
 	constructor(winnersService : WinnersService, resultsService : ResultsService, pmResultsService: PmResultsService,
-		resetService : Reset, config : Config) {
+		resetService : Reset, config : Config, spark : CiscoSpark) {
 		super();
 
 		this.winnersService = winnersService;
@@ -27,6 +28,7 @@ export default class Finish extends Trigger {
 		this.pmResultsService = pmResultsService;
 		this.reset = resetService;
 		this.config = config;
+		this.spark = spark;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -38,7 +40,7 @@ export default class Finish extends Trigger {
 		return pattern.test(message.html);
 	}
 
-	async createMessage() : Promise<MessageObject> {
+	async createMessage(commandMessage : MessageObject, room : string) : Promise<MessageObject> {
 		let winnersMarkdown: string;
 		let resultsMarkdown: string;
 
@@ -54,20 +56,22 @@ export default class Finish extends Trigger {
 			});
 		__logger.debug('[Finish.createMessage] Got winners and responses');
 
+		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
+		message += resultsMarkdown;
+
+		this.spark.messages.create({
+			markdown: message,
+			roomId: room
+		});
+
 		try {
 			await this.pmResultsService.pmResults();
+			__logger.information(`[Finish.createMessage] Finished sending PMs.`);
 		} catch(error) {
 			__logger.error(`[Finish.createMessage] Error PMing results: ${error.message}`);
 			return { markdown: `Error while trying to PM results` };
 		}
 
-		var reset = await this.reset.createMessage();
-
-		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
-		message += resultsMarkdown;
-		message += '\n\n' + reset.markdown;
-		return {
-			markdown: message
-		};
+		return undefined;
 	}
 }
