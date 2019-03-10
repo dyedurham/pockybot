@@ -4,12 +4,15 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import responder from './lib/responder';
 import pmResponder from './lib/pm-responder';
+import  { DefaultKeywordCorrectionService } from './lib/services/keyword-correction-service';
 import * as url from 'url';
 import * as fs from 'fs';
 
 // Constants
 const PORT = 80;
 const HOST = '0.0.0.0';
+
+let keywordCorrectionService = new DefaultKeywordCorrectionService();
 
 //Startup
 import './lib/registerhooks';
@@ -44,8 +47,8 @@ app.post('/pm', async (req, res) => {
 
 app.get('/keyword', async (req, res) => {
 	try {
-		//await pmResponder.respond(req.body, req.params);
-		res.status(200).end();
+		let html = await keywordCorrectionService.CorrectMessage(req.body, req.params);
+		res.send(html);
 	} catch (e) {
 		__logger.error(`[Server.pm] Error in server /keyword: ${e.message}`);
 		res.status(400).end();

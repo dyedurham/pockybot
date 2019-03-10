@@ -53,7 +53,8 @@ export default class Peg extends Trigger {
 		}
 
 		if (this.config.getConfig('requireValues') && !this.validateValues(parsedMessage)) {
-			this.pmKeywordCorrection(parsedMessage.toPersonId, parsedMessage.fromPerson, parsedMessage.comment)
+			this.pmKeywordCorrection(parsedMessage.toPersonId, parsedMessage.fromPerson, parsedMessage.comment);
+			return undefined;
 		}
 
 		return await this.givePegWithComment(parsedMessage.comment, parsedMessage.toPersonId, parsedMessage.fromPerson);
@@ -129,12 +130,18 @@ export default class Peg extends Trigger {
 	async pmKeywordCorrection(toPersonId : string, fromPerson : string, message : string) : Promise<MessageObject> {
 
 		//TODO generate one time key
-
+		let data = {
+				"toPerson" : toPersonId,
+				"fromPerson" : fromPerson,
+				"message" : message,
+		}
+		let key = new Buffer(JSON.stringify(data)).toString("base64");
+		//add key to object in keyword service?
 		let markdown = "Unfortunately I couldn't find a keyword in your recent peg request. If you select the keyword below I'll fix up your message for you :)\n\n";
 		let keywords = this.config.getStringConfig('keyword');
-
 		keywords.forEach(keyword => {
-			markdown += `[${keyword}](${constants.serverUrl}/keyword?keyword=${keyword}&sender=${fromPerson}&receiver=${toPersonId}&message=${message})`
+				markdown += `[${keyword}](${constants.serverUrl}/keyword?keyword=${keyword}&sender=${fromPerson}&receiver=${toPersonId}&message=${message})`
+				markdown += `[${keyword}](${constants.serverUrl}/keyword?keyword=${keyword}&key=${key}) \n`
 		});
 
 		return {

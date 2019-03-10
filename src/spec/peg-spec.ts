@@ -224,6 +224,20 @@ describe('creating Message', () => {
 		expect(output.markdown).toBe(expected);
 		done();
 	});
+
+	it('should fail without a value', async (done : DoneFn) => {
+		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for regular reasons',
+		'mockfromID');
+		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
+
+		let pockyDb = new MockPockyDb(true, 0, true, 1);
+		let peg = new Peg(spark, pockyDb, dbUsers, config);
+
+		let output = await peg.createMessage(sentMessage);
+		expect(output).toBe(undefined);
+		//spy on PM?
+		done();
+	});
 });
 
 describe('testing peg triggers', () => {
