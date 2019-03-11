@@ -1,6 +1,4 @@
-import constants from '../../constants';
 import __logger from '../logger';
-import { emitKeypressEvents } from 'readline';
 
 
 
@@ -16,10 +14,21 @@ export class DefaultKeywordCorrectionService implements KeywordCorrectionService
 	}
 
 	async CorrectMessage(body: string, params: string) : Promise<string> {
-        let html = "you peg has been succesfully sent";
-        
-        
+        __logger.debug(`correcting message. body:${body} params: ${params}`);
 
+        let index = this.keys.findIndex(params["key"])
+        if (index == -1) {
+            let html = "you peg has been succesfully sent";
+            return html
+        }
+
+        //let data = keys[index].base64decode
+        //data.message += " (${params[keyword]})";
+        //send the peg again
+
+        __logger.debug("message corrected");
+        //replace with actual html page
+        let html = "you peg has been succesfully sent";
 		return html;
     }
     

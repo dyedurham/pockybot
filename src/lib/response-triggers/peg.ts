@@ -136,7 +136,7 @@ export default class Peg extends Trigger {
 				"message" : message,
 		}
 		let key = new Buffer(JSON.stringify(data)).toString("base64");
-		//add key to object in keyword service?
+		//add key to object in keyword service? need the service to be single instance?
 		let markdown = "Unfortunately I couldn't find a keyword in your recent peg request. If you select the keyword below I'll fix up your message for you :)\n\n";
 		let keywords = this.config.getStringConfig('keyword');
 		keywords.forEach(keyword => {

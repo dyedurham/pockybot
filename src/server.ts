@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import responder from './lib/responder';
 import pmResponder from './lib/pm-responder';
-import  { DefaultKeywordCorrectionService } from './lib/services/keyword-correction-service';
+import { DefaultKeywordCorrectionService } from './lib/services/keyword-correction-service';
 import * as url from 'url';
 import * as fs from 'fs';
 
