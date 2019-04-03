@@ -4,10 +4,15 @@ import responseFactory from './response-triggers/index';
 import __logger from './logger';
 
 async function respond(messageEvent : {data : {id : string}}) {
-	try {
+	try {		
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 		__logger.debug('processing message: ' + JSON.stringify(message));
 		let room = message.roomId;
+
+		if (message.personEmail.includes('@sparkbot.io') || message.personEmail.includes('@webex.bot')) {
+			__logger.debug('Message was sent by a bot, ignoring this message.');
+		}
+
 
 		let responseMessage : MessageObject;
 		try {
