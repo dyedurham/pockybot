@@ -1,10 +1,19 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
+import Config from '../config';
 import { MessageObject } from 'ciscospark/env';
 
 export default class Rotation extends Trigger {
 	readonly commandText : string = 'rotation';
 	readonly rotationCommand : string = `(?: )*${this.commandText}(?: )*`;
+
+	config : Config;
+
+	constructor(config : Config) {
+		super();
+
+		this.config = config;
+	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
 		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.rotationCommand, 'ui');
@@ -16,16 +25,16 @@ export default class Rotation extends Trigger {
 	}
 
 	async createMessage() : Promise<MessageObject> {
-		return {
-				markdown:
-`## Here's the snack buying rotation:
+		const data = this.config.getStringConfig('rotation')[0];
 
-* Valkyries
-* Velociraptors
-* Titans
-* Thundercats
-* Vikings
-* Infrastructure
-` };
+		let newMessage = `## Here's the snack buying rotation:\n\n`;
+
+		data.split(',').forEach(item => {
+			newMessage += `* ${item}\n`;
+		});
+
+		return {
+			markdown: newMessage
+		};
 	}
 };
