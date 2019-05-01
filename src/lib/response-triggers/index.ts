@@ -75,7 +75,7 @@ const stringConfig = new StringConfig(config);
 const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
-const rotation = new Rotation();
+const rotation = new Rotation(config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [

@@ -45,7 +45,7 @@ const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const help = new Help(config);
 const ping = new Ping();
-const rotation = new Rotation();
+const rotation = new Rotation(config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
