@@ -30,7 +30,8 @@ export default class Rotation extends Trigger {
 		let newMessage = `## Here's the snack buying rotation:\n\n`;
 
 		data.split(',').forEach(item => {
-			newMessage += `* ${item}\n`;
+			const name = item.charAt(0).toUpperCase() + item.substring(1);
+			newMessage += `* ${name}\n`;
 		});
 
 		return {
