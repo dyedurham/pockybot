@@ -50,7 +50,7 @@ export default class Help extends Trigger {
 	1. To get a welcome message from me, type \`@${constants.botName} welcome\` OR direct message me with \`welcome\`.
 	1. I will respond in the room you messaged me in.
 * Check the rotation!
-	1. To check the rotation, type \`@${constants.botName} rotation\` OR direct message me with \`rotation\`.
+	1. To check the rotation of teams responsible for buying snacks, type \`@${constants.botName} rotation\` OR direct message me with \`rotation\`.
 	1. I will respond in the room you messaged me in.\n`;
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners)) {
