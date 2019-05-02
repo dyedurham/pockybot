@@ -13,6 +13,7 @@ import Welcome from './welcome';
 import Help from './help';
 import Ping from './ping';
 import Keywords from './keywords';
+import Rotation from './rotation';
 import Default from './default';
 
 // Services
@@ -44,6 +45,7 @@ const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const help = new Help(config);
 const ping = new Ping();
+const rotation = new Rotation(config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -52,6 +54,7 @@ const triggers : Trigger[] = [
 	ping,
 	status,
 	keywords,
+	rotation,
 	defaultTrigger
 ];
 

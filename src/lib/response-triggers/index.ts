@@ -20,6 +20,7 @@ import Welcome from './welcome';
 import Help from './help';
 import Ping from './ping';
 import Keywords from './keywords';
+import Rotation from './rotation';
 import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
@@ -74,6 +75,7 @@ const stringConfig = new StringConfig(config);
 const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
+const rotation = new Rotation(config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -89,6 +91,7 @@ const triggers : Trigger[] = [
 	finish,
 	unpeg,
 	keywords,
+	rotation,
 	numberConfig,
 	stringConfig,
 	roleConfig,
