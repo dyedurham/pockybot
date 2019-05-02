@@ -29,7 +29,7 @@ beforeAll(() => {
 
 describe('help message', () => {
 	const help = new Help(config);
-	const helpMessage = { personId: 'asdfar'};
+	const helpMessage = { personId: 'asdfar', text: 'help'};
 
 	it('should create the message', async (done : DoneFn) => {
 		let response = await help.createMessage(helpMessage);
