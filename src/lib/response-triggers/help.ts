@@ -28,7 +28,9 @@ export default class Help extends Trigger {
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.helpCommand, 'ui');
-		const command = message.text.trim().replace(pattern, '').trim();
+		let patternEnd = new RegExp(constants.optionalMarkdownEnding + '$', 'ui');
+
+		const command = message.text.trim().replace(pattern, '').replace(patternEnd, '').trim();
 		let newMessage: string;
 
 		if(!command) {
