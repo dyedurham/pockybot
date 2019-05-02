@@ -4,10 +4,10 @@ import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
+import { Command } from '../../models/command';
 
 export default class Help extends Trigger {
-	readonly commandText : string = 'help';
-	readonly helpCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly helpCommand : string = `(?: )*${Command.Help}(?: )*`;
 
 	config : Config;
 
@@ -23,7 +23,7 @@ export default class Help extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim().startsWith(this.commandText);
+		return message.text.toLowerCase().trim().startsWith(Command.Help);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
@@ -36,46 +36,46 @@ export default class Help extends Trigger {
 			newMessage = this.createCommandListMessage(message);
 		} else {
 			switch(command.toLowerCase()){
-				case 'peg':
+				case Command.Peg:
 					newMessage = this.createPegHelpMessage();
 					break;
-				case 'status':
+				case Command.Status:
 					newMessage = this.createStatusHelpMessage();
 					break;
-				case 'keywords':
+				case Command.Keywords:
 					newMessage = this.createKeywordsHelpMessage();
 					break;
-				case 'ping':
+				case Command.Ping:
 					newMessage = this.createPingHelpMessage();
 					break;
-				case 'welcome':
+				case Command.Welcome:
 					newMessage = this.createWelcomeHelpMessage();
 					break;
-				case 'rotation':
+				case Command.Rotation:
 					newMessage = this.createRotationHelpMessage();
 					break;
-				case 'winners':
+				case Command.Winners:
 					newMessage = this.createWinnersHelpMessage(message);
 					break;
-				case 'results':
+				case Command.Results:
 					newMessage = this.createResultsHelpMessage(message);
 					break;
-				case 'reset':
+				case Command.Reset:
 					newMessage = this.createResetHelpMessage(message);
 					break;
-				case 'update':
+				case Command.Update:
 					newMessage = this.createUpdateHelpMessage(message);
 					break;
-				case 'finish':
+				case Command.Finish:
 					newMessage = this.createFinishHelpMessage(message);
 					break;
-				case 'numberconfig':
+				case Command.NumberConfig:
 					newMessage = this.createNumberConfigHelpMessage(message);
 					break;
-				case 'stringconfig':
+				case Command.StringConfig:
 					newMessage = this.createStringConfigHelpMessage(message);
 					break;
-				case 'roleconfig':
+				case Command.RoleConfig:
 					newMessage = this.createRoleConfigHelpMessage(message);
 					break;
 				default:
@@ -92,37 +92,37 @@ export default class Help extends Trigger {
 	createCommandListMessage(message: MessageObject) : string {
 		let newMessage = `## What I can do (List of Commands)
 
-* peg
-* status
-* keywords
-* ping
-* welcome
-* rotation\n`;
+* ${Command.Peg}
+* ${Command.Status}
+* ${Command.Keywords}
+* ${Command.Ping}
+* ${Command.Welcome}
+* ${Command.Rotation}\n`;
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners)) {
-			newMessage += `* winners\n`;
+			newMessage += `* ${Command.Winners}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Results)) {
-			newMessage += `* results\n`;
+			newMessage += `* ${Command.Results}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Reset)) {
-			newMessage += `* reset\n`;
+			newMessage += `* ${Command.Reset}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Update)) {
-			newMessage += `* update\n`;
+			newMessage += `* ${Command.Update}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Finish)) {
-			newMessage += `* finish\n`;
+			newMessage += `* ${Command.Finish}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
-			newMessage += `* numberconfig
-* stringconfig
-* roleconfig\n`;
+			newMessage += `* ${Command.NumberConfig}
+* ${Command.StringConfig}
+* ${Command.RoleConfig}\n`;
 		}
 		newMessage += `\nFor more information on a command type \`@${constants.botName} help command-name\` or direct message me with \`help command-name\`\n`;
 		newMessage += `\nI am still being worked on, so [more features to come : )] (${constants.todoUrl})`;

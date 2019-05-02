@@ -2,9 +2,9 @@ import constants from '../../constants';
 import Trigger from '../../models/trigger';
 import { MessageObject } from 'ciscospark/env';
 import * as pjson from 'pjson';
+import { Command } from '../../models/command';
 
-const commandText = 'ping';
-const pingCommand = `(?: )*${commandText}(?: )*`;
+const pingCommand = `(?: )*${Command.Ping}(?: )*`;
 
 export default class Ping extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -13,7 +13,7 @@ export default class Ping extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === commandText;
+		return message.text.toLowerCase().trim() === Command.Ping;
 	}
 
 	async createMessage() : Promise<MessageObject> {

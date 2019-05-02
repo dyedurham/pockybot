@@ -2,10 +2,10 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import Config from '../config';
 import { MessageObject } from 'ciscospark/env';
+import { Command } from '../../models/command';
 
 export default class Rotation extends Trigger {
-	readonly commandText : string = 'rotation';
-	readonly rotationCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly rotationCommand : string = `(?: )*${Command.Rotation}(?: )*`;
 
 	config : Config;
 
@@ -21,7 +21,7 @@ export default class Rotation extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === this.commandText;
+		return message.text.toLowerCase().trim() === Command.Rotation;
 	}
 
 	async createMessage() : Promise<MessageObject> {

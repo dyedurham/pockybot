@@ -3,16 +3,16 @@ import Config from '../config';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'ciscospark/env';
-import { Role, RolesRow } from '../../models/database';
+import { Role } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import DbUsers from '../database/db-users';
 import { Element } from 'libxmljs';
 import tableHelper from '../parsers/tableHelper';
+import { Command } from '../../models/command';
 
 export default class RoleConfig extends Trigger {
-	readonly commandText : string = 'roleconfig';
-	readonly roleConfigCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly roleConfigCommand : string = `(?: )*${Command.RoleConfig}(?: )*`;
 
 	dbUsers : DbUsers;
 	config : Config;
@@ -41,7 +41,7 @@ export default class RoleConfig extends Trigger {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
 		}
 
-		let pattern = new RegExp('^' + this.commandText, 'ui');
+		let pattern = new RegExp('^' + Command.RoleConfig, 'ui');
 		const command = parsedMessage[1].text().toLowerCase().trim().replace(pattern, '').trim();
 
 		try {
