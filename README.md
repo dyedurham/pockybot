@@ -76,6 +76,9 @@ Use any of these commands in a room PockyBot is participating in to perform comm
   * If comments are required, a reason **must** be given. Otherwise, reasons are optional.
   * `<reason>` must include a keyword anywhere within it if keywords are required.
 * `@PockyBot keywords` &mdash; display the available keywords.
+* `@PockyBot rotation` &mdash; display the rotation of the order in which teams are responsible for buying snacks.
+  This can be configured by adding a stringconfig with the name "rotation" and the value corresponding to a list of
+  comma separated team names.
 * `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`.
 
 ##### Direct message commands
@@ -86,7 +89,8 @@ PockyBot can be messaged directly with certain commands.
 * `welcome` &mdash; display a welcome message.
 * `ping` &mdash; verify that the bot is alive.
 * `help` &mdash; display a list of available commands.
-* `keywords` &mdash; display the available keywords
+* `keywords` &mdash; display the available keywords.
+* `rotation` &mdash; display the rotation (see above).
 
 #### Admin-only commands
 
