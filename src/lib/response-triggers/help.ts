@@ -23,7 +23,7 @@ export default class Help extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === this.commandText;
+		return message.text.toLowerCase().trim().startsWith(this.commandText);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
@@ -116,7 +116,7 @@ export default class Help extends Trigger {
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
-			newMessage += `*numberconfig
+			newMessage += `* numberconfig
 * stringconfig
 * roleconfig\n`;
 		}
