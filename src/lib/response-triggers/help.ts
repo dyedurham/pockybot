@@ -35,57 +35,46 @@ export default class Help extends Trigger {
 		if(!command) {
 			newMessage = this.createCommandListMessage(message);
 		} else {
-			switch(command.toLowerCase()){
-				case Command.Peg:
-					newMessage = this.createPegHelpMessage();
-					break;
-				case Command.Status:
-					newMessage = this.createStatusHelpMessage();
-					break;
-				case Command.Keywords:
-					newMessage = this.createKeywordsHelpMessage();
-					break;
-				case Command.Ping:
-					newMessage = this.createPingHelpMessage();
-					break;
-				case Command.Welcome:
-					newMessage = this.createWelcomeHelpMessage();
-					break;
-				case Command.Rotation:
-					newMessage = this.createRotationHelpMessage();
-					break;
-				case Command.Winners:
-					newMessage = this.createWinnersHelpMessage(message);
-					break;
-				case Command.Results:
-					newMessage = this.createResultsHelpMessage(message);
-					break;
-				case Command.Reset:
-					newMessage = this.createResetHelpMessage(message);
-					break;
-				case Command.Update:
-					newMessage = this.createUpdateHelpMessage(message);
-					break;
-				case Command.Finish:
-					newMessage = this.createFinishHelpMessage(message);
-					break;
-				case Command.NumberConfig:
-					newMessage = this.createNumberConfigHelpMessage(message);
-					break;
-				case Command.StringConfig:
-					newMessage = this.createStringConfigHelpMessage(message);
-					break;
-				case Command.RoleConfig:
-					newMessage = this.createRoleConfigHelpMessage(message);
-					break;
-				default:
-					newMessage = this.createDefaultHelpMessage();
-					break;
-			}
+			newMessage = this.createHelpResponseMessage(message, command);
 		}
 
 		return {
 				markdown: newMessage
+		};
+	}
+
+	createHelpResponseMessage(message: MessageObject, command: string) : string {
+		switch (command.toLowerCase()) {
+			case Command.Peg:
+				return this.createPegHelpMessage();
+			case Command.Status:
+				return this.createStatusHelpMessage();
+			case Command.Keywords:
+				return this.createKeywordsHelpMessage();
+			case Command.Ping:
+				return this.createPingHelpMessage();
+			case Command.Welcome:
+				return this.createWelcomeHelpMessage();
+			case Command.Rotation:
+				return this.createRotationHelpMessage();
+			case Command.Winners:
+				return this.createWinnersHelpMessage(message);
+			case Command.Results:
+				return this.createResultsHelpMessage(message);
+			case Command.Reset:
+				return this.createResetHelpMessage(message);
+			case Command.Update:
+				return this.createUpdateHelpMessage(message);
+			case Command.Finish:
+				return this.createFinishHelpMessage(message);
+			case Command.NumberConfig:
+				return this.createNumberConfigHelpMessage(message);
+			case Command.StringConfig:
+				return this.createStringConfigHelpMessage(message);
+			case Command.RoleConfig:
+				return this.createRoleConfigHelpMessage(message);
+			default:
+				return this.createDefaultHelpMessage();
 		}
 	}
 

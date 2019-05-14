@@ -28,7 +28,7 @@ beforeAll(() => {
 })
 
 function createInputMessage(text: string) {
-	return { personId: 'person', text: text};
+	return { personId: 'person', text: text };
 }
 
 describe('help message', () => {
