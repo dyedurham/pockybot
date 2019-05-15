@@ -108,8 +108,13 @@ const triggers : Trigger[] = [
 export default async (message : MessageObject, room : string) => {
 	try {
 		const responder : Trigger = triggers.find(x => x.isToTriggerOn(message));
-		__logger.information(`[Index.default] Found a trigger: ${responder.constructor.name}`);
-		return await responder.createMessage(message, room);
+		if(responder) {
+			__logger.information(`[Index.default] Found a trigger: ${responder.constructor.name}`);
+			return await responder.createMessage(message, room);
+		} else {
+			__logger.information(`[Index.default] No trigger found.`);
+			return null;
+		}
 	} catch (e) {
 		__logger.error(`[Index.default] Error selecting trigger: ${e.message}`);
 		return {
