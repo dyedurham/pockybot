@@ -3,8 +3,9 @@ import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 
 export default class Default extends Trigger {
-	isToTriggerOn() : boolean {
-		return true;
+	isToTriggerOn(message : MessageObject) : boolean {
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + 'ui');
+		return pattern.test(message.html);
 	}
 
 	isToTriggerOnPM() : boolean {
