@@ -30,13 +30,7 @@ export default class Help extends Trigger {
 		const pattern = new RegExp('^' + constants.botName, 'ui');
 		const helpPattern = new RegExp('^' + this.helpCommand, 'ui');
 		const command = message.text.trim().replace(pattern, '').trim().replace(helpPattern, '').trim();
-		let newMessage: string;
-
-		if(!command) {
-			newMessage = this.createCommandListMessage(message);
-		} else {
-			newMessage = this.createHelpResponseMessage(message, command);
-		}
+		const newMessage = this.createHelpResponseMessage(message, command);
 
 		return {
 				markdown: newMessage
@@ -44,6 +38,10 @@ export default class Help extends Trigger {
 	}
 
 	createHelpResponseMessage(message: MessageObject, command: string) : string {
+		if (!command) {
+			return this.createCommandListMessage(message);
+		}
+
 		switch (command.toLowerCase()) {
 			case Command.Peg:
 				return this.createPegHelpMessage();
