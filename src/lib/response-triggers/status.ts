@@ -5,9 +5,9 @@ import Config from '../config';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
+import { Command } from '../../models/command';
 
-const commandText = 'status';
-const statusCommand = `(?: )*${commandText}(?: )*`;
+const statusCommand = `(?: )*${Command.Status}(?: )*`;
 
 export default class Status extends Trigger {
 	spark : CiscoSpark;
@@ -28,7 +28,7 @@ export default class Status extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === commandText;
+		return message.text.toLowerCase().trim() === Command.Status;
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {

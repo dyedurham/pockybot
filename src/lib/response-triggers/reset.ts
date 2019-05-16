@@ -4,9 +4,10 @@ import { PockyDB } from '../database/db-interfaces';
 import Config from '../config';
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
-import { Role, ResultRow } from '../../models/database';
+import { Role } from '../../models/database';
+import { Command } from '../../models/command';
 
-const resetCommand = '(?: )*reset(?: )*';
+const resetCommand = `(?: )*${Command.Reset}(?: )*`;
 
 export default class Reset extends Trigger {
 	database : PockyDB;

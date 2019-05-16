@@ -5,8 +5,9 @@ import Config from '../config';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow, Role } from '../../models/database';
+import { Command } from '../../models/command';
 
-const updateCommand = '(?: )*update(?: )*';
+const updateCommand = `(?: )*${Command.Update}(?: )*`;
 
 export default class Update extends Trigger {
 	spark : CiscoSpark;

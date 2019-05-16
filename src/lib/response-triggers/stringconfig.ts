@@ -6,10 +6,10 @@ import { MessageObject } from 'ciscospark/env';
 import { Role, StringConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
+import { Command } from '../../models/command';
 
 export default class StringConfig extends Trigger {
-	readonly commandText : string = 'stringconfig';
-	readonly stringConfigCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly stringConfigCommand : string = `(?: )*${Command.StringConfig}(?: )*`;
 
 	config : Config;
 

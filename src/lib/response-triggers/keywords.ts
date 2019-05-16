@@ -2,10 +2,10 @@ import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
+import { Command } from '../../models/command';
 
 export default class Keywords extends Trigger {
-	readonly commandText : string = 'keywords';
-	readonly keywordsCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly keywordsCommand : string = `(?: )*${Command.Keywords}(?: )*`;
 
 	config : Config;
 
@@ -21,7 +21,7 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === this.commandText;
+		return message.text.toLowerCase().trim() === Command.Keywords;
 	}
 
 	async createMessage() : Promise<MessageObject> {
