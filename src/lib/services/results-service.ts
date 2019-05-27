@@ -2,7 +2,7 @@ import constants from '../../constants';
 import __logger from '../logger';
 import * as fs from 'fs';
 import { FormatResultsService } from './format-results-service';
-const storage = require('@google-cloud/storage');
+import { Storage } from '@google-cloud/storage';
 
 export interface ResultsService {
 	returnResultsMarkdown() : Promise<string>
@@ -30,7 +30,7 @@ export class DefaultResultsService implements ResultsService {
 
 		fs.writeFileSync(filePath + '.html', html);
 
-		const client = new storage.Storage();
+		const client = new Storage();
 		let response = await client.bucket(process.env.GCLOUD_BUCKET_NAME).upload(filePath + '.html');
 		let file = response[0];
 		await file.makePublic();
