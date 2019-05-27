@@ -28,7 +28,7 @@ function createDbUsers() : DbUsers {
 
 	const dbUsers = new DbUsers(null, queryHandler);
 	spyOn(dbUsers, 'existsOrCanBeCreated').and.returnValue(new Promise((resolve, reject) => resolve(true)));
-	spyOn(dbUsers, 'getUser').and.returnValue(new Promise((resolve, reject) => resolve({username: 'Username'})));
+	spyOn(dbUsers, 'getUser').and.returnValue(new Promise((resolve, reject) => resolve({ userid: '1', username: 'Username'})));
 
 	return dbUsers;
 }
@@ -36,7 +36,7 @@ function createDbUsers() : DbUsers {
 beforeAll(() => {
 	spyOn(config, 'getAllRoles').and.callFake(() => {
 		return [{
-			role: Role.Admin,
+			role: Role.Unmetered,
 			userid: '1'
 		}];
 	});
@@ -56,7 +56,7 @@ beforeAll(() => {
 
 	spyOn(config, 'getRoles').and.callFake((userid : string) => {
 		if (userid === '1') {
-			return ['UNMETERED'];
+			return [ Role.Unmetered ];
 		}
 
 		return [];
@@ -85,8 +85,8 @@ describe('configuration message parsing', () => {
 		expect(response.markdown).toContain(
 `Here is the current config:
 \`\`\`
-Name | Value
-test | Username
+  Name    | Value
+UNMETERED | Username
 \`\`\``
 		);
 		done();

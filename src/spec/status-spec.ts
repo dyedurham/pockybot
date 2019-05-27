@@ -38,7 +38,10 @@ beforeAll(() => {
 	spyOn(spark.people, 'get').and.callFake((name : string) => {
 		return new Promise((resolve, reject) => {
 			resolve({
-				displayName: name + 'display'
+				id: name,
+				displayName: name + 'display',
+				emails: [],
+				created: new Date()
 			});
 		})
 	});

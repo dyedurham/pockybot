@@ -19,7 +19,9 @@ function createMessage(htmlMessage : string, personId = 'MockSender', receiver =
 
 function createDatabase() : DbUsers {
 	let client = new Client();
-	spyOn(client, 'connect').and.returnValue(new Promise(resolve => resolve()));
+	spyOn(client, 'connect').and.callFake(() => {
+		return Promise.resolve(undefined);
+	});
 	let db = new MockDbUsers();
 
 	spyOn(db, 'getUser').and.callFake((userid : string) => {
