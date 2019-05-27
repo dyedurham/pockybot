@@ -57,8 +57,6 @@ function getReceiverColumnWidths(results : Receiver[]) : { receiver : number, se
 }
 
 function getRolesColumnWidths(configValues : RolesRow[]) : { name : number, value : number } {
-	const stringWidth = require('string-width');
-
 	let longestname = stringWidth('name');
 	let longestvalue = stringWidth('value');
 
@@ -67,8 +65,8 @@ function getRolesColumnWidths(configValues : RolesRow[]) : { name : number, valu
 			longestname = stringWidth(value.role);
 		}
 
-		if (stringWidth(value.userid) > longestvalue) {
-			longestvalue = stringWidth(value.userid);
+		if (stringWidth(value.userid.toString()) > longestvalue) {
+			longestvalue = stringWidth(value.userid.toString());
 		}
 	});
 
@@ -111,8 +109,8 @@ function getConfigColumnWidths(configValues : ConfigRow[]) : { name : number, va
 			longestname = stringWidth(value.name);
 		}
 
-		if (stringWidth(value.value) > longestvalue) {
-			longestvalue = stringWidth(value.value);
+		if (stringWidth(value.value.toString()) > longestvalue) {
+			longestvalue = stringWidth(value.value.toString());
 		}
 	});
 
