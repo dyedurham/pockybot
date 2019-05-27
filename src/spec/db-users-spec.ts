@@ -24,7 +24,9 @@ function createPgClient(connectSuccess : boolean, pegCount : number) : Client {
 
 	if (connectSuccess) {
 		console.log('connect success');
-		spyOn(client, 'connect').and.returnValue(new Promise((resolve, reject) => resolve()));
+		spyOn(client, 'connect').and.callFake(() => {
+			return Promise.resolve(undefined);
+		});
 	} else {
 		console.log('connect fail');
 		spyOn(client, 'connect').and.returnValue(new Promise((resolve, reject) => reject()));

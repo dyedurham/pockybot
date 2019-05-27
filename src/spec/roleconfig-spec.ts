@@ -20,7 +20,7 @@ function createMessage(htmlMessage : string, person : string) : MessageObject {
 function createDbUsers() : DbUsers {
 	const client = new Client();
 	spyOn(client, 'connect').and.callFake(() => {
-		return new Promise((resolve, reject) => {resolve()});
+		return Promise.resolve(undefined);
 	});
 
 	const queryHandler = new QueryHandler(client);
@@ -36,8 +36,8 @@ function createDbUsers() : DbUsers {
 beforeAll(() => {
 	spyOn(config, 'getAllRoles').and.callFake(() => {
 		return [{
-			role: 'test',
-			userid: 1
+			role: Role.Admin,
+			userid: '1'
 		}];
 	});
 
