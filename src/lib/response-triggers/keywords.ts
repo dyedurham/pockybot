@@ -31,8 +31,15 @@ export default class Keywords extends Trigger {
 			newMessage += `* ${item}\n`;
 		});
 
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeywords');
+		if (penaltyKeywords.length > 0) {
+			newMessage += '\n## Here is the list of keywords that can be used to apply a penalty to the sender\n\n';
+			newMessage += 'Penalty keywords do not count against the peg limit, and are *not* applied to messages that also include standard keywords.\n\n';
+			newMessage += penaltyKeywords.map(keyword => `* ${keyword}\n`);
+		}
+
 		return {
-				markdown: newMessage
+			markdown: newMessage
 		};
 	}
 }

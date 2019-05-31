@@ -73,10 +73,13 @@ export default class Peg extends Trigger {
 	}
 
 	validateValues(message : ParsedMessage) : boolean {
-		let keywords = this.config.getStringConfig('keyword');
-		return keywords.some(keyword =>
-			message.comment.toLowerCase().includes(keyword.toLowerCase())
-		);
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeywords');
+
+		// lambda to check if the message contains one of the words in the list on which it is run
+		const keywordIncluded = keyword => message.comment.toLowerCase().includes(keyword.toLowerCase());
+
+		return keywords.some(keywordIncluded) || penaltyKeywords.some(keywordIncluded);
 	}
 
 	validateMessage(message : ParsedMessage) : boolean {
@@ -103,6 +106,7 @@ export default class Peg extends Trigger {
 	}
 
 	async givePegWithComment(comment : string, toPersonId : string, fromPerson : string) : Promise<MessageObject> {
+		// TODO: refactor the way database queries are handled to allow checking in logic to dis-count penalty pegs
 		let result : number = await this.database.givePegWithComment(comment, toPersonId, fromPerson);
 
 		if (result === dbConstants.pegSuccess) {
