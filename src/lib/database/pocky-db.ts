@@ -81,13 +81,21 @@ export default class PockyDB implements PockyDbInterface {
 			values: [user]
 		};
 
+		let data : any;
+
 		try {
-			let data = await this.queryHandler.executeQuery(query);
-			return data[0]['count'];
+			data = await this.queryHandler.executeQuery(query);
 		} catch (error) {
 			__logger.error(`[PockyDb.countPegsGiven] Error executing query to count pegs given by user ${user}`);
 			throw error;
 		}
+
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+		const nonPenaltyPegs = data.filter(peg =>
+			!penaltyKeywords.some(keyword =>
+				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+
+		return nonPenaltyPegs.length;
 	}
 
 	async hasSparePegs(user : string) : Promise<boolean> {
