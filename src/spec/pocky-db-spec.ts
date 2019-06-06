@@ -31,7 +31,13 @@ beforeAll(() => {
 			return 0;
 		}
 
-		throw new Error('bad config');
+		throw new Error(`bad config: ${config}`);
+	});
+
+	spyOn(config, 'getStringConfig').and.callFake((string : string) => {
+		if (string === 'penaltyKeyword') {
+			return ['shame'];
+		}
 	});
 });
 
@@ -78,10 +84,8 @@ describe('has spare pegs', () => {
 	let queryHandler : QueryHandler;
 
 	beforeEach(() => {
-		queryHandler = createQueryHandlerMock(
-			[{count:0}]
-		);
-	})
+		queryHandler = createQueryHandlerMock([]);
+	});
 
 	it('should return true for default_user', async (done : DoneFn) => {
 		const database = new PockyDB(queryHandler, null);
@@ -100,7 +104,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return false for other users', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:10}]);
+		let queryHandler = createQueryHandlerMock(createGoodPegs(10));
 		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.hasSparePegs('some_sender');
@@ -109,7 +113,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return true for no pegs spent', async (done : DoneFn) => {
-		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], false);
+		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], ['shame'], false);
 
 		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
@@ -120,19 +124,28 @@ describe('has spare pegs', () => {
 });
 
 describe('count pegs', () => {
-	it('should return count of pegs', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:125689}]);
+	it('should return count of all good pegs', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock(createGoodPegs(125689));
 		const database = new PockyDB(queryHandler, null);
 		database.loadConfig(config);
 		let result = await database.countPegsGiven('some_sender');
 		expect(result).toBe(125689);
 		done();
 	});
+
+	it('should return count of good pegs when there are good and bad pegs', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock(createGoodAndBadPegs(40, 12));
+		const database = new PockyDB(queryHandler, null);
+		database.loadConfig(config);
+		let result = await database.countPegsGiven('some_sender');
+		expect(result).toBe(40);
+		done();
+	})
 });
 
 describe('give peg with comment', () => {
 	it('should return 0', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:0}]);
+		let queryHandler = createQueryHandlerMock([]);
 		let dbUsers = new MockDbUsers();
 		const database = new PockyDB(queryHandler, dbUsers);
 		database.loadConfig(config);
@@ -141,3 +154,21 @@ describe('give peg with comment', () => {
 		done();
 	});
 });
+
+function createGoodPegs(count : number) {
+	let pegs = [];
+	for (let i = 0; i < count; ++i) {
+		pegs.push({'comment': 'this is an awesome peg!'});
+	}
+
+	return pegs;
+}
+
+function createGoodAndBadPegs(goodPegs : number, badPegs : number) {
+	let pegs = createGoodPegs(goodPegs);
+	for (let i = 0; i < badPegs; ++i) {
+		pegs.push({'comment': 'this is a shameful peg'});
+	}
+
+	return pegs;
+}

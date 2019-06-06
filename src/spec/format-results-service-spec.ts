@@ -41,7 +41,7 @@ function createDatabase(success: boolean, data): PockyDB {
 }
 
 function createConfig(): Config{
-	let config = new MockConfig(5, 1, 3, 1, 1, 1, ['brave', 'awesome', 'customer']);
+	let config = new MockConfig(5, 1, 3, 1, 1, 1, ['brave', 'awesome', 'customer'], ['shame']);
 	return config;
 }
 
