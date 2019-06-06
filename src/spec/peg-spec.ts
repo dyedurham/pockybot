@@ -10,7 +10,7 @@ import MockConfig from './mocks/mock-config';
 
 const spark = new MockCiscoSpark();
 const dbUsers = new MockDbUsers();
-const config = new MockConfig(10, 5, 3, 1, 0, 1, ['awesome', 'brave', 'collaborative']);
+const config = new MockConfig(10, 5, 3, 1, 0, 1, ['awesome', 'brave', 'collaborative'], ['shame']);
 
 function createMessage(htmlMessage : string, person : string,
 	mentionedFirst = constants.botId, mentionedSecond = 'aoeuidhtns') : MessageObject {
