@@ -1,5 +1,5 @@
 FROM node:9-alpine
-LABEL version="1.5.1"
+LABEL version="1.6.0"
 COPY . /src
 WORKDIR /src
 ENTRYPOINT ["npm", "start"]
