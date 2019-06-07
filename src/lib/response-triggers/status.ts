@@ -44,11 +44,18 @@ export default class Status extends Trigger {
 			response += `
 
 Here's the pegs you've given so far...
-${mapped.list}`;
+${mapped.goodPegs}`;
 		} else {
 			response += `
 
 You have not given any pegs so far.`;
+		}
+
+		if (mapped.hasPenalised) {
+			response += `
+
+Here are the penalties you have received...
+${mapped.penaltyPegs}`
 		}
 
 		return {
@@ -69,19 +76,35 @@ You have not given any pegs so far.`;
 		return Promise.all(mapToDisplayNameAsync);
 	}
 
-	mapData(data : PegGivenData[], fromPerson : string) : {list : string, remaining : string, hasPegged : boolean} {
+	mapData(data : PegGivenData[], fromPerson : string) :
+		{ goodPegs : string, penaltyPegs : string, remaining : string,
+			hasPegged : boolean, hasPenalised : boolean } {
 		let remaining = '';
+
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+		const nonPenaltyPegs = data.filter(peg =>
+			!penaltyKeywords.some(keyword =>
+				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+		const penaltyPegs = data.filter(peg =>
+			penaltyKeywords.some(keyword =>
+				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+
+		const givenPegs = nonPenaltyPegs.length;
 
 		if (this.config.checkRole(fromPerson, Role.Unmetered)) {
 			remaining = 'unlimited';
 		} else {
-			remaining = (this.config.getConfig('limit') - data.length).toString();
+			remaining = (this.config.getConfig('limit') - givenPegs).toString();
 		}
 
+		const pegMessageReducer = (msg, p) => msg + `* **${p.receiver}** — "_${p.comment}_"\n`;
+
 		return {
-			list: data.reduce((msg, p) => msg + `* **${p.receiver}** — "_${p.comment}_"\n`, ''),
+			goodPegs: nonPenaltyPegs.reduce(pegMessageReducer, ''),
+			penaltyPegs: penaltyPegs.reduce(pegMessageReducer, ''),
 			remaining: remaining,
-			hasPegged: data.length > 0
+			hasPegged: nonPenaltyPegs.length > 0,
+			hasPenalised: penaltyPegs.length > 0
 		};
 	}
 }
