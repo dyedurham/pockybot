@@ -81,13 +81,22 @@ ${mapped.penaltyPegs}`
 			hasPegged : boolean, hasPenalised : boolean } {
 		let remaining = '';
 
+		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
 		const nonPenaltyPegs = data.filter(peg =>
-			!penaltyKeywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+			// NOT: peg comment includes penaltyKeyword and does not include keyword
+			!(penaltyKeywords.some(keyword =>
+					peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
+				&& keywords.some(keyword =>
+					peg['comment'].toLowerCase().includes(keyword.toLowerCase()))));
+
 		const penaltyPegs = data.filter(peg =>
+			// peg comment includes penaltyKeyword and does not include keyword
 			penaltyKeywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+					peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
+				&& keywords.some(keyword =>
+					peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
 
 		const givenPegs = nonPenaltyPegs.length;
 

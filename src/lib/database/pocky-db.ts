@@ -95,10 +95,15 @@ export default class PockyDB implements PockyDbInterface {
 			throw error;
 		}
 
+		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
 		const nonPenaltyPegs = givenPegs.filter(peg =>
-			!penaltyKeywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
+			// NOT: peg comment includes penaltyKeyword and does not include keyword
+			!(penaltyKeywords.some(keyword =>
+				peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
+				&& keywords.some(keyword =>
+					peg['comment'].toLowerCase().includes(keyword.toLowerCase()))));
 
 		return nonPenaltyPegs.length;
 	}
