@@ -38,6 +38,10 @@ beforeAll(() => {
 		if (string === 'penaltyKeyword') {
 			return ['shame'];
 		}
+
+		if (string === 'keyword') {
+			return ['awesome', 'brave', 'collaborative'];
+		}
 	});
 });
 
