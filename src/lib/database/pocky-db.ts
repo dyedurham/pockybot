@@ -41,6 +41,7 @@ export default class PockyDB implements PockyDbInterface {
 	 *         2 on error
 	 */
 	async givePegWithComment(comment : string, receiver : string, sender = 'default_user') : Promise<number> {
+		// Check or create both sender and receiver users
 		try {
 			await Promise.all([this.dbUsers.existsOrCanBeCreated(sender), this.dbUsers.existsOrCanBeCreated(receiver)]);
 		} catch (error) {
@@ -54,7 +55,11 @@ export default class PockyDB implements PockyDbInterface {
 			return dbConstants.pegError;
 		}
 
-		if (!senderHasPegs) {
+		// TODO: make this faster and less repetitive by refactoring getting the list of penaltyKeywords.
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
+		if (!senderHasPegs
+			&&!penaltyKeywords.some(keyword => comment.toLowerCase().includes(keyword.toLowerCase()))) {
 			__logger.information(`[PockyDb.givePegWithComment] Sender ${sender} has no spare pegs`);
 			return dbConstants.pegAllSpent;
 		}
@@ -81,17 +86,17 @@ export default class PockyDB implements PockyDbInterface {
 			values: [user]
 		};
 
-		let data : any;
+		let givenPegs : any;
 
 		try {
-			data = await this.queryHandler.executeQuery(query);
+			givenPegs = await this.queryHandler.executeQuery(query);
 		} catch (error) {
 			__logger.error(`[PockyDb.countPegsGiven] Error executing query to count pegs given by user ${user}`);
 			throw error;
 		}
 
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
-		const nonPenaltyPegs = data.filter(peg =>
+		const nonPenaltyPegs = givenPegs.filter(peg =>
 			!penaltyKeywords.some(keyword =>
 				peg['comment'].toLowerCase().includes(keyword.toLowerCase())));
 
