@@ -55,11 +55,7 @@ export default class PockyDB implements PockyDbInterface {
 			return dbConstants.pegError;
 		}
 
-		// TODO: make this faster and less repetitive by refactoring getting the list of penaltyKeywords.
-		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
-
-		if (!senderHasPegs
-			&&!penaltyKeywords.some(keyword => comment.toLowerCase().includes(keyword.toLowerCase()))) {
+		if (!senderHasPegs) {
 			__logger.information(`[PockyDb.givePegWithComment] Sender ${sender} has no spare pegs`);
 			return dbConstants.pegAllSpent;
 		}
