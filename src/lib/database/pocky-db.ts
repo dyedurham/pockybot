@@ -55,7 +55,7 @@ export default class PockyDB implements PockyDbInterface {
 
 		let senderHasPegs : boolean;
 		try {
-			senderHasPegs = await this.hasSparePegs(sender, comment);
+			senderHasPegs = await this.senderCanPeg(sender, comment);
 		} catch (error) {
 			return dbConstants.pegError;
 		}
@@ -101,13 +101,13 @@ export default class PockyDB implements PockyDbInterface {
 		return nonPenaltyPegs.length;
 	}
 
-	async hasSparePegs(user : string, comment : string) : Promise<boolean> {
+	async senderCanPeg(user : string, comment : string) : Promise<boolean> {
 		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
 		let count = this.countPegsGiven(user, keywords, penaltyKeywords);
 
-		__logger.debug(`[PockyDb.hasSparePegs] Checking if user ${user} has spare pegs`);
+		__logger.debug(`[PockyDb.senderCanPeg] Checking if user ${user} has spare pegs`);
 
 		if (this.utilities.commentIsPenalty(comment, keywords, penaltyKeywords)) {
 			return true;

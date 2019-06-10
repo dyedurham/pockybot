@@ -97,7 +97,7 @@ describe('has spare pegs', () => {
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('default_user', '');
+		let result = await database.senderCanPeg('default_user', '');
 		expect(result).toBe(true);
 		done();
 	});
@@ -107,7 +107,7 @@ describe('has spare pegs', () => {
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('mockunmeteredID', '');
+		let result = await database.senderCanPeg('mockunmeteredID', '');
 		expect(result).toBe(true);
 		done();
 	});
@@ -118,7 +118,7 @@ describe('has spare pegs', () => {
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('some_sender', '');
+		let result = await database.senderCanPeg('some_sender', '');
 		expect(result).toBe(false);
 		done();
 	});
@@ -131,7 +131,7 @@ describe('has spare pegs', () => {
 		const database = new PockyDB(queryHandler, null, utilities);
 
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('some_sender', '');
+		let result = await database.senderCanPeg('some_sender', '');
 		expect(result).toBe(true);
 		done();
 	});
