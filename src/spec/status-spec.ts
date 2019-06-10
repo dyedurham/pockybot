@@ -6,6 +6,7 @@ import MockCiscoSpark from './mocks/mock-spark';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
+import Utilities from '../lib/utilities';
 
 const config = new Config(null);
 const spark = new MockCiscoSpark();
@@ -81,7 +82,10 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		let status = new Status(spark, database, config);
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
+
+		let status = new Status(spark, database, config, utilities);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
 		let message = await status.createMessage(sentMessage);
@@ -97,7 +101,10 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		let status = new Status(spark, database, config);
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
+
+		let status = new Status(spark, database, config, utilities);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'mockunlimitedID');
 		let message = await status.createMessage(sentMessage);
@@ -113,7 +120,10 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		let status = new Status(spark, database, config);
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
+
+		let status = new Status(spark, database, config, utilities);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
 		let message = await status.createMessage(sentMessage);
@@ -129,17 +139,26 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'dtsdsrtdrsdpf'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		let status = new Status(spark, database, config);
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake(() => {
+			return [
+				{receiver: 'test', comment: 'trsioetnsrio'},
+				{receiver: 'test3', comment: 'dtsdsrtdrsdpf'},
+				{receiver: 'test2', comment: 'trsioetnsrio'}
+			];
+		});
+
+		let status = new Status(spark, database, config, utilities);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> status',
 			'person!');
 		let message = await status.createMessage(sentMessage);
-		expect(message.markdown).toContain('* **test3display** — "_dtsdsrtdrsdpf_"');
+		expect(message.markdown).toContain('* **test3** — "_dtsdsrtdrsdpf_"');
 		done();
 	});
 });
 
 describe('testing status triggers', () => {
-	const status = new Status(spark, null, config);
+	const status = new Status(spark, null, config, null);
 
 	const TriggerTestCases = [
 		{ text: `${constants.mentionMe} status`, expectedTriggered: true },
@@ -156,7 +175,7 @@ describe('testing status triggers', () => {
 });
 
 describe('testing status PM triggers', () => {
-	const status = new Status(spark, null, config);
+	const status = new Status(spark, null, config, null);
 	it('should accept trigger', () => {
 		let message = createPrivateMessage('status');
 		let results = status.isToTriggerOnPM(message)
