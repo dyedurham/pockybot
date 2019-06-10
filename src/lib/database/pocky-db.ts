@@ -6,6 +6,8 @@ import { PegGiven, ResultRow, Role } from '../../models/database';
 import { DbUsers } from './db-interfaces';
 import { PockyDB as PockyDbInterface } from './db-interfaces';
 import QueryHandler from './query-handler-interface';
+import Utilities from '../utilities';
+import { PegGivenData } from '../../models/peg-given-data';
 
 export default class PockyDB implements PockyDbInterface {
 	private readonly sqlGivePegWithComment : string;
@@ -18,10 +20,13 @@ export default class PockyDB implements PockyDbInterface {
 	private config : Config;
 	private queryHandler : QueryHandler;
 	private dbUsers : DbUsers;
+	private readonly utilities : Utilities;
 
-	constructor(queryHandler : QueryHandler, dbUsers : DbUsers) {
+
+	constructor(queryHandler : QueryHandler, dbUsers : DbUsers, utilities : Utilities) {
 		this.queryHandler = queryHandler;
 		this.dbUsers = dbUsers;
+		this.utilities = utilities;
 
 		this.sqlGivePegWithComment = this.queryHandler.readFile('../../../database/queries/give_peg_with_comment.sql');
 		this.sqlPegsGiven = this.queryHandler.readFile('../../../database/queries/pegs_given.sql');
@@ -50,7 +55,7 @@ export default class PockyDB implements PockyDbInterface {
 
 		let senderHasPegs : boolean;
 		try {
-			senderHasPegs = await this.hasSparePegs(sender);
+			senderHasPegs = await this.hasSparePegs(sender, comment);
 		} catch (error) {
 			return dbConstants.pegError;
 		}
@@ -75,14 +80,14 @@ export default class PockyDB implements PockyDbInterface {
 		}
 	}
 
-	async countPegsGiven(user : string) : Promise<number> {
+	async countPegsGiven(user : string, keywords : string[], penaltyKeywords : string[]) : Promise<number> {
 		let query : QueryConfig = {
 			name: 'pegsGiven',
 			text: this.sqlPegsGiven,
 			values: [user]
 		};
 
-		let givenPegs : any;
+		let givenPegs : PegGivenData[];
 
 		try {
 			givenPegs = await this.queryHandler.executeQuery(query);
@@ -91,22 +96,22 @@ export default class PockyDB implements PockyDbInterface {
 			throw error;
 		}
 
-		const keywords = this.config.getStringConfig('keyword');
-		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
-
-		const nonPenaltyPegs = givenPegs.filter(peg =>
-			// Peg includes keyword, OR peg does not include penaltyKeyword
-			keywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
-			|| (!penaltyKeywords.some(keyword => peg['comment'].toLowerCase().includes(keyword.toLowerCase())))
-		);
+		const nonPenaltyPegs = this.utilities.getNonPenaltyPegs(givenPegs, keywords, penaltyKeywords);
 
 		return nonPenaltyPegs.length;
 	}
 
-	async hasSparePegs(user : string) : Promise<boolean> {
-		let count = this.countPegsGiven(user);
+	async hasSparePegs(user : string, comment : string) : Promise<boolean> {
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
+		let count = this.countPegsGiven(user, keywords, penaltyKeywords);
+
 		__logger.debug(`[PockyDb.hasSparePegs] Checking if user ${user} has spare pegs`);
+
+		if (this.utilities.commentIsPenalty(comment, keywords, penaltyKeywords)) {
+			return true;
+		}
 
 		if (user === 'default_user' || this.config.checkRole(user, Role.Unmetered)) {
 			return true;

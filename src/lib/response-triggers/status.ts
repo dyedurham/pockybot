@@ -6,6 +6,7 @@ import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
 import { Command } from '../../models/command';
+import Utilities from '../utilities';
 
 const statusCommand = `(?: )*${Command.Status}(?: )*`;
 
@@ -13,13 +14,15 @@ export default class Status extends Trigger {
 	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
+	utilities : Utilities;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config, utilities : Utilities) {
 		super();
 
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;
+		this.utilities = utilities;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -84,19 +87,9 @@ ${mapped.penaltyPegs}`
 		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
-		const nonPenaltyPegs = data.filter(peg =>
-			// Peg includes keyword, OR peg does not include penaltyKeyword
-			keywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
-			|| (!penaltyKeywords.some(keyword => peg['comment'].toLowerCase().includes(keyword.toLowerCase())))
-		);
+		const nonPenaltyPegs = this.utilities.getNonPenaltyPegs(data, keywords, penaltyKeywords);
 
-		const penaltyPegs = data.filter(peg =>
-			// Peg includes penaltyKeyword, AND peg does not include keyword
-			penaltyKeywords.some(keyword =>
-				peg['comment'].toLowerCase().includes(keyword.toLowerCase()))
-			&& (!keywords.some(keyword => peg['comment'].toLowerCase().includes(keyword.toLowerCase())))
-		);
+		const penaltyPegs = this.utilities.getPenaltyPegs(data, keywords, penaltyKeywords);
 
 		const givenPegs = nonPenaltyPegs.length;
 
