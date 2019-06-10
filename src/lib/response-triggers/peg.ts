@@ -136,8 +136,11 @@ export default class Peg extends Trigger {
 	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject> {
 		let count : number;
 
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
 		try {
-			count = await this.database.countPegsGiven(fromPerson);
+			count = await this.database.countPegsGiven(fromPerson, keywords, penaltyKeywords);
 		} catch (error) {
 			__logger.error(`[Peg.pmSender] Error counting pegsGiven from ${fromPerson}: ${error.message}`);
 			return {
