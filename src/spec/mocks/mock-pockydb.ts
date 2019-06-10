@@ -39,7 +39,7 @@ export default class MockPockyDb implements PockyDB {
 		}
 	}
 
-	async hasSparePegs(user: string) : Promise<boolean> {
+	async senderCanPeg(user: string) : Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
 
