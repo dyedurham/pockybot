@@ -27,20 +27,22 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
+import Utilities from '../utilities';
 
 
 // Service instantiation
+const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
-const database = new PockyDB(queryHandler, dbUsers);
+const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new configService(dbConfig);
 
 database.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const status = new Status(spark, database, config);
+const status = new Status(spark, database, config, utilities);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const help = new Help(config);
