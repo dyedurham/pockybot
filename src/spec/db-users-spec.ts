@@ -16,7 +16,8 @@ function createSparkMock() : CiscoSpark {
 				id: userid,
 				displayName: userid + 'display',
 				emails: [],
-				created: new Date()
+				created: new Date(),
+				type: 'person'
 			});
 		});
 	});

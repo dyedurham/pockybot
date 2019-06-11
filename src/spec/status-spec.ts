@@ -42,7 +42,8 @@ beforeAll(() => {
 				id: name,
 				displayName: name + 'display',
 				emails: [],
-				created: new Date()
+				created: new Date(),
+				type: 'person'
 			});
 		})
 	});
