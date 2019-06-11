@@ -7,6 +7,7 @@ import Utilities from '../utilities';
 import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow } from '../../models/database';
+import { Command } from '../../models/command';
 
 // A joke option. Tells users pegs have been removed, but no pegs will actually be taken.
 export default class  Unpeg extends Trigger {
@@ -24,7 +25,7 @@ export default class  Unpeg extends Trigger {
 		this.utilities = utilities;
 
 		let s = constants.optionalSpace;
-		this.unpegCommand = `^${s}unpeg${s}$`;
+		this.unpegCommand = `^${s}${Command.Unpeg}${s}$`;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {

@@ -13,4 +13,5 @@ VALUES
 ('keyword', 'brave'),
 ('keyword', 'awesome'),
 ('keyword', 'collaborative'),
-('keyword', 'real');
+('keyword', 'real'),
+('penaltyKeyword', 'shame');

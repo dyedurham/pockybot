@@ -5,8 +5,9 @@ import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { WinnersService } from '../services/winners-service';
+import { Command } from '../../models/command';
 
-const resultsCommand = '(?: )*winners(?: )*';
+const winnersCommand = `(?: )*${Command.Winners}(?: )*`;
 
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = 'Error encountered; cannot display winners.';
@@ -24,7 +25,7 @@ export default class Results extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resultsCommand, 'ui');
+		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + winnersCommand, 'ui');
 		return pattern.test(message.html);
 	}
 

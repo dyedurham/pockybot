@@ -6,13 +6,15 @@ import { MessageObject } from 'ciscospark/env';
 const config = new Config(null);
 beforeAll(() => {
 	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
-		if (config == 'keyword') {
+		if (config === 'keyword') {
 			return ['customer', 'brave', 'awesome', 'collaborative', 'real'];
+		} else if (config === 'penaltyKeyword') {
+			return ['shame'];
 		}
 
-		throw new Error('bad config');
+		throw new Error(`bad config: ${config}`);
 	});
-})
+});
 
 function createMessage(htmlMessage : string) : MessageObject {
 	return {

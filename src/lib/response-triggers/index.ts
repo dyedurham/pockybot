@@ -20,6 +20,7 @@ import Welcome from './welcome';
 import Help from './help';
 import Ping from './ping';
 import Keywords from './keywords';
+import Rotation from './rotation';
 import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
@@ -47,7 +48,7 @@ const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(spark, queryHandler);
-const database = new PockyDB(queryHandler,dbUsers);
+const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new Config(dbConfig);
 const categoryResultsService = new DefaultCategoryResultsService();
 const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService);
@@ -64,7 +65,7 @@ const unpeg = new Unpeg(spark, dbUsers, utilities);
 const reset = new Reset(database, config);
 const winners = new Winners(winnersService, config);
 const results = new Results(resultsService, config);
-const status = new Status(spark, database, config);
+const status = new Status(spark, database, config, utilities);
 const update = new Update(spark, dbUsers, config);
 const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config, spark);
 const welcome = new Welcome(config);
@@ -74,6 +75,7 @@ const stringConfig = new StringConfig(config);
 const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
+const rotation = new Rotation(config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -89,6 +91,7 @@ const triggers : Trigger[] = [
 	finish,
 	unpeg,
 	keywords,
+	rotation,
 	numberConfig,
 	stringConfig,
 	roleConfig,
@@ -105,8 +108,13 @@ const triggers : Trigger[] = [
 export default async (message : MessageObject, room : string) => {
 	try {
 		const responder : Trigger = triggers.find(x => x.isToTriggerOn(message));
-		__logger.information(`[Index.default] Found a trigger: ${responder.constructor.name}`);
-		return await responder.createMessage(message, room);
+		if(responder) {
+			__logger.information(`[Index.default] Found a trigger: ${responder.constructor.name}`);
+			return await responder.createMessage(message, room);
+		} else {
+			__logger.information(`[Index.default] No trigger found.`);
+			return null;
+		}
 	} catch (e) {
 		__logger.error(`[Index.default] Error selecting trigger: ${e.message}`);
 		return {

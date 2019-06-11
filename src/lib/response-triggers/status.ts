@@ -5,21 +5,24 @@ import Config from '../config';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
+import { Command } from '../../models/command';
+import Utilities from '../utilities';
 
-const commandText = 'status';
-const statusCommand = `(?: )*${commandText}(?: )*`;
+const statusCommand = `(?: )*${Command.Status}(?: )*`;
 
 export default class Status extends Trigger {
 	spark : CiscoSpark;
 	database : PockyDB;
 	config : Config;
+	utilities : Utilities;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config) {
+	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config, utilities : Utilities) {
 		super();
 
 		this.spark = sparkService;
 		this.database = databaseService;
 		this.config = config;
+		this.utilities = utilities;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -28,7 +31,7 @@ export default class Status extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === commandText;
+		return message.text.toLowerCase().trim() === Command.Status;
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
@@ -44,11 +47,18 @@ export default class Status extends Trigger {
 			response += `
 
 Here's the pegs you've given so far...
-${mapped.list}`;
+${mapped.goodPegs}`;
 		} else {
 			response += `
 
 You have not given any pegs so far.`;
+		}
+
+		if (mapped.hasPenalised) {
+			response += `
+
+Here are the penalties you have received...
+${mapped.penaltyPegs}`
 		}
 
 		return {
@@ -69,19 +79,34 @@ You have not given any pegs so far.`;
 		return Promise.all(mapToDisplayNameAsync);
 	}
 
-	mapData(data : PegGivenData[], fromPerson : string) : {list : string, remaining : string, hasPegged : boolean} {
+	mapData(data : PegGivenData[], fromPerson : string) :
+		{ goodPegs : string, penaltyPegs : string, remaining : string,
+			hasPegged : boolean, hasPenalised : boolean } {
 		let remaining = '';
+
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
+		const nonPenaltyPegs = this.utilities.getNonPenaltyPegs(data, keywords, penaltyKeywords);
+
+		const penaltyPegs = this.utilities.getPenaltyPegs(data, keywords, penaltyKeywords);
+
+		const givenPegs = nonPenaltyPegs.length;
 
 		if (this.config.checkRole(fromPerson, Role.Unmetered)) {
 			remaining = 'unlimited';
 		} else {
-			remaining = (this.config.getConfig('limit') - data.length).toString();
+			remaining = (this.config.getConfig('limit') - givenPegs).toString();
 		}
 
+		const pegMessageReducer = (msg, p) => msg + `* **${p.receiver}** — "_${p.comment}_"\n`;
+
 		return {
-			list: data.reduce((msg, p) => msg + `* **${p.receiver}** — "_${p.comment}_"\n`, ''),
+			goodPegs: nonPenaltyPegs.reduce(pegMessageReducer, ''),
+			penaltyPegs: penaltyPegs.reduce(pegMessageReducer, ''),
 			remaining: remaining,
-			hasPegged: data.length > 0
+			hasPegged: nonPenaltyPegs.length > 0,
+			hasPenalised: penaltyPegs.length > 0
 		};
 	}
 }

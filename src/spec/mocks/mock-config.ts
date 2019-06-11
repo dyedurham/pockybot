@@ -9,11 +9,13 @@ export default class MockConfig implements Config {
 	private pegWithoutKeyword : number;
 	private requireValues : number;
 	private keywords : string[];
+	private penaltyKeywords : string[];
 	private hasRole? : boolean;
 
 	constructor(limit : number, minimum : number, winners : number,
 		commentsRequired : number, pegWithoutKeyword : number, requireValues : number,
 		keywords : string[],
+		penaltyKeywords : string[],
 		hasRole? : boolean) {
 		this.limit = limit;
 		this.minimum = minimum;
@@ -22,6 +24,7 @@ export default class MockConfig implements Config {
 		this.pegWithoutKeyword = pegWithoutKeyword;
 		this.requireValues = requireValues;
 		this.keywords = keywords;
+		this.penaltyKeywords = penaltyKeywords;
 		if (hasRole != null) {
 			this.hasRole = hasRole;
 		}
@@ -53,6 +56,8 @@ export default class MockConfig implements Config {
 	getStringConfig(config : string) : string[] {
 		if (config === 'keyword') {
 			return this.keywords;
+		} else if (config === 'penaltyKeyword') {
+			return this.penaltyKeywords;
 		} else {
 			throw new Error('config does not exist');
 		}

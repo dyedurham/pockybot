@@ -73,10 +73,13 @@ export default class Peg extends Trigger {
 	}
 
 	validateValues(message : ParsedMessage) : boolean {
-		let keywords = this.config.getStringConfig('keyword');
-		return keywords.some(keyword =>
-			message.comment.toLowerCase().includes(keyword.toLowerCase())
-		);
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
+		// lambda to check if the message contains one of the words in the list on which it is run
+		const keywordIncluded = keyword => message.comment.toLowerCase().includes(keyword.toLowerCase());
+
+		return keywords.some(keywordIncluded) || penaltyKeywords.some(keywordIncluded);
 	}
 
 	validateMessage(message : ParsedMessage) : boolean {
@@ -133,8 +136,11 @@ export default class Peg extends Trigger {
 	async pmSender(toPersonId : string, fromPerson : string) : Promise<MessageObject> {
 		let count : number;
 
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
 		try {
-			count = await this.database.countPegsGiven(fromPerson);
+			count = await this.database.countPegsGiven(fromPerson, keywords, penaltyKeywords);
 		} catch (error) {
 			__logger.error(`[Peg.pmSender] Error counting pegsGiven from ${fromPerson}: ${error.message}`);
 			return {

@@ -27,13 +27,34 @@ beforeAll(() => {
 	});
 })
 
+function createInputMessage(text: string) {
+	return { personId: 'person', text: text };
+}
+
 describe('help message', () => {
 	const help = new Help(config);
-	const helpMessage = { personId: 'asdfar'};
 
 	it('should create the message', async (done : DoneFn) => {
-		let response = await help.createMessage(helpMessage);
+		var message = createInputMessage('help');
+		let response = await help.createMessage(message);
 		expect(response.markdown).toBeDefined();
+		expect(response.markdown).toContain('## What I can do (List of Commands)');
+		done();
+	});
+
+	it('should create the message for a specific command', async (done : DoneFn) => {
+		var message = createInputMessage('help status');
+		let response = await help.createMessage(message);
+		expect(response.markdown).toBeDefined();
+		expect(response.markdown).toContain('### How to check your status 📈!');
+		done();
+	});
+
+	it('should create the message for an invalid command', async (done: DoneFn) => {
+		var message = createInputMessage('help invalid1232433');
+		let response = await help.createMessage(message);
+		expect(response.markdown).toBe(`Command not found. To see a full list of commands type ` +
+			`\`@${constants.botName} help\` or direct message me with \`help\`.`);
 		done();
 	});
 });
@@ -43,6 +64,12 @@ describe('testing help triggers', () => {
 
 	it('should accept trigger', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help`);
+		let results = help.isToTriggerOn(message)
+		expect(results).toBe(true);
+	});
+
+	it('should accept help for specific command', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> help status`);
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
@@ -77,6 +104,12 @@ describe('testing help PM triggers', () => {
 
 	it('should accept trigger', () => {
 		let message = createPrivateMessage('help');
+		let results = help.isToTriggerOnPM(message)
+		expect(results).toBe(true);
+	});
+
+	it('should accept help for specific command', () => {
+		let message = createPrivateMessage('help commandtest');
 		let results = help.isToTriggerOnPM(message)
 		expect(results).toBe(true);
 	});

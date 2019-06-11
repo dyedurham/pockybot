@@ -8,8 +8,9 @@ import { Role } from '../../models/database';
 import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
 import { WinnersService } from '../services/winners-service';
+import { Command } from '../../models/command';
 
-const finishCommand = '(?: )*finish(?: )*';
+const finishCommand = `(?: )*${Command.Finish}(?: )*`;
 
 export default class Finish extends Trigger {
 	winnersService: WinnersService;

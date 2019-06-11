@@ -5,8 +5,8 @@ import Config from '../config';
 export interface PockyDB {
 	loadConfig : (config : Config) => void;
 	givePegWithComment : (comment : string, receiver : string, sender : string) => Promise<number>;
-	countPegsGiven : (user : string) => Promise<number>;
-	hasSparePegs : (user : string) => Promise<boolean>;
+	countPegsGiven : (user : string, keywords : string[], penaltyKeywords : string[]) => Promise<number>;
+	senderCanPeg : (user : string, comment : string) => Promise<boolean>;
 	reset : () => Promise<QueryResult>;
 	returnResults : () => Promise<ResultRow[]>;
 	returnWinners : () => Promise<ResultRow[]>;

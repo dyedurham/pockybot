@@ -4,7 +4,7 @@ import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
 import MockConfig from './mocks/mock-config';
 
-const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three']);
+const config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], ['shame']);
 import MockResultsService from './mocks/mock-results-service';
 import { ResultsService } from '../lib/services/results-service';
 

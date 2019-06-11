@@ -5,8 +5,9 @@ import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { ResultsService } from '../services/results-service';
+import { Command } from '../../models/command';
 
-const resultsCommand = '(?: )*results(?: )*';
+const resultsCommand = `(?: )*${Command.Results}(?: )*`;
 
 export default class Results extends Trigger {
 	private readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';

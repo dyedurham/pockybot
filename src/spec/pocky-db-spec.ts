@@ -6,6 +6,7 @@ import MockConfig from './mocks/mock-config';
 import QueryHandler from '../lib/database/query-handler-interface';
 import MockQueryHandler from './mocks/mock-query-handler';
 import MockDbUsers from './mocks/mock-dbusers';
+import Utilities from '../lib/utilities';
 
 const config = new Config(null);
 
@@ -31,7 +32,17 @@ beforeAll(() => {
 			return 0;
 		}
 
-		throw new Error('bad config');
+		throw new Error(`bad config: ${config}`);
+	});
+
+	spyOn(config, 'getStringConfig').and.callFake((string : string) => {
+		if (string === 'penaltyKeyword') {
+			return ['shame'];
+		}
+
+		if (string === 'keyword') {
+			return ['awesome', 'brave', 'collaborative'];
+		}
 	});
 });
 
@@ -43,7 +54,7 @@ function createQueryHandlerMock(result : any | QueryResult) : QueryHandler {
 describe('return results', () => {
 	it('should return the results from database as is', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock results');
-		const database = new PockyDB(queryHandler, null);
+		const database = new PockyDB(queryHandler, null, null);
 		database.loadConfig(config);
 		let results = await database.returnResults();
 		console.log(results);
@@ -55,7 +66,7 @@ describe('return results', () => {
 describe('return winners', () => {
 	it('should return the results from database as is', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock results');
-		const database = new PockyDB(queryHandler, null);
+		const database = new PockyDB(queryHandler, null, null);
 		database.loadConfig(config);
 		let results = await database.returnWinners();
 		expect(results as any).toBe('mock results');
@@ -66,7 +77,7 @@ describe('return winners', () => {
 describe('reset', () => {
 	it('should call query and return the raw output', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock('mock result');
-		const database = new PockyDB(queryHandler, null);
+		const database = new PockyDB(queryHandler, null, null);
 		database.loadConfig(config);
 		let results = await database.reset();
 		expect(results as any).toBe('mock result');
@@ -78,53 +89,63 @@ describe('has spare pegs', () => {
 	let queryHandler : QueryHandler;
 
 	beforeEach(() => {
-		queryHandler = createQueryHandlerMock(
-			[{count:0}]
-		);
-	})
+		queryHandler = createQueryHandlerMock([]);
+	});
 
 	it('should return true for default_user', async (done : DoneFn) => {
-		const database = new PockyDB(queryHandler, null);
+		const utilities = new Utilities();
+		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
+		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('default_user');
+		let result = await database.senderCanPeg('default_user', '');
 		expect(result).toBe(true);
 		done();
 	});
 
 	it('should return true for mockunmeteredID', async (done : DoneFn) => {
-		const database = new PockyDB(queryHandler, null);
+		const utilities = new Utilities();
+		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
+		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('mockunmeteredID');
+		let result = await database.senderCanPeg('mockunmeteredID', '');
 		expect(result).toBe(true);
 		done();
 	});
 
 	it('should return false for other users', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:10}]);
-		const database = new PockyDB(queryHandler, null);
+		let queryHandler = createQueryHandlerMock(createGoodPegs(10));
+		const utilities = new Utilities();
+		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
+		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('some_sender');
+		let result = await database.senderCanPeg('some_sender', '');
 		expect(result).toBe(false);
 		done();
 	});
 
 	it('should return true for no pegs spent', async (done : DoneFn) => {
-		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], false);
+		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], ['shame'], false);
 
-		const database = new PockyDB(queryHandler, null);
+		const utilities = new Utilities();
+		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
+		const database = new PockyDB(queryHandler, null, utilities);
+
 		database.loadConfig(config);
-		let result = await database.hasSparePegs('some_sender');
+		let result = await database.senderCanPeg('some_sender', '');
 		expect(result).toBe(true);
 		done();
 	});
 });
 
 describe('count pegs', () => {
-	it('should return count of pegs', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:125689}]);
-		const database = new PockyDB(queryHandler, null);
+	it('should return count of good pegs', async (done : DoneFn) => {
+		let queryHandler = createQueryHandlerMock(createGoodPegs(125689));
+
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
+		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
-		let result = await database.countPegsGiven('some_sender');
+		let result = await database.countPegsGiven('some_sender', [], []);
 		expect(result).toBe(125689);
 		done();
 	});
@@ -132,12 +153,24 @@ describe('count pegs', () => {
 
 describe('give peg with comment', () => {
 	it('should return 0', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock([{count:0}]);
+		let queryHandler = createQueryHandlerMock([]);
 		let dbUsers = new MockDbUsers();
-		const database = new PockyDB(queryHandler, dbUsers);
+		const utilities = new Utilities();
+		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
+
+		const database = new PockyDB(queryHandler, dbUsers, utilities);
 		database.loadConfig(config);
 		let result = await database.givePegWithComment('one comment here', 'some_receiver', 'some_sender');
 		expect(result).toBe(0);
 		done();
 	});
 });
+
+function createGoodPegs(count : number) {
+	let pegs = [];
+	for (let i = 0; i < count; ++i) {
+		pegs.push({'comment': 'this is an awesome peg!'});
+	}
+
+	return pegs;
+}

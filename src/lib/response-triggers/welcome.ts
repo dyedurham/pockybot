@@ -2,10 +2,10 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import Config from '../config';
 import { MessageObject } from 'ciscospark/env';
+import { Command } from '../../models/command';
 
 export default class Welcome extends Trigger {
-	readonly commandText : string = 'welcome';
-	readonly welcomeCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly welcomeCommand : string = `(?: )*${Command.Welcome}(?: )*`;
 
 	config : Config;
 	constructor(config : Config) {
@@ -20,7 +20,7 @@ export default class Welcome extends Trigger {
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
-		return message.text.toLowerCase().trim() === this.commandText;
+		return message.text.toLowerCase().trim() === Command.Welcome;
 	}
 
 	async createMessage() : Promise<MessageObject> {

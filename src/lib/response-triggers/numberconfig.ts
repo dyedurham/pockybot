@@ -6,10 +6,10 @@ import { MessageObject } from 'ciscospark/env';
 import { Role, ConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
+import { Command } from '../../models/command';
 
 export default class NumberConfig extends Trigger {
-	readonly commandText : string = 'numberconfig';
-	readonly numberConfigCommand : string = `(?: )*${this.commandText}(?: )*`;
+	readonly numberConfigCommand : string = `(?: )*${Command.NumberConfig}(?: )*`;
 
 	config : Config;
 
