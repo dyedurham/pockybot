@@ -28,20 +28,22 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
 		const winnersData: ResultRow[] = await this.database.returnWinners();
-		let resultsData: ResultRow[] = await this.database.returnResults();
+		const resultsData: ResultRow[] = await this.database.returnResults();
 
 		//Get only people who didn't win in the general results so there are no double ups
-		resultsData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
+		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
 
 		const categories = this.config.getStringConfig('keyword');
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
+		const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
+
 		const winnersTable = HtmlHelper.generateTable(winners);
-		const resultsTable = HtmlHelper.generateTable(results);
+		const losersTable = HtmlHelper.generateTable(losers);
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
 
-		const html = this.generateHtml(winnersTable, resultsTable, categoryResultsTable, todayString);
+		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, todayString);
 		return html;
 	}
 
