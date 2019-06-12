@@ -36,6 +36,7 @@ declare module 'ciscospark/env' {
 		emails : string[];
 		displayName : string;
 		created : Date;
+		type : string;
 	}
 
 	class Page<T> implements Iterable<T> {
