@@ -9,11 +9,11 @@ import MockDbUsers from './mocks/mock-dbusers';
 
 const spark = new MockCiscoSpark();
 
-function createMessage(htmlMessage : string, personId = 'MockSender', receiver = 'MockReceiver') : MessageObject {
+function createMessage(htmlMessage : string, personId = 'MockSender', receiver = 'MockReceiver', otherMentions = []) : MessageObject {
 	return {
 		html: htmlMessage,
 		personId: personId,
-		mentionedPeople: [constants.botId, receiver]
+		mentionedPeople: [constants.botId, receiver, ...otherMentions]
 	};
 }
 
@@ -77,6 +77,34 @@ describe('unpeg triggers', () => {
 			console.log(e);
 			expect(false).toBe(true);
 		}
+	});
+
+	it('should accept an unpeg command with extra mentions', () => {
+		let database = createDatabase();
+		let utilities = createUtilities(1);
+
+		let unpeg = new Unpeg(spark, database, utilities);
+		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
+		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
+		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
+			'MockSender', 'MockReceiver', ['MockPerson']);
+
+		let triggers = unpeg.isToTriggerOn(sentMessage);
+		expect(triggers).toBe(true);
+	});
+
+	it('should validate an unpeg command with extra mentions', () => {
+		let database = createDatabase();
+		let utilities = createUtilities(1);
+
+		let unpeg = new Unpeg(spark, database, utilities);
+		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
+		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
+		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
+			'MockSender', 'MockReceiver', ['MockPerson']);
+
+		let valid = unpeg.validateMessage(sentMessage);
+		expect(valid).toBe(true);
 	});
 });
 
