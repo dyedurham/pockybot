@@ -7,31 +7,37 @@ import MockConfig from './mocks/mock-config';
 import Config from '../lib/config-interface';
 import { CategoryResultsService } from '../lib/services/category-results-service';
 import MockCategoryResultsService from './mocks/mock-category-results-service';
+import { WinnersService } from '../lib/services/winners-service';
+import MockWinnersService from './mocks/mock-winners-service';
 
 function createData(): ResultRow[] {
 	return [{
 		receiver: 'receiver 1',
 		sender: 'mock sender receiver 1',
 		comment: 'test awesome',
-		receiverid: 'r1ID'
+		receiverid: 'r1ID',
+		senderid: 's1ID'
 	},
 	{
 		receiver: 'receiver 1',
 		sender: 'mock sender 2 receiver 1',
 		comment: 'test brave',
-		receiverid: 'r1ID'
+		receiverid: 'r1ID',
+		senderid: 's2ID'
 	},
 	{
 		receiver: 'receiver 2',
 		sender: 'mock sender receiver 2',
 		comment: 'test brave',
-		receiverid: 'r2ID'
+		receiverid: 'r2ID',
+		senderid: 's1ID'
 	},
 	{
 		receiver: 'receiver 2',
 		sender: 'mock sender 2 receiver 2',
 		comment: 'test customer',
-		receiverid: 'r2ID'
+		receiverid: 'r2ID',
+		senderid: 's2ID'
 	}];
 }
 
@@ -52,6 +58,7 @@ describe('format results service', () => {
 	let database: PockyDB;
 	let formatResultsService: FormatResultsService;
 	let categoryResultsService: CategoryResultsService;
+	let winnersService: WinnersService;
 	let config: Config;
 	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -60,10 +67,13 @@ describe('format results service', () => {
 		database = createDatabase(true, data);
 		config = createConfig();
 		categoryResultsService = new MockCategoryResultsService();
-		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService);
+		winnersService = new MockWinnersService(true, '');
+		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService);
 	});
 
 	it('should generate the correct html', async (done: DoneFn) => {
+		spyOn(winnersService, 'getWinners').and.returnValue(data);
+
 		var html = await formatResultsService.returnResultsHtml();
 		expect(html).toContain('<tr><th colspan="3">receiver 1 &mdash; 2 peg(s) total</th></tr>');
 		expect(html).toContain('<tr><td>mock sender receiver 1</td><td>test awesome</td><td>awesome</td></tr>');

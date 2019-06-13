@@ -2,13 +2,92 @@ import { ResultRow } from '../models/database';
 import { PockyDB } from '../lib/database/db-interfaces';
 import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultWinnersService, WinnersService } from '../lib/services/winners-service';
+import Config from '../lib/config';
+
+const config = new Config(null);
+
+beforeAll(() => {
+	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
+		if (config == 'keyword') {
+			return ['customer', 'brave', 'awesome', 'collaborative', 'real'];
+		} else if (config == 'penaltyKeyword') {
+			return ['shame'];
+		}
+
+		throw new Error('bad config');
+	});
+
+	spyOn(config, 'getConfig').and.callFake((config : string) => {
+		if (config === 'limit') {
+			return 5;
+		} else if (config === 'minimum') {
+			return 5;
+		} else if (config === 'winners') {
+			return 3;
+		} else if (config === 'requireValues') {
+			return 1;
+		}
+
+		throw new Error('bad config');
+	});
+});
 
 function createData(): ResultRow[] {
 	return [{
-		'receiver': 'mock receiver',
-		'receiverid': 'mockID',
-		'sender': 'mock sender',
-		'comment': ' test'
+		receiver: 'mock receiver',
+		sender: 'mock sender',
+		comment: 'test awesome',
+		receiverid: 'r1ID',
+		senderid: 's1ID'
+	},
+	{
+		receiver: 'mock receiver',
+		sender: 'mock sender',
+		comment: 'test brave',
+		receiverid: 'r1ID',
+		senderid: 's1ID'
+	},
+	{
+		receiver: 'receiver 2',
+		sender: 'mock sender 2',
+		comment: 'test brave',
+		receiverid: 'r2ID',
+		senderid: 's2ID'
+	},
+	{
+		receiver: 'mock sender',
+		sender: 'mock receiver',
+		comment: 'test customer',
+		receiverid: 's1ID',
+		senderid: 'r1ID'
+	},
+	{
+		receiver: 'mock sender',
+		sender: 'mock receiver',
+		comment: 'test customer',
+		receiverid: 's1ID',
+		senderid: 'r1ID'
+	},
+	{
+		receiver: 'mock sender',
+		sender: 'mock receiver',
+		comment: 'test customer',
+		receiverid: 's1ID',
+		senderid: 'r1ID'
+	},
+	{
+		receiver: 'mock sender',
+		sender: 'mock receiver',
+		comment: 'test customer',
+		receiverid: 's1ID',
+		senderid: 'r1ID'
+	},
+	{
+		receiver: 'mock sender',
+		sender: 'mock receiver',
+		comment: 'test customer',
+		receiverid: 's1ID',
+		senderid: 'r1ID'
 	}];
 }
 
@@ -25,7 +104,7 @@ describe('winners service', () => {
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
-		winnersService = new DefaultWinnersService(database);
+		winnersService = new DefaultWinnersService(database, config);
 	});
 
 	it('should parse a proper message', async (done : DoneFn) => {
@@ -33,9 +112,10 @@ describe('winners service', () => {
 		expect(message).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +
 'Total         |             | \n' +
-'--------------+-------------+---------\n' +
+'--------------+-------------+-------------\n' +
 'mock receiver |             | \n' +
-'1             | mock sender |  test\n' +
+'2             | mock sender | test awesome\n' +
+'              | mock sender | test brave\n' +
 '```');
 		done();
 	});

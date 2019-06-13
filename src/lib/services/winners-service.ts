@@ -23,19 +23,26 @@ export class DefaultWinnersService implements WinnersService {
 	getWinners(results: ResultRow[]): ResultRow[] {
 		let goodSenders : { senderid : string, amtReceived : number, received: ResultRow[] }[] = []
 		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 		const minimum = this.config.getConfig('minimum');
+		const requireKeywords = this.config.getConfig('requireValues');
 
 		const allSenders = results.map(x => x.senderid).sort()
 			.filter((value, index, array) => index === 0 || value !== array[index - 1]);
 
-		// lambda to check if the message contains one of the words in the list on which it is run
-		const keywordIncluded = (keyword: string, message: string) => message.toLowerCase().includes(keyword.toLowerCase());
+		const pegValid = (comment: string) => {
+			if (requireKeywords) {
+				return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+			} else {
+				return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+			}
+		}
 
 		allSenders.forEach(sender => {
-			const goodPegs = results.filter(x => x.senderid === sender && keywords.some(y => keywordIncluded(y, x.comment)));
+			const goodPegs = results.filter(x => x.senderid === sender && pegValid(x.comment));
 
 			if (goodPegs.length >= minimum) {
-				const received = results.filter(x => x.receiverid === sender && keywords.some(y => keywordIncluded(y, x.comment)));
+				const received = results.filter(x => x.receiverid === sender && pegValid(x.comment));
 				goodSenders.push({
 					senderid : sender,
 					amtReceived : received.length,
@@ -44,14 +51,14 @@ export class DefaultWinnersService implements WinnersService {
 			}
 		});
 
-		let topReceived = goodSenders.map(x => x.amtReceived).sort()
+		let topReceived = goodSenders.map(x => x.amtReceived).sort().reverse()
 			.filter((value, index, array) => index === 0 || value !== array[index - 1])
 			.slice(0, this.config.getConfig('winners'));
 
-		return goodSenders.sort((a, b) => a.amtReceived - b.amtReceived)
+		return goodSenders.sort((a, b) => b.amtReceived - a.amtReceived)
 			.filter(x => topReceived.some(y => y === x.amtReceived))
 			.map(x => x.received)
-			.reduce((prev, cur) => prev.concat(cur));
+			.reduce((prev, cur) => prev.concat(cur), []);
 	}
 
 	async returnWinnersResponse() : Promise<string> {

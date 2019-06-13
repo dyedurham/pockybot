@@ -1,6 +1,6 @@
 import PockyDB from '../lib/database/pocky-db';
 import Config from '../lib/config';
-import { QueryConfig, Client, QueryResult } from 'pg';
+import { QueryResult } from 'pg';
 import { Role } from '../models/database';
 import MockConfig from './mocks/mock-config';
 import QueryHandler from '../lib/database/query-handler-interface';
@@ -58,17 +58,6 @@ describe('return results', () => {
 		database.loadConfig(config);
 		let results = await database.returnResults();
 		console.log(results);
-		expect(results as any).toBe('mock results');
-		done();
-	});
-});
-
-describe('return winners', () => {
-	it('should return the results from database as is', async (done : DoneFn) => {
-		let queryHandler = createQueryHandlerMock('mock results');
-		const database = new PockyDB(queryHandler, null, null);
-		database.loadConfig(config);
-		let results = await database.returnWinners();
 		expect(results as any).toBe('mock results');
 		done();
 	});
