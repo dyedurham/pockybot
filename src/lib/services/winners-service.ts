@@ -29,7 +29,7 @@ export class DefaultWinnersService implements WinnersService {
 	}
 
 	getWinners(results: ResultRow[]): ResultRow[] {
-		let goodSenders : {
+		let eligibleToWinSenders : {
 			senderid : string,
 			numberOfValidPegsReceived : number,
 			validPegsReceived: ResultRow[]
@@ -48,7 +48,7 @@ export class DefaultWinnersService implements WinnersService {
 
 			if (validPegsSent.length >= minimum) {
 				const validPegsReceived = results.filter(x => x.receiverid === sender && this.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
-				goodSenders.push({
+				eligibleToWinSenders.push({
 					senderid : sender,
 					numberOfValidPegsReceived : validPegsReceived.length,
 					validPegsReceived
@@ -56,11 +56,11 @@ export class DefaultWinnersService implements WinnersService {
 			}
 		});
 
-		let topNumberOfPegsReceived = goodSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
+		let topNumberOfPegsReceived = eligibleToWinSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
 			.filter((value, index, array) => index === 0 || value !== array[index - 1])
 			.slice(0, this.config.getConfig('winners'));
 
-		return goodSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
+		return eligibleToWinSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
 			.filter(x => topNumberOfPegsReceived.some(y => y === x.numberOfValidPegsReceived))
 			.map(x => x.validPegsReceived)
 			.reduce((prev, cur) => prev.concat(cur), []);
