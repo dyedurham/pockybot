@@ -3,6 +3,7 @@ import { PockyDB } from '../lib/database/db-interfaces';
 import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultWinnersService, WinnersService } from '../lib/services/winners-service';
 import Config from '../lib/config';
+import Utilities from '../lib/utilities';
 
 const config = new Config(null);
 
@@ -102,9 +103,10 @@ describe('winners service', () => {
 	let data: ResultRow[];
 
 	beforeEach(() => {
+		const utilities = new Utilities();
 		data = createData();
 		database = createDatabase(true, data);
-		winnersService = new DefaultWinnersService(database, config);
+		winnersService = new DefaultWinnersService(database, config, utilities);
 	});
 
 	it('should parse a proper message', async (done : DoneFn) => {

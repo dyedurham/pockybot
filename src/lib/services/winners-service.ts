@@ -4,6 +4,9 @@ import TableHelper from '../parsers/tableHelper';
 import __logger from '../logger';
 import { Receiver } from '../../models/receiver';
 import Config from '../config';
+import { distinct } from '../helpers/helpers';
+import Utilities from '../utilities';
+import { PegRecipient } from '../../models/peg-recipient';
 
 export interface WinnersService {
 	getWinners(results: ResultRow[]): ResultRow[]
@@ -14,40 +17,30 @@ export class DefaultWinnersService implements WinnersService {
 	readonly cannotDisplayResults: string = 'Error encountered; cannot display winners.';
 	database : PockyDB;
 	config : Config;
+	utilities : Utilities;
 
-	constructor(database : PockyDB, config: Config) {
+	constructor(database : PockyDB, config: Config, utilities: Utilities) {
 		this.database = database;
 		this.config = config;
-	}
-
-	pegValid(comment: string, requireKeywords: number, keywords: string[], penaltyKeywords: string[]): boolean {
-		if (requireKeywords) {
-			return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
-		} else {
-			return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
-		}
+		this.utilities = utilities;
 	}
 
 	getWinners(results: ResultRow[]): ResultRow[] {
-		let eligibleToWinSenders : {
-			senderid : string,
-			numberOfValidPegsReceived : number,
-			validPegsReceived: ResultRow[]
-		}[] = []
+		let eligibleToWinSenders : PegRecipient[] = [];
 
 		const minimum = this.config.getConfig('minimum');
 		const requireKeywords = this.config.getConfig('requireValues');
 		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
-		const allSenders = results.map(x => x.senderid).sort()
-			.filter((value, index, array) => index === 0 || value !== array[index - 1]);
+		let allSenders = results.map(x => x.senderid).sort();
+		allSenders = distinct(allSenders);
 
 		allSenders.forEach(sender => {
-			const validPegsSent = results.filter(x => x.senderid === sender && this.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+			const validPegsSent = results.filter(x => x.senderid === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 
 			if (validPegsSent.length >= minimum) {
-				const validPegsReceived = results.filter(x => x.receiverid === sender && this.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const validPegsReceived = results.filter(x => x.receiverid === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 				eligibleToWinSenders.push({
 					senderid : sender,
 					numberOfValidPegsReceived : validPegsReceived.length,
@@ -57,8 +50,8 @@ export class DefaultWinnersService implements WinnersService {
 		});
 
 		let topNumberOfPegsReceived = eligibleToWinSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
-			.filter((value, index, array) => index === 0 || value !== array[index - 1])
 			.slice(0, this.config.getConfig('winners'));
+		topNumberOfPegsReceived = distinct(topNumberOfPegsReceived);
 
 		return eligibleToWinSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
 			.filter(x => topNumberOfPegsReceived.some(y => y === x.numberOfValidPegsReceived))
