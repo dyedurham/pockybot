@@ -20,44 +20,49 @@ export class DefaultWinnersService implements WinnersService {
 		this.config = config;
 	}
 
+	pegValid(comment: string, requireKeywords: number, keywords: string[], penaltyKeywords: string[]): boolean {
+		if (requireKeywords) {
+			return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+		} else {
+			return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+		}
+	}
+
 	getWinners(results: ResultRow[]): ResultRow[] {
-		let goodSenders : { senderid : string, amtReceived : number, received: ResultRow[] }[] = []
-		const keywords = this.config.getStringConfig('keyword');
-		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+		let goodSenders : {
+			senderid : string,
+			numberOfValidPegsReceived : number,
+			validPegsReceived: ResultRow[]
+		}[] = []
+
 		const minimum = this.config.getConfig('minimum');
 		const requireKeywords = this.config.getConfig('requireValues');
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
 		const allSenders = results.map(x => x.senderid).sort()
 			.filter((value, index, array) => index === 0 || value !== array[index - 1]);
 
-		const pegValid = (comment: string) => {
-			if (requireKeywords) {
-				return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
-			} else {
-				return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
-			}
-		}
-
 		allSenders.forEach(sender => {
-			const goodPegs = results.filter(x => x.senderid === sender && pegValid(x.comment));
+			const validPegsSent = results.filter(x => x.senderid === sender && this.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 
-			if (goodPegs.length >= minimum) {
-				const received = results.filter(x => x.receiverid === sender && pegValid(x.comment));
+			if (validPegsSent.length >= minimum) {
+				const validPegsReceived = results.filter(x => x.receiverid === sender && this.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 				goodSenders.push({
 					senderid : sender,
-					amtReceived : received.length,
-					received
+					numberOfValidPegsReceived : validPegsReceived.length,
+					validPegsReceived
 				});
 			}
 		});
 
-		let topReceived = goodSenders.map(x => x.amtReceived).sort().reverse()
+		let topNumberOfPegsReceived = goodSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
 			.filter((value, index, array) => index === 0 || value !== array[index - 1])
 			.slice(0, this.config.getConfig('winners'));
 
-		return goodSenders.sort((a, b) => b.amtReceived - a.amtReceived)
-			.filter(x => topReceived.some(y => y === x.amtReceived))
-			.map(x => x.received)
+		return goodSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
+			.filter(x => topNumberOfPegsReceived.some(y => y === x.numberOfValidPegsReceived))
+			.map(x => x.validPegsReceived)
 			.reduce((prev, cur) => prev.concat(cur), []);
 	}
 
