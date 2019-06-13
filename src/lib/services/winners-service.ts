@@ -51,10 +51,10 @@ export class DefaultWinnersService implements WinnersService {
 
 		let topNumberOfPegsReceived = eligibleToWinSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
 			.slice(0, this.config.getConfig('winners'));
-		topNumberOfPegsReceived = distinct(topNumberOfPegsReceived);
+		let topCutoff = topNumberOfPegsReceived[topNumberOfPegsReceived.length - 1];
 
 		return eligibleToWinSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
-			.filter(x => topNumberOfPegsReceived.some(y => y === x.numberOfValidPegsReceived))
+			.filter(x => x.numberOfValidPegsReceived >= topCutoff)
 			.map(x => x.validPegsReceived)
 			.reduce((prev, cur) => prev.concat(cur), []);
 	}
