@@ -11,7 +11,7 @@ function distinctWithComparator(array: any[], comparator: (value1: any, value2: 
 }
 
 function distinctWithoutComparator(array: any[]): any[] {
-	return array.sort().filter((value, index, array) => index === 0 || value !== array[index - 1]);
+	return array.filter((value, index, array) => index === array.indexOf(value));
 }
 
 export {
