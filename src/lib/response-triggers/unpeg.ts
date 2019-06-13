@@ -77,8 +77,8 @@ export default class  Unpeg extends Trigger {
 	validateMessage(message : MessageObject) : boolean {
 		try {
 			let parsedMessage = XmlMessageParser.getMessageXml(message);
-			if (message.mentionedPeople.length !== 2 || message.mentionedPeople[0] !== constants.botId) {
-				__logger.warn('Unpeg candidate message does not contain 2 people or 1st person is not bot');
+			if (message.mentionedPeople.length < 2 || message.mentionedPeople[0] !== constants.botId) {
+				__logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
 				return false;
 			}
 
