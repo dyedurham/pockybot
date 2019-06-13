@@ -7,11 +7,11 @@ function distinct(array: any[], comparator?: (value1: any, value2: any) => numbe
 }
 
 function distinctWithComparator(array: any[], comparator: (value1: any, value2: any) => number): any[] {
-	return array.filter((value, index, array) => index === 0 || comparator(value, array[index - 1]) !== 0);
+	return array.sort(comparator).filter((value, index, array) => index === 0 || comparator(value, array[index - 1]) !== 0);
 }
 
 function distinctWithoutComparator(array: any[]): any[] {
-	return array.filter((value, index, array) => index === 0 || value !== array[index - 1]);
+	return array.sort().filter((value, index, array) => index === 0 || value !== array[index - 1]);
 }
 
 export {

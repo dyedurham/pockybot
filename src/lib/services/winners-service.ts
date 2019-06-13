@@ -33,7 +33,7 @@ export class DefaultWinnersService implements WinnersService {
 		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
-		let allSenders = results.map(x => x.senderid).sort();
+		let allSenders = results.map(x => x.senderid);
 		allSenders = distinct(allSenders);
 
 		allSenders.forEach(sender => {
