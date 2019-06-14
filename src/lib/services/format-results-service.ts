@@ -31,29 +31,33 @@ export class DefaultFormatResultsService implements FormatResultsService {
 	async returnResultsHtml() : Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+		const categories = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+		const requireValues = this.config.getConfig('requireValues');
 
 		const fullData: ResultRow[] = await this.database.returnResults();
-		const resultsData = fullData.filter(x => this.utilities.pegValid(
-			x.comment, this.config.getConfig('requireValues'), this.config.getStringConfig('keyword'), this.config.getStringConfig('penaltyKeyword')));
+		const resultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const penaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const winnersData = this.winnersService.getWinners(fullData);
 
 		//Get only people who didn't win in the general results so there are no double ups
 		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
-		const categories = this.config.getStringConfig('keyword');
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
 		const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
+		const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
 
 		const winnersTable = HtmlHelper.generateTable(winners);
 		const losersTable = HtmlHelper.generateTable(losers);
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
+		const penaltyTable = HtmlHelper.generateTable(penalties);
 
-		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, todayString);
+		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
 		return html;
 	}
 
-	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, todayString: string) : string {
+	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, penaltyTable: string, todayString: string) : string {
 		try {
 			const html =
 `<!doctype html><html>
@@ -69,6 +73,7 @@ export class DefaultFormatResultsService implements FormatResultsService {
 			<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
 				<a class="nav-item nav-link active" id="generalResults-tab" data-toggle="tab" href="#generalResults" aria-controls="generalResults" aria-selected="true">General Results</a>
 				<a class="nav-item nav-link" id="categoryResults-tab" data-toggle="tab" href="#categoryResults" role="tab" aria-controls="categoryResults" aria-selected="false">Category Results</a>
+				<a class="nav-item nav-link" id="penaltyResults-tab" data-toggle="tab" href="#penaltyResults" role="tab" aria-controls="penaltyResults" aria-selected="false">Penalty Results</a>
 			</div>
 
 			<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -80,6 +85,9 @@ ${resultsTable}
 				</div>
 				<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
 ${categoryResultsTable}
+				</div>
+				<div class="tab-pane fade show" id="penaltyResults" role="tabpanel" aria-labelledby="penaltyResults-tab">
+${penaltyTable}
 				</div>
 			</div>
 		</div>
