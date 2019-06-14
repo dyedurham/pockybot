@@ -75,11 +75,12 @@ describe('format results service', () => {
 		spyOn(winnersService, 'getWinners').and.returnValue(data);
 
 		var html = await formatResultsService.returnResultsHtml();
-		expect(html).toContain('<tr><th colspan="3">receiver 1 &mdash; 2 peg(s) total</th></tr>');
+
+		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> receiver 1 &mdash; 2 peg(s) total</th></tr>');
 		expect(html).toContain('<tr><td>mock sender receiver 1</td><td>test awesome</td><td>awesome</td></tr>');
 		expect(html).toContain('<tr><td>mock sender 2 receiver 1</td><td>test brave</td><td>brave</td></tr>');
 
-		expect(html).toContain('<tr><th colspan="3">receiver 2 &mdash; 2 peg(s) total</th></tr>');
+		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> receiver 2 &mdash; 2 peg(s) total</th></tr>');
 		expect(html).toContain('<tr><td>mock sender receiver 2</td><td>test brave</td><td>brave</td></tr>');
 		expect(html).toContain('<tr><td>mock sender 2 receiver 2</td><td>test customer</td><td>customer</td></tr>');
 
