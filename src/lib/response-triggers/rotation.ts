@@ -3,10 +3,9 @@ import constants from '../../constants';
 import Config from '../config';
 import { MessageObject } from 'ciscospark/env';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Rotation extends Trigger {
-	readonly rotationCommand : string = `(?: )*${Command.Rotation}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -16,8 +15,9 @@ export default class Rotation extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.rotationCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Rotation;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {

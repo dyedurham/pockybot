@@ -9,8 +9,7 @@ import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
 import { WinnersService } from '../services/winners-service';
 import { Command } from '../../models/command';
-
-const finishCommand = `(?: )*${Command.Finish}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Finish extends Trigger {
 	winnersService: WinnersService;
@@ -37,8 +36,9 @@ export default class Finish extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + finishCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Finish;
 	}
 
 	async createMessage(commandMessage : MessageObject, room : string) : Promise<MessageObject> {

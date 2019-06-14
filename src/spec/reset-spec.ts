@@ -2,7 +2,6 @@ import Reset from '../lib/response-triggers/reset';
 import constants from '../constants';
 import Config from '../lib/config';
 import { PockyDB } from '../lib/database/db-interfaces';
-import { Client } from 'pg';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
@@ -36,10 +35,11 @@ beforeAll(() => {
 	});
 })
 
-function createMessage(htmlMessage : string, person : string) : MessageObject {
+function createMessage(htmlMessage : string, person : string, mentionId : string = constants.botId) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person
+		personId: person,
+		mentionedPeople: [ mentionId ]
 	}
 }
 
@@ -112,7 +112,7 @@ describe('testing reset triggers', () => {
 
 	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMGFiNWE5ZS05MjliLTQ3N2EtOTk0MC00ZGJlN2QY2MzNzU">' + constants.botName + '</spark-mention> reset',
-		'mockadminID');
+		'mockadminID', 'wrongid');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

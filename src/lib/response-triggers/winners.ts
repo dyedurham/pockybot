@@ -6,8 +6,7 @@ import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { WinnersService } from '../services/winners-service';
 import { Command } from '../../models/command';
-
-const winnersCommand = `(?: )*${Command.Winners}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Results extends Trigger {
 	readonly cannotDisplayResults : string = 'Error encountered; cannot display winners.';
@@ -25,8 +24,10 @@ export default class Results extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + winnersCommand, 'ui');
-		return pattern.test(message.html);
+
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Winners;
 	}
 
 	async createMessage() : Promise<MessageObject> {

@@ -6,8 +6,7 @@ import __logger from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow, Role } from '../../models/database';
 import { Command } from '../../models/command';
-
-const updateCommand = `(?: )*${Command.Update}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Update extends Trigger {
 	spark : CiscoSpark;
@@ -27,8 +26,9 @@ export default class Update extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + updateCommand + constants.optionalMarkdownEnding + '$', 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Update;
 	}
 
 	async createMessage() : Promise<MessageObject> {

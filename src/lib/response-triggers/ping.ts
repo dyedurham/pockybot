@@ -3,13 +3,13 @@ import Trigger from '../../models/trigger';
 import { MessageObject } from 'ciscospark/env';
 import * as pjson from 'pjson';
 import { Command } from '../../models/command';
-
-const pingCommand = `(?: )*${Command.Ping}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Ping extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + pingCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Ping;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {

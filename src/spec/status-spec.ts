@@ -52,7 +52,8 @@ beforeAll(() => {
 function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person
+		personId: person,
+		mentionedPeople: [ constants.botId ]
 	}
 }
 

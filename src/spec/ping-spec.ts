@@ -5,9 +5,10 @@ import * as pjson from 'pjson';
 
 import sinon = require('sinon');
 
-function createMessage(htmlMessage : string) : MessageObject {
+function createMessage(htmlMessage : string, mentionId : string = constants.botId) : MessageObject {
 	return {
-		html: htmlMessage
+		html: htmlMessage,
+		mentionedPeople: [ mentionId ]
 	}
 }
 
@@ -53,7 +54,7 @@ describe('testing ping triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> ping');
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> ping', 'wrongId');
 		let results = ping.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

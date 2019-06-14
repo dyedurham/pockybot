@@ -3,10 +3,9 @@ import Config from '../config';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Keywords extends Trigger {
-	readonly keywordsCommand : string = `(?: )*${Command.Keywords}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -16,8 +15,9 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Keywords;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {

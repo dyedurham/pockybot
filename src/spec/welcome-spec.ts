@@ -23,9 +23,10 @@ beforeAll(() => {
 	});
 });
 
-function createMessage(htmlMessage : string) : MessageObject {
+function createMessage(htmlMessage : string, mentionId : string = constants.botId) : MessageObject {
 	return {
-		html: htmlMessage
+		html: htmlMessage,
+		mentionedPeople: [ mentionId ]
 	}
 }
 
@@ -61,7 +62,7 @@ describe('testing welcome triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> welcome');
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> welcome', 'wrongid');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

@@ -6,8 +6,7 @@ import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { Command } from '../../models/command';
-
-const resetCommand = `(?: )*${Command.Reset}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Reset extends Trigger {
 	database : PockyDB;
@@ -25,8 +24,9 @@ export default class Reset extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resetCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length === 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase() === Command.Reset;
 	}
 
 	async createMessage() : Promise<MessageObject> {
