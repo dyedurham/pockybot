@@ -87,6 +87,7 @@ ${resultsTable}
 ${categoryResultsTable}
 				</div>
 				<div class="tab-pane fade show" id="penaltyResults" role="tabpanel" aria-labelledby="penaltyResults-tab">
+				<h2>Penalties:</h2>
 ${penaltyTable}
 				</div>
 			</div>
