@@ -30,7 +30,8 @@ export default class RoleConfig extends Trigger {
 		}
 
 		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
-		return parsedMessage.length >= 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+		return parsedMessage.length >= 2 && parsedMessage[0].name() === 'spark-mention'
+		&& xmlMessageParser.getPersonId(parsedMessage[0].attr('data-object-id').value()) === constants.botId
 			&& parsedMessage[1].text().trim().toLowerCase().startsWith(Command.RoleConfig);
 	}
 
@@ -97,7 +98,7 @@ export default class RoleConfig extends Trigger {
 			throw new Error('You must specify a user and a role to set/delete.');
 		}
 
-		if (parsedMessage[0].name() !== 'spark-mention' || parsedMessage[2].name() !== 'spark-mention' || message.mentionedPeople.length !== 2) {
+		if (parsedMessage[0].name() !== 'spark-mention' || parsedMessage[2].name() !== 'spark-mention') {
 			throw new Error('Please mention a user you want to set/delete a role for');
 		}
 
@@ -106,7 +107,7 @@ export default class RoleConfig extends Trigger {
 			throw new Error(`Invalid role ${role}. Valid values are: ${Object.values(Role).join(', ')}`);
 		}
 
-		const userId = message.mentionedPeople[1];
+		const userId = xmlMessageParser.getPersonId(parsedMessage[2].attr('data-object-id').value());
 		const username = parsedMessage[2].text();
 
 		try {

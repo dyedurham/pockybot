@@ -6,11 +6,10 @@ import { Role } from '../models/database';
 
 const config = new Config(null);
 
-function createMessage(htmlMessage : string, person : string, mentionId : string = constants.botId) : MessageObject {
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [ mentionId ]
+		personId: person
 	}
 }
 
@@ -160,7 +159,7 @@ describe('testing configuration triggers', () => {
 
 	it('should reject wrong id', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> stringConfig`,
-			'mockAdminID', 'wrongId');
+			'mockAdminID');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

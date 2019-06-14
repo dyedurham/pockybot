@@ -43,7 +43,8 @@ export default class  Unpeg extends Trigger {
 			};
 		}
 
-		let toPersonId = message.mentionedPeople[1];
+		let parsedMessage = XmlMessageParser.parsePegMessage(message);
+		let toPersonId = parsedMessage.toPersonId;
 		let fromPersonId = message.personId;
 
 		try {

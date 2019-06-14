@@ -12,12 +12,10 @@ const spark = new MockCiscoSpark();
 const dbUsers = new MockDbUsers();
 const config = new MockConfig(10, 5, 3, 1, 0, 1, ['awesome', 'brave', 'collaborative'], ['shame']);
 
-function createMessage(htmlMessage : string, person : string,
-	mentionedFirst = constants.botId, mentionedSecond = 'aoeuidhtns') : MessageObject {
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [mentionedFirst, mentionedSecond]
+		personId: person
 	};
 }
 
@@ -243,7 +241,7 @@ describe('testing peg triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> peg</p>', null, 'mockID');
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> peg</p>', null);
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});

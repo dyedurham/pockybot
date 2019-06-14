@@ -14,10 +14,9 @@ beforeAll(() => {
 	});
 })
 
-function createMessage(htmlMessage : string, mentionId : string = constants.botId) : MessageObject {
+function createMessage(htmlMessage : string) : MessageObject {
 	return {
-		html: htmlMessage,
-		mentionedPeople: [ mentionId ]
+		html: htmlMessage
 	}
 }
 
@@ -53,7 +52,7 @@ describe('testing rotation triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="notabotID">${constants.botName}</spark-mention> rotation`, 'wrongId');
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="notabotID">${constants.botName}</spark-mention> rotation`);
 		let results = rotation.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

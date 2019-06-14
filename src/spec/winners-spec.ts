@@ -35,11 +35,10 @@ beforeAll(() => {
 	})
 });
 
-function createMessage(htmlMessage : string, person : string, mentionId : string = constants.botId) : MessageObject {
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [ mentionId ]
+		personId: person
 	}
 }
 
@@ -109,7 +108,7 @@ describe('testing winners triggers', () => {
 
 	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotid">' + constants.botName + '</spark-mention> winners',
-			'goodID', 'wrongId');
+			'goodID');
 		let triggered = winners.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});

@@ -63,7 +63,8 @@ function getMessageXml(message : MessageObject) : xml.Document {
 export default {
 	parsePegMessage,
 	getMessageXml,
-	parseXmlMessage
+	parseXmlMessage,
+	getPersonId
 }
 
 export {

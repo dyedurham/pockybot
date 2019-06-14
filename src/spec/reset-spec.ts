@@ -35,11 +35,10 @@ beforeAll(() => {
 	});
 })
 
-function createMessage(htmlMessage : string, person : string, mentionId : string = constants.botId) : MessageObject {
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [ mentionId ]
+		personId: person
 	}
 }
 
@@ -112,7 +111,7 @@ describe('testing reset triggers', () => {
 
 	it('should reject wrong id', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMGFiNWE5ZS05MjliLTQ3N2EtOTk0MC00ZGJlN2QY2MzNzU">' + constants.botName + '</spark-mention> reset',
-		'mockadminID', 'wrongid');
+		'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
