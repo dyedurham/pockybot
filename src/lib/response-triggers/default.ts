@@ -1,11 +1,12 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Default extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId;
 	}
 
 	isToTriggerOnPM() : boolean {
