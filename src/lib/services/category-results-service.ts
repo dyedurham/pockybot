@@ -10,17 +10,22 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 
 	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string {
 		let tables = '';
+		let sectionNum = 0;
+
 		categories.forEach(category => {
-			tables += `
-					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
-`;
+			const sectionId = `categoryresults-${sectionNum}`
 			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
 			if (categoryResults.length > 0) {
-				tables += HtmlHelper.generateTable(categoryResults);
+				tables += `
+					<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-${sectionId}" aria-expanded="false" aria-controls="section-${sectionId}"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
+`;
+				tables += HtmlHelper.generateTable(categoryResults, sectionId);
 			} else {
-				tables +=
-`					<p class="pb-3">There were no pegs given for this keyword</p>`;
+				tables += `
+					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
+					<p class="pb-3">There were no pegs given for this keyword</p>`;
 			}
+			sectionNum++;
 		});
 		return tables;
 	}
