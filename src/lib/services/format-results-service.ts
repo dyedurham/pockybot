@@ -51,7 +51,7 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const winnersTable = HtmlHelper.generateTable(winners, 'winners');
 		const losersTable = HtmlHelper.generateTable(losers, 'losers');
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
-		const penaltyTable = HtmlHelper.generateTable(penalties);
+		const penaltyTable = HtmlHelper.generateTable(penalties, 'penalties');
 
 		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
 		return html;
@@ -114,7 +114,7 @@ ${resultsTable}
 ${categoryResultsTable}
 				</div>
 				<div class="tab-pane fade show" id="penaltyResults" role="tabpanel" aria-labelledby="penaltyResults-tab">
-				<h2>Penalties:</h2>
+				<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-penalties" aria-expanded="false" aria-controls="section-penalties"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Penalties</h2>
 ${penaltyTable}
 				</div>
 			</div>

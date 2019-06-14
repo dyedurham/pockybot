@@ -94,7 +94,7 @@ describe('format results service', () => {
 		expect(html).toContain('<tr><td>mock sender 2 receiver 2</td><td>test shame</td><td></td></tr>');
 		expect(html).toContain('<tr><td>mock sender 2 receiver 2</td><td>test customer</td><td>customer</td></tr>');
 
-		expect(html).toContain('<tr><th colspan="3">mock sender 2 receiver 2 &mdash; 1 peg(s) total</th></tr>');
+		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> mock sender 2 receiver 2 &mdash; 1 peg(s) total</th></tr>');
 		expect(html).toContain('<tr><td>receiver 2</td><td>test shame</td><td>shame</td></tr>');
 
 		expect(html).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
