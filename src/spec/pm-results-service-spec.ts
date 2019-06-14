@@ -10,6 +10,7 @@ function createData(): ResultRow[] {
 		'receiver': 'mock receiver',
 		'receiverid': 'mockID',
 		'sender': 'mock sender',
+		'senderid': 'mockSenderID',
 		'comment': ' test'
 	}];
 }

@@ -4,7 +4,7 @@ WITH count AS (
 	FROM pegs l
 	GROUP BY receiver
 )
-SELECT receivers.username receiver, pegs.receiver receiverid, senders.username sender, pegs.comment
+SELECT receivers.username receiver, pegs.receiver receiverid, senders.username sender, senders.userid senderid, pegs.comment
 FROM count
 INNER JOIN pegs ON count.receiver = pegs.receiver
 INNER JOIN pockyusers AS receivers ON count.receiver = receivers.userid

@@ -6,6 +6,7 @@ import HtmlHelper from '../parsers/htmlHelper';
 import __logger from '../logger';
 import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
+import { WinnersService } from './winners-service';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>
@@ -16,19 +17,21 @@ export class DefaultFormatResultsService implements FormatResultsService {
 	database: PockyDB;
 	config: Config;
 	categoryResultsService: CategoryResultsService;
+	winnersService: WinnersService;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService) {
+	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService) {
 		this.database = database;
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
+		this.winnersService = winnersService;
 	}
 
 	async returnResultsHtml() : Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-		const winnersData: ResultRow[] = await this.database.returnWinners();
 		const resultsData: ResultRow[] = await this.database.returnResults();
+		const winnersData = this.winnersService.getWinners(resultsData);
 
 		//Get only people who didn't win in the general results so there are no double ups
 		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
