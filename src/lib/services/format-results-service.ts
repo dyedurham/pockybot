@@ -7,35 +7,38 @@ import __logger from '../logger';
 import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
+import Utilities from '../utilities';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>
 }
 
 export class DefaultFormatResultsService implements FormatResultsService {
-
 	database: PockyDB;
 	config: Config;
 	categoryResultsService: CategoryResultsService;
 	winnersService: WinnersService;
+	utilities: Utilities;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService) {
+	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService, utilities: Utilities) {
 		this.database = database;
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
 		this.winnersService = winnersService;
+		this.utilities = utilities;
 	}
 
 	async returnResultsHtml() : Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-		const resultsData: ResultRow[] = await this.database.returnResults();
-		const winnersData = this.winnersService.getWinners(resultsData);
+		const fullData: ResultRow[] = await this.database.returnResults();
+		const resultsData = fullData.filter(x => this.utilities.pegValid(
+			x.comment, this.config.getConfig('requireValues'), this.config.getStringConfig('keyword'), this.config.getStringConfig('penaltyKeyword')));
+		const winnersData = this.winnersService.getWinners(fullData);
 
 		//Get only people who didn't win in the general results so there are no double ups
 		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
-
 		const categories = this.config.getStringConfig('keyword');
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);

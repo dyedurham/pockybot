@@ -9,6 +9,7 @@ import { CategoryResultsService } from '../lib/services/category-results-service
 import MockCategoryResultsService from './mocks/mock-category-results-service';
 import { WinnersService } from '../lib/services/winners-service';
 import MockWinnersService from './mocks/mock-winners-service';
+import Utilities from '../lib/utilities';
 
 function createData(): ResultRow[] {
 	return [{
@@ -63,12 +64,13 @@ describe('format results service', () => {
 	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 	beforeEach(() => {
+		const utilities = new Utilities();
 		data = createData();
 		database = createDatabase(true, data);
 		config = createConfig();
 		categoryResultsService = new MockCategoryResultsService();
 		winnersService = new MockWinnersService(true, '');
-		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService);
+		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
 	});
 
 	it('should generate the correct html', async (done: DoneFn) => {
