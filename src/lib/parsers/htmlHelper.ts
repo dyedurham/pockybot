@@ -8,10 +8,9 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 		htmlTable =
 `					<table id="section-${section}" class="table pb-3 collapse">`;
 	}
-	let subsection = 0;
 
-	receivers.forEach((result: Receiver) => {
-		const subsectionId = section ? `section-${section}-${subsection}` : null;
+	receivers.forEach((result: Receiver, index: number) => {
+		const subsectionId = section ? `section-${section}-${index}` : null;
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
@@ -30,7 +29,6 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 		htmlTable +=
 `						</tbody>
 `;
-		subsection++;
 	});
 	htmlTable +=
 `					</table>`;

@@ -10,10 +10,9 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 
 	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string {
 		let tables = '';
-		let sectionNum = 0;
 
-		categories.forEach(category => {
-			const sectionId = `categoryresults-${sectionNum}`
+		categories.forEach((category: string, index: number) => {
+			const sectionId = `categoryresults-${index}`
 			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
 			if (categoryResults.length > 0) {
 				tables += `
@@ -25,7 +24,6 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
 					<p class="pb-3">There were no pegs given for this keyword</p>`;
 			}
-			sectionNum++;
 		});
 		return tables;
 	}
