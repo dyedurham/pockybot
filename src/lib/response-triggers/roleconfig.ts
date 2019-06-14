@@ -28,8 +28,10 @@ export default class RoleConfig extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.roleConfigCommand, 'ui');
-		return pattern.test(message.html);
+
+		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
+		return parsedMessage.length >= 2 && parsedMessage[0].name() === 'spark-mention' && message.mentionedPeople[0] === constants.botId
+			&& parsedMessage[1].text().trim().toLowerCase().startsWith(Command.RoleConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {

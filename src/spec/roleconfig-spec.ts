@@ -10,10 +10,11 @@ import RoleConfig from '../lib/response-triggers/roleconfig';
 
 const config = new Config(null);
 
-function createMessage(htmlMessage : string, person : string) : MessageObject {
+function createMessage(htmlMessage : string, person : string, mentionId : string = constants.botId) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person
+		personId: person,
+		mentionedPeople: [ mentionId ]
 	}
 }
 
@@ -213,7 +214,7 @@ describe('testing configuration triggers', () => {
 
 	it('should reject wrong id', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> roleconfig`,
-			'mockAdminID');
+			'mockAdminID', 'wrongId');
 		let results = configuration.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
