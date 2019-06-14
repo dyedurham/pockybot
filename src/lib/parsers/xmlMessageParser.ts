@@ -47,8 +47,12 @@ function getMessageXml(message : MessageObject) : xml.Document {
 		return xml.parseXml(unencoded);
 	} catch (e) {
 		// XML parsing requires root node. If it doesn't exist, add one.
-		unencoded = '<p>' + unencoded.trim();
-		unencoded = unencoded.trim() + '</p>';
+		if (!unencoded.toLowerCase().startsWith('<p>')) {
+			unencoded = '<p>' + unencoded.trim();
+		}
+		if (!unencoded.toLowerCase().trim().endsWith('</p>')) {
+			unencoded = unencoded.trim() + '</p>';
+		}
 		return xml.parseXml(unencoded);
 	}
 }
