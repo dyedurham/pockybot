@@ -3,6 +3,7 @@ const unescape = require('unescape');
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { ParsedMessage } from '../../models/parsed-message';
+import constants from '../../constants';
 
 function parsePegMessage(message : MessageObject) : ParsedMessage {
 	try {
@@ -10,8 +11,8 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 		let children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
-			toPersonId: message.mentionedPeople[1],
-			botId: message.mentionedPeople[0],
+			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' ? getPersonId(children[2].attr('data-object-id').value()) : null,
+			botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
 			children,
 			comment: children.reduce((a, child, index) => {
 				// first three children should be mentions or command words
@@ -27,6 +28,14 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 		__logger.error(`[xmlMessageParser.parsePegMessage] Error parsing message as XML: ${e.message}`);
 		throw new Error('Error in parseMessage');
 	}
+}
+
+function getPersonId(id: string) : string {
+	if (id.indexOf('-') >= 0) {
+		return Buffer.from(constants.sparkTokenPrefix + id).toString('base64').replace(new RegExp('=', 'g'), '');
+	}
+
+	return id;
 }
 
 function parseXmlMessage(message : MessageObject) : xml.Element[] {
