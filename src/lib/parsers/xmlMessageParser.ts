@@ -41,14 +41,16 @@ function getMessageXml(message : MessageObject) : xml.Document {
 	// Ensure it is encoded correctly
 	unescape.chars['&amp;'] = '&amp;';
 	let unencoded = unescape(message.html);
-	// XML parsing requires root node. If it doesn't exist, add one.
-	if (!unencoded.toLowerCase().startsWith('<p>')) {
+
+	// Messages may begin with any root tag, or may have no root tag.
+	try {
+		return xml.parseXml(unencoded);
+	} catch (e) {
+		// XML parsing requires root node. If it doesn't exist, add one.
 		unencoded = '<p>' + unencoded.trim();
-	}
-	if (!unencoded.toLowerCase().trim().endsWith('</p>')) {
 		unencoded = unencoded.trim() + '</p>';
+		return xml.parseXml(unencoded);
 	}
-	return xml.parseXml(unencoded);
 }
 
 export default {
