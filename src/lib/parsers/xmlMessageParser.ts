@@ -42,10 +42,10 @@ function getMessageXml(message : MessageObject) : xml.Document {
 	unescape.chars['&amp;'] = '&amp;';
 	let unencoded = unescape(message.html);
 
-	if (!unencoded.toLowerCase().trim().startsWith('<p>') || !unencoded.toLowerCase().trim().startsWith('<div>')) {
+	if (!unencoded.toLowerCase().trim().startsWith('<p>') && !unencoded.toLowerCase().trim().startsWith('<div>')) {
 		unencoded = '<p>' + unencoded.trim();
 	}
-	if (!unencoded.toLowerCase().trim().endsWith('</p>') || !unencoded.toLowerCase().trim().endsWith('</div>')) {
+	if (!unencoded.toLowerCase().trim().endsWith('</p>') && !unencoded.toLowerCase().trim().endsWith('</div>')) {
 		unencoded = unencoded.trim() + '</p>';
 	}
 	return xml.parseXml(unencoded);
