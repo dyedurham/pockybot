@@ -25,6 +25,27 @@ function mapResults(data : ResultRow[], categories: string[] = null) : Receiver[
 	return results;
 }
 
+function mapPenalties(data: ResultRow[], penaltyKeywords?: string[]) : Receiver[] {
+	let results : Receiver[] = [];
+	data.forEach((row) => {
+		if (!results.map(person => person.id).includes(row.senderid)) {
+			results.push({
+				id: row.senderid,
+				person: row.sender,
+				pegs: []
+			});
+		}
+
+		results[results.findIndex(value => value.id === row.senderid)].pegs.push({
+			sender: row.receiver,
+			comment: row.comment,
+			categories: penaltyKeywords ? parseCategories(row.comment, penaltyKeywords) : null
+		});
+	})
+
+	return results;
+}
+
 function parseCategories(comment: string, categories: string[]) : string[] {
 	return categories.filter(category => comment.includes(category));
 }
@@ -132,6 +153,7 @@ function stringLength(str : string) : number {
 
 export default {
 	mapResults,
+	mapPenalties,
 	getReceiverColumnWidths,
 	getRolesColumnWidths,
 	getStringConfigColumnWidths,

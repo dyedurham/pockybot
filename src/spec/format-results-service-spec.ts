@@ -9,6 +9,7 @@ import { CategoryResultsService } from '../lib/services/category-results-service
 import MockCategoryResultsService from './mocks/mock-category-results-service';
 import { WinnersService } from '../lib/services/winners-service';
 import MockWinnersService from './mocks/mock-winners-service';
+import Utilities from '../lib/utilities';
 
 function createData(): ResultRow[] {
 	return [{
@@ -38,6 +39,13 @@ function createData(): ResultRow[] {
 		comment: 'test customer',
 		receiverid: 'r2ID',
 		senderid: 's2ID'
+	},
+	{
+		receiver: 'receiver 2',
+		sender: 'mock sender 2 receiver 2',
+		comment: 'test shame',
+		receiverid: 'r2ID',
+		senderid: 's2ID'
 	}];
 }
 
@@ -63,12 +71,13 @@ describe('format results service', () => {
 	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 	beforeEach(() => {
+		const utilities = new Utilities();
 		data = createData();
 		database = createDatabase(true, data);
 		config = createConfig();
 		categoryResultsService = new MockCategoryResultsService();
 		winnersService = new MockWinnersService(true, '');
-		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService);
+		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
 	});
 
 	it('should generate the correct html', async (done: DoneFn) => {
@@ -80,9 +89,13 @@ describe('format results service', () => {
 		expect(html).toContain('<tr><td>mock sender receiver 1</td><td>test awesome</td><td>awesome</td></tr>');
 		expect(html).toContain('<tr><td>mock sender 2 receiver 1</td><td>test brave</td><td>brave</td></tr>');
 
-		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> receiver 2 &mdash; 2 peg(s) total</th></tr>');
+		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> receiver 2 &mdash; 3 peg(s) total</th></tr>');
 		expect(html).toContain('<tr><td>mock sender receiver 2</td><td>test brave</td><td>brave</td></tr>');
+		expect(html).toContain('<tr><td>mock sender 2 receiver 2</td><td>test shame</td><td></td></tr>');
 		expect(html).toContain('<tr><td>mock sender 2 receiver 2</td><td>test customer</td><td>customer</td></tr>');
+
+		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> mock sender 2 receiver 2 &mdash; 1 peg(s) total</th></tr>');
+		expect(html).toContain('<tr><td>receiver 2</td><td>test shame</td><td>shame</td></tr>');
 
 		expect(html).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
 		done();

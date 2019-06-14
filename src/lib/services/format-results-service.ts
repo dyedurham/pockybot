@@ -7,50 +7,57 @@ import __logger from '../logger';
 import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
+import Utilities from '../utilities';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>
 }
 
 export class DefaultFormatResultsService implements FormatResultsService {
-
 	database: PockyDB;
 	config: Config;
 	categoryResultsService: CategoryResultsService;
 	winnersService: WinnersService;
+	utilities: Utilities;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService) {
+	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService, utilities: Utilities) {
 		this.database = database;
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
 		this.winnersService = winnersService;
+		this.utilities = utilities;
 	}
 
 	async returnResultsHtml() : Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+		const categories = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+		const requireValues = this.config.getConfig('requireValues');
 
-		const resultsData: ResultRow[] = await this.database.returnResults();
-		const winnersData = this.winnersService.getWinners(resultsData);
+		const fullData: ResultRow[] = await this.database.returnResults();
+		const resultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const penaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const winnersData = this.winnersService.getWinners(fullData);
 
 		//Get only people who didn't win in the general results so there are no double ups
 		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
 
-		const categories = this.config.getStringConfig('keyword');
-
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
 		const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
+		const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
 
 		const winnersTable = HtmlHelper.generateTable(winners, 'winners');
 		const losersTable = HtmlHelper.generateTable(losers, 'losers');
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
+		const penaltyTable = HtmlHelper.generateTable(penalties, 'penalties');
 
-		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, todayString);
+		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
 		return html;
 	}
 
-	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, todayString: string) : string {
+	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, penaltyTable: string, todayString: string) : string {
 		try {
 			const html =
 `<!doctype html><html>
@@ -93,6 +100,7 @@ export class DefaultFormatResultsService implements FormatResultsService {
 			<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
 				<a class="nav-item nav-link active" id="generalResults-tab" data-toggle="tab" href="#generalResults" aria-controls="generalResults" aria-selected="true">General Results</a>
 				<a class="nav-item nav-link" id="categoryResults-tab" data-toggle="tab" href="#categoryResults" role="tab" aria-controls="categoryResults" aria-selected="false">Category Results</a>
+				<a class="nav-item nav-link" id="penaltyResults-tab" data-toggle="tab" href="#penaltyResults" role="tab" aria-controls="penaltyResults" aria-selected="false">Penalty Results</a>
 			</div>
 
 			<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -104,6 +112,10 @@ ${resultsTable}
 				</div>
 				<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
 ${categoryResultsTable}
+				</div>
+				<div class="tab-pane fade show" id="penaltyResults" role="tabpanel" aria-labelledby="penaltyResults-tab">
+				<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-penalties" aria-expanded="false" aria-controls="section-penalties"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Penalties</h2>
+${penaltyTable}
 				</div>
 			</div>
 		</div>
