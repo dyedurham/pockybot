@@ -5,9 +5,10 @@ import { MessageObject } from 'ciscospark/env';
 
 const config = new Config(null);
 
-function createMessage(htmlMessage : string) : MessageObject {
+function createMessage(htmlMessage : string, mentionId : string = constants.botId) : MessageObject {
 	return {
-		html: htmlMessage
+		html: htmlMessage,
+		mentionedPeople: [ mentionId ]
 	}
 }
 
@@ -81,7 +82,7 @@ describe('testing help triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> help`);
+		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> help`, 'wrongId');
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
