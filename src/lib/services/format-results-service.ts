@@ -48,8 +48,8 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
 		const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
 
-		const winnersTable = HtmlHelper.generateTable(winners);
-		const losersTable = HtmlHelper.generateTable(losers);
+		const winnersTable = HtmlHelper.generateTable(winners, 'winners');
+		const losersTable = HtmlHelper.generateTable(losers, 'losers');
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
 		const penaltyTable = HtmlHelper.generateTable(penalties);
 
@@ -66,6 +66,33 @@ export class DefaultFormatResultsService implements FormatResultsService {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<title>Pegs ${todayString}</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha256-zVUlvIh3NEZRYa9X/qpNY8P1aBy0d4FrI7bhfZSZVwc=" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+		<style type="text/css">
+			h2 {
+				font-size: 170%;
+			}
+
+			.clickable {
+				cursor: pointer;
+				padding: 6px;
+			}
+			.clickable:hover {
+				background-color: #e9ecef;
+			}
+
+			.clickable > i.fa-plus, .clickable > tr > th > i.fa-plus {
+				display: none;
+			}
+			.clickable > i.fa-minus, .clickable > tr > th > i.fa-minus {
+				display: inline-block;
+			}
+			.clickable.collapsed > i.fa-plus, .clickable.collapsed > tr > th > i.fa-plus {
+				display: inline-block;
+			}
+			.clickable.collapsed > i.fa-minus, .clickable.collapsed > tr > th > i.fa-minus {
+				display: none;
+			}
+		</style>
    </head>
 	<body>
 		<div class="container content">
@@ -78,9 +105,9 @@ export class DefaultFormatResultsService implements FormatResultsService {
 
 			<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
 				<div class="tab-pane fade show active" id="generalResults" role="tabpanel" aria-labelledby="generalResults-tab">
-					<h2>Winners:</h2>
+					<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-winners" aria-expanded="false" aria-controls="section-winners"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Winners</h2>
 ${winnersTable}
-					<h2>Other Pegs Received:</h2>
+					<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-losers" aria-expanded="false" aria-controls="section-losers"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Other Pegs Received</h2>
 ${resultsTable}
 				</div>
 				<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">

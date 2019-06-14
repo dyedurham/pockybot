@@ -1,17 +1,22 @@
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
 
-function generateTable(receivers: Receiver[]) : string {
+function generateTable(receivers: Receiver[], section: string = null) : string {
 	let htmlTable =
 '					<table class="table pb-3">';
+	if(section) {
+		htmlTable =
+`					<table id="section-${section}" class="table pb-3 collapse">`;
+	}
 
-	receivers.forEach((result: Receiver) => {
+	receivers.forEach((result: Receiver, index: number) => {
+		const subsectionId = section ? `section-${section}-${index}` : null;
 
 		htmlTable += `
-						<thead class="thead-light">
-							<tr><th colspan="3">${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
+						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person.toString()} &mdash; ${result.pegs.length} peg(s) total</th></tr>
 						</thead>
-						<tbody>`;
+						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
 		result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
