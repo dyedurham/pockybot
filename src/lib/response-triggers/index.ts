@@ -51,8 +51,8 @@ const dbUsers = new DbUsers(spark, queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new Config(dbConfig);
 const categoryResultsService = new DefaultCategoryResultsService();
-const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService);
-const winnersService = new DefaultWinnersService(database);
+const winnersService = new DefaultWinnersService(database, config, utilities);
+const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService);
 const resultsService = new DefaultResultsService(formatResultsService);
 const pmResultsService = new DefaultPmResultsService(database, spark);
 

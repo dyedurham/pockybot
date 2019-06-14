@@ -14,7 +14,6 @@ export default class PockyDB implements PockyDbInterface {
 	private readonly sqlPegsGiven : string;
 	private readonly sqlReset : string;
 	private readonly sqlReturnResults : string;
-	private readonly sqlReturnWinners : string;
 	private readonly sqlReturnGives : string;
 
 	private config : Config;
@@ -32,7 +31,6 @@ export default class PockyDB implements PockyDbInterface {
 		this.sqlPegsGiven = this.queryHandler.readFile('../../../database/queries/pegs_given.sql');
 		this.sqlReset = this.queryHandler.readFile('../../../database/queries/reset.sql');
 		this.sqlReturnResults = this.queryHandler.readFile('../../../database/queries/return_results.sql');
-		this.sqlReturnWinners = this.queryHandler.readFile('../../../database/queries/return_winners.sql');
 		this.sqlReturnGives = this.queryHandler.readFile('../../../database/queries/return_gives.sql');
 	}
 
@@ -142,18 +140,6 @@ export default class PockyDB implements PockyDbInterface {
 		let results : ResultRow[] = await this.queryHandler.executeQuery(query);
 		__logger.debug('[PockyDb.returnResults] returning results: ' + JSON.stringify(results));
 		return results;
-	}
-
-	async returnWinners() : Promise<ResultRow[]> {
-		let query : QueryConfig = {
-			name: 'returnWinnersQuery',
-			text: this.sqlReturnWinners,
-			values: [this.config.getConfig('minimum'), this.config.getConfig('winners')]
-		};
-
-		let winners : ResultRow[] = await this.queryHandler.executeQuery(query);
-		__logger.debug('[PockyDb.returnWinners] returning winners: ' + JSON.stringify(winners));
-		return winners;
 	}
 
 	async getPegsGiven(user : string) : Promise<PegGiven[]> {

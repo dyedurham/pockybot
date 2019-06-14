@@ -1,4 +1,5 @@
 import { WinnersService } from '../../lib/services/winners-service';
+import { ResultRow } from '../../models/database';
 
 export default class MockWinnersService implements WinnersService {
 	success: boolean;
@@ -7,6 +8,10 @@ export default class MockWinnersService implements WinnersService {
 	constructor(success: boolean, resultString: string){
 		this.success = success;
 		this.resultString = resultString;
+	}
+
+	getWinners(results: ResultRow[]) : ResultRow[] {
+		return [];
 	}
 
 	returnWinnersResponse(): Promise<string> {

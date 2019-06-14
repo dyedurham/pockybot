@@ -9,7 +9,6 @@ export interface PockyDB {
 	senderCanPeg : (user : string, comment : string) => Promise<boolean>;
 	reset : () => Promise<QueryResult>;
 	returnResults : () => Promise<ResultRow[]>;
-	returnWinners : () => Promise<ResultRow[]>;
 	getPegsGiven : (user : string) => Promise<PegGiven[]>;
 }
 

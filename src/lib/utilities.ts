@@ -41,4 +41,12 @@ export default class Utilities {
 			|| (!penaltyKeywords.some(keyword => peg['comment'].toLowerCase().includes(keyword.toLowerCase())))
 		);
 	}
+
+	pegValid(comment: string, requireKeywords: number, keywords: string[], penaltyKeywords: string[]): boolean {
+		if (requireKeywords) {
+			return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+		} else {
+			return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
+		}
+	}
 };
