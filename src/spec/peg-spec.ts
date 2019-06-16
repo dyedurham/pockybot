@@ -12,12 +12,10 @@ const webex = new MockWebex();
 const dbUsers = new MockDbUsers();
 const config = new MockConfig(10, 5, 3, 1, 0, 1, ['awesome', 'brave', 'collaborative'], ['shame']);
 
-function createMessage(htmlMessage : string, person : string,
-	mentionedFirst = constants.botId, mentionedSecond = 'aoeuidhtns') : MessageObject {
+function createMessage(htmlMessage : string, person : string) : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: person,
-		mentionedPeople: [mentionedFirst, mentionedSecond]
+		personId: person
 	};
 }
 
@@ -200,7 +198,7 @@ describe('creating Message', () => {
 	});
 
 	it('should work with iPhone format', async (done : DoneFn) => {
-		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons',
+		let sentMessage = createMessage('<spark-mention data-object-id="20f7dd3c-83ea-4baf-9964-ba866a6bb31c" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons',
 			'mockfromID');
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
@@ -213,7 +211,7 @@ describe('creating Message', () => {
 	});
 
 	it('should work with ampersand', async (done : DoneFn) => {
-		let sentMessage = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons &amp; stuff',
+		let sentMessage = createMessage('<spark-mention data-object-id="' + constants.botId + '" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for awesome reasons &amp; stuff',
 		'mockfromID');
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
@@ -243,7 +241,7 @@ describe('testing peg triggers', () => {
 	});
 
 	it('should reject wrong id', () => {
-		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> peg</p>', null, 'mockID');
+		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="notabotID">' + constants.botName + '</spark-mention> peg</p>', null);
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
@@ -261,7 +259,7 @@ describe('testing peg triggers', () => {
 	});
 
 	it('should accept iPhone format', () => {
-		let message = createMessage('<spark-mention data-object-id="mockappleID" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for reasons', 'personId');
+		let message = createMessage('<spark-mention data-object-id="20f7dd3c-83ea-4baf-9964-ba866a6bb31c" data-object-type="person">' + constants.botName + '</spark-mention> peg <spark-mention data-object-id="aoeuidhtns" data-object-type="person">Bob</spark-mention> for reasons', 'personId');
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});

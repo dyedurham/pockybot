@@ -9,11 +9,10 @@ import MockDbUsers from './mocks/mock-dbusers';
 
 const webex = new MockWebex();
 
-function createMessage(htmlMessage : string, personId = 'MockSender', receiver = 'MockReceiver', otherMentions = []) : MessageObject {
+function createMessage(htmlMessage : string, personId = 'MockSender') : MessageObject {
 	return {
 		html: htmlMessage,
-		personId: personId,
-		mentionedPeople: [constants.botId, receiver, ...otherMentions]
+		personId: personId
 	};
 }
 
@@ -87,7 +86,7 @@ describe('unpeg triggers', () => {
 		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
 		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
 		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
-			'MockSender', 'MockReceiver', ['MockPerson']);
+			'MockSender');
 
 		let triggers = unpeg.isToTriggerOn(sentMessage);
 		expect(triggers).toBe(true);
@@ -101,7 +100,7 @@ describe('unpeg triggers', () => {
 		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
 		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
 		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
-			'MockSender', 'MockReceiver', ['MockPerson']);
+			'MockSender');
 
 		let valid = unpeg.validateMessage(sentMessage);
 		expect(valid).toBe(true);

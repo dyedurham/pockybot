@@ -3,10 +3,9 @@ import constants from '../../constants';
 import Config from '../config';
 import { MessageObject } from 'webex/env';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Rotation extends Trigger {
-	readonly rotationCommand : string = `(?: )*${Command.Rotation}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -16,8 +15,8 @@ export default class Rotation extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.rotationCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Rotation;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
