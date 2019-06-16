@@ -45,6 +45,6 @@
 		"jasmine-ts": "^0.3.0",
 		"sinon": "^7.3.2",
 		"ts-node": "^7.0.1",
-		"typescript": "^3.5.1"
+		"typescript": "^3.5.2"
 	}
 }
