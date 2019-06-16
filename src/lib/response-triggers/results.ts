@@ -6,8 +6,7 @@ import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { ResultsService } from '../services/results-service';
 import { Command } from '../../models/command';
-
-const resultsCommand = `(?: )*${Command.Results}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Results extends Trigger {
 	private readonly cannotDisplayResults : string = 'Error encountered; cannot display results.';
@@ -25,8 +24,9 @@ export default class Results extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Results))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resultsCommand, 'ui');
-		return pattern.test(message.html);
+
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Results;
 	}
 
 	async createMessage() : Promise<MessageObject> {

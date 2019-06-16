@@ -7,6 +7,7 @@ import { Role, ConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class NumberConfig extends Trigger {
 	readonly numberConfigCommand : string = `(?: )*${Command.NumberConfig}(?: )*`;
@@ -24,8 +25,8 @@ export default class NumberConfig extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.numberConfigCommand, 'ui');
-		return pattern.test(message.html.trim());
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.NumberConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {

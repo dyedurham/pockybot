@@ -9,8 +9,7 @@ import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
 import { WinnersService } from '../services/winners-service';
 import { Command } from '../../models/command';
-
-const finishCommand = `(?: )*${Command.Finish}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Finish extends Trigger {
 	winnersService: WinnersService;
@@ -37,8 +36,8 @@ export default class Finish extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + finishCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Finish;
 	}
 
 	async createMessage(commandMessage : MessageObject, room : string) : Promise<MessageObject> {

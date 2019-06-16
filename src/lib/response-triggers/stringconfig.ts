@@ -7,6 +7,7 @@ import { Role, StringConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class StringConfig extends Trigger {
 	readonly stringConfigCommand : string = `(?: )*${Command.StringConfig}(?: )*`;
@@ -23,8 +24,9 @@ export default class StringConfig extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.stringConfigCommand, 'ui');
-		return pattern.test(message.html);
+
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.StringConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
