@@ -1,6 +1,6 @@
-import { CiscoSpark, MessageObject, RoomObject, WebhookObject, Page, PersonObject } from "ciscospark/env";
+import { Webex, MessageObject, RoomObject, WebhookObject, Page, PersonObject } from 'webex/env';
 
-export default class MockCiscoSpark implements CiscoSpark {
+export default class MockWebex implements Webex {
 	ciscospark : boolean;
 	version : string;
 	webhooks : {

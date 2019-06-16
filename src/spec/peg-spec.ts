@@ -1,14 +1,14 @@
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 
 import constants from '../constants';
 import Peg from '../lib/response-triggers/peg';
 
-import MockCiscoSpark from './mocks/mock-spark';
+import MockWebex from './mocks/mock-spark';
 import MockPockyDb from './mocks/mock-pockydb';
 import MockDbUsers from './mocks/mock-dbusers';
 import MockConfig from './mocks/mock-config';
 
-const spark = new MockCiscoSpark();
+const webex = new MockWebex();
 const dbUsers = new MockDbUsers();
 const config = new MockConfig(10, 5, 3, 1, 0, 1, ['awesome', 'brave', 'collaborative'], ['shame']);
 
@@ -28,7 +28,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -41,7 +41,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 2 pegs this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 2);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -54,7 +54,7 @@ describe('creating Message', () => {
 		let expected = 'Sorry, but you have already spent all of your pegs for this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 1, true, 2);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -67,7 +67,7 @@ describe('creating Message', () => {
 		let expected = 'Error encountered, peg not given';
 
 		let pockyDb = new MockPockyDb(true, 2, true, 2);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -82,7 +82,7 @@ describe('creating Message', () => {
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`;
 
 		let pockyDb = new MockPockyDb(true, 0, true, 2);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -97,7 +97,7 @@ describe('creating Message', () => {
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`;
 
 		let pockyDb = new MockPockyDb(true, 0, true, 2);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -110,7 +110,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -123,7 +123,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -136,7 +136,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -151,7 +151,7 @@ describe('creating Message', () => {
 @` + constants.botName + ` peg @Person this is the reason for giving you a peg`;
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -166,7 +166,7 @@ describe('creating Message', () => {
 @${constants.botName} peg @Person this is the reason for giving you a peg`;
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -179,7 +179,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -192,7 +192,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -205,7 +205,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -218,7 +218,7 @@ describe('creating Message', () => {
 		let expected = 'Peg given to mock name. You have given 1 peg this fortnight.';
 
 		let pockyDb = new MockPockyDb(true, 0, true, 1);
-		let peg = new Peg(spark, pockyDb, dbUsers, config);
+		let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 		let output = await peg.createMessage(sentMessage);
 		expect(output.markdown).toBe(expected);
@@ -228,7 +228,7 @@ describe('creating Message', () => {
 
 describe('testing peg triggers', () => {
 	let pockyDb = new MockPockyDb(true, 0, true, 1);
-	let peg = new Peg(spark, pockyDb, dbUsers, config);
+	let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 	it('should accept trigger', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');
@@ -281,7 +281,7 @@ describe('testing peg triggers', () => {
 
 describe('testing keywords in peg messages', () => {
 	let pockyDb = new MockPockyDb(true, 0, true, 1);
-	let peg = new Peg(spark, pockyDb, dbUsers, config);
+	let peg = new Peg(webex, pockyDb, dbUsers, config);
 
 	it('should reject with no keyword', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="aoeuidhtns">John</spark-mention> for reasons</p>', 'personId');

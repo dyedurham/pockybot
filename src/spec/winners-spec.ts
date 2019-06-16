@@ -1,7 +1,7 @@
 import Winners from '../lib/response-triggers/winners';
 import constants from '../constants';
 import Config from '../lib/config';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 import { WinnersService } from '../lib/services/winners-service';
 import MockWinnersService from './mocks/mock-winners-service';

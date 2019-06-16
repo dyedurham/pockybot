@@ -2,12 +2,12 @@ import Unpeg from '../lib/response-triggers/unpeg';
 import constants from '../constants';
 import Utilities from '../lib/utilities';
 import { Client } from 'pg';
-import MockCiscoSpark from './mocks/mock-spark';
-import { MessageObject } from 'ciscospark/env';
+import MockWebex from './mocks/mock-spark';
+import { MessageObject } from 'webex/env';
 import { DbUsers } from '../lib/database/db-interfaces';
 import MockDbUsers from './mocks/mock-dbusers';
 
-const spark = new MockCiscoSpark();
+const webex = new MockWebex();
 
 function createMessage(htmlMessage : string, personId = 'MockSender', receiver = 'MockReceiver', otherMentions = []) : MessageObject {
 	return {
@@ -50,7 +50,7 @@ describe('unpeg triggers', () => {
 		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, utilities);
+		let unpeg = new Unpeg(webex, database, utilities);
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
 
 		try {
@@ -66,7 +66,7 @@ describe('unpeg triggers', () => {
 		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, utilities);
+		let unpeg = new Unpeg(webex, database, utilities);
 
 		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> peg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>');
 
@@ -83,7 +83,7 @@ describe('unpeg triggers', () => {
 		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, utilities);
+		let unpeg = new Unpeg(webex, database, utilities);
 		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
 		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
 		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
@@ -97,7 +97,7 @@ describe('unpeg triggers', () => {
 		let database = createDatabase();
 		let utilities = createUtilities(1);
 
-		let unpeg = new Unpeg(spark, database, utilities);
+		let unpeg = new Unpeg(webex, database, utilities);
 		const mockPerson = '<spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention>';
 		const mockPerson2 = '<spark-mention data-object-type="person" data-object-id="MockPerson">ShameBot2</spark-mention>';
 		let sentMessage = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> unpeg ${mockPerson} with a comment concerning ${mockPerson2}</p>`,
@@ -173,9 +173,9 @@ Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 			let database = createDatabase();
 			let utilities = createUtilities(test.case);
 
-			let unpeg = new Unpeg(spark, database, utilities);
+			let unpeg = new Unpeg(webex, database, utilities);
 
-			spyOn(spark.messages, 'create').and.callThrough();
+			spyOn(webex.messages, 'create').and.callThrough();
 
 			let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg <spark-mention data-object-type="person" data-object-id="MockReceiver">ShameBot</spark-mention> with a comment</p>', test.senderId);
 			let roomId = 'abc';
@@ -183,7 +183,7 @@ Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 			let result = await unpeg.createMessage(message, roomId);
 
 			if (test.twoStage) {
-				expect(spark.messages.create).toHaveBeenCalledWith({
+				expect(webex.messages.create).toHaveBeenCalledWith({
 					markdown: test.firstResponse,
 					roomId: roomId
 				});

@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 
 export default class Default extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {

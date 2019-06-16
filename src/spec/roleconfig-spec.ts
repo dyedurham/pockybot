@@ -1,7 +1,7 @@
 import Roleconfig from '../lib/response-triggers/roleconfig';
 import constants from '../constants';
 import Config from '../lib/config';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 import DbUsers from '../lib/database/db-users';
 import { Client } from 'pg';

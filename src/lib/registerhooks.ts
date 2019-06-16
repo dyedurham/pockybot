@@ -1,5 +1,5 @@
-import { WebhookObject, Page } from 'ciscospark/env';
-const spark = require('ciscospark/env');
+import { WebhookObject, Page } from 'webex/env';
+const webex = require('webex/env');
 import constants from '../constants';
 import __logger from './logger';
 import * as fs from "fs";
@@ -38,7 +38,7 @@ try {
 }
 
 try {
-	spark.webhooks.list()
+	webex.webhooks.list()
 		.then(async (webhooks : Page<WebhookObject>) => {
 			let myHooks : WebhookObject[] = [];
 			let first = true;
@@ -53,12 +53,12 @@ try {
 			} while (webhooks.hasNext())
 
 			myHooks.forEach((hook : WebhookObject) => {
-				spark.webhooks.remove(hook);
+				webex.webhooks.remove(hook);
 			});
 
 			__logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
 		}).then(() => {
-			spark.webhooks.create({
+			webex.webhooks.create({
 				resource: 'messages',
 				event: 'created',
 				filter: 'mentionedPeople=me',
@@ -66,7 +66,7 @@ try {
 				name: constants.botName + ' webhook'
 			});
 
-			spark.webhooks.create({
+			webex.webhooks.create({
 				resource: 'messages',
 				event: 'created',
 				filter: 'roomType=direct',

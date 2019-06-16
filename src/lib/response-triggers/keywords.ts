@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Command } from '../../models/command';
 
 export default class Keywords extends Trigger {

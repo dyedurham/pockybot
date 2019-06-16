@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import { Command } from '../../models/command';

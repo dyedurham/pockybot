@@ -27,8 +27,8 @@ import RoleConfig from './roleconfig';
 import Default from './default';
 
 // Services
-import { MessageObject } from 'ciscospark/env';
-const spark = require('ciscospark/env');
+import { MessageObject } from 'webex/env';
+const webex = require('webex/env');
 import { Client } from 'pg';
 import Utilities from '../utilities';
 import Config from '../config';
@@ -47,27 +47,27 @@ import { DefaultCategoryResultsService } from '../services/category-results-serv
 const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
-const dbUsers = new DbUsers(spark, queryHandler);
+const dbUsers = new DbUsers(webex, queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new Config(dbConfig);
 const categoryResultsService = new DefaultCategoryResultsService();
 const winnersService = new DefaultWinnersService(database, config, utilities);
 const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
 const resultsService = new DefaultResultsService(formatResultsService);
-const pmResultsService = new DefaultPmResultsService(database, spark);
+const pmResultsService = new DefaultPmResultsService(database, webex);
 
 database.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const peg = new Peg(spark, database, dbUsers, config);
-const unpeg = new Unpeg(spark, dbUsers, utilities);
+const peg = new Peg(webex, database, dbUsers, config);
+const unpeg = new Unpeg(webex, dbUsers, utilities);
 const reset = new Reset(database, config);
 const winners = new Winners(winnersService, config);
 const results = new Results(resultsService, config);
-const status = new Status(spark, database, config, utilities);
-const update = new Update(spark, dbUsers, config);
-const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config, spark);
+const status = new Status(webex, database, config, utilities);
+const update = new Update(webex, dbUsers, config);
+const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config, webex);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const numberConfig = new NumberConfig(config);
