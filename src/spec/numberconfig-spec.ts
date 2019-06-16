@@ -38,7 +38,9 @@ beforeAll(() => {
 		if (config === 'test') {
 			return 1;
 		}
-
+		if (config === 'limit') {
+			return 1;
+		}
 		return null;
 	})
 })
@@ -120,6 +122,20 @@ test | 1
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config to be deleted');
+		done();
+	});
+
+	it('should fail to set minimum higher than limit', async (done : DoneFn) => {
+		const configMinimumMessage = { text: `${constants.botName} numberconfig set minimum 6` };
+		let minResponse = await configuration.createMessage(configMinimumMessage);
+		expect(minResponse.markdown).toBe('Minimum pegs must be less than or equal to maximum pegs.');
+		done();
+	});
+
+	it('should fail to set minimum less than 0', async (done : DoneFn) => {
+		const configMinimumMessage = { text: `${constants.botName} numberconfig set minimum -1` };
+		let minResponse = await configuration.createMessage(configMinimumMessage);
+		expect(minResponse.markdown).toBe('Config should be greater than 0.');
 		done();
 	});
 });

@@ -46,15 +46,13 @@ export default class NumberConfig extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
-				if (words.length < 4) {
-					newMessage = 'You must specify a config name and value to set';
-					break;
-				}
+				newMessage = this.validateConfigActionSet(words);
+				if(newMessage) break;
 
-				const value = Number(words[3])
+				const value = Number(words[3]);
 
-				if (isNaN(value)) {
-					newMessage = 'Config must be set to a number';
+				if(words[2] === 'minimum' && value > this.config.getConfig('limit')) {
+					newMessage = 'Minimum pegs must be less than or equal to maximum pegs.';
 					break;
 				}
 
@@ -105,5 +103,22 @@ export default class NumberConfig extends Trigger {
 		message += '```';
 
 		return message;
+	}
+
+	private validateConfigActionSet(words: string[]) : string {
+		if (words.length < 4) {
+			return 'You must specify a config name and value to set';
+		}
+
+		const value = Number(words[3]);
+
+		if (isNaN(value)) {
+			return 'Config must be set to a number';
+		}
+
+		if(value < 0) {
+			return 'Config should be greater than 0.';
+		}
+		return null;
 	}
 }

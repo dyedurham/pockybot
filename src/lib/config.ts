@@ -96,10 +96,6 @@ export default class Config implements ConfigInterface {
 	}
 
 	async setConfig(config : string, value : number) : Promise<void> {
-		if (isNaN(value)) {
-			throw new Error('error: config must be an integer');
-		}
-
 		await this.database.setConfig(config, value);
 		await this.updateConfig();
 	}
