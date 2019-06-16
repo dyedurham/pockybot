@@ -36,7 +36,7 @@ function parseNonPegMessage(message : MessageObject) : ParsedMessage {
 		botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
 		children,
 		command: children.reduce((a, child, index) => {
-			// first three children should be mentions or command words
+			// first child should be mention
 			if (index > 0) {
 				return a + child.text();
 			}
