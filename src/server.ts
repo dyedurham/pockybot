@@ -2,8 +2,8 @@
 import __logger from './lib/logger';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import responder from './lib/responder';
-import pmResponder from './lib/pm-responder';
+import { respond } from './lib/responder';
+import { pmRespond } from './lib/pm-responder';
 import * as url from 'url';
 import * as fs from 'fs';
 
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.post('/respond', async (req, res) => {
 	try {
-		await responder.respond(req.body);
+		await respond(req.body);
 		res.status(200).end();
 	} catch (e) {
 		__logger.error(`[Server.respond] Error in server /respond: ${e.message}`);
@@ -34,7 +34,7 @@ app.post('/respond', async (req, res) => {
 
 app.post('/pm', async (req, res) => {
 	try {
-		await pmResponder.respond(req.body);
+		await pmRespond(req.body);
 		res.status(200).end();
 	} catch (e) {
 		__logger.error(`[Server.pm] Error in server /pm: ${e.message}`);

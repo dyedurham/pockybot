@@ -1,8 +1,9 @@
 {
-	"name": "PockyBot",
-	"version": "1.7.1",
+	"name": "pockybot",
+	"version": "1.7.1-preview",
 	"description": "Spark bot that handles team recognition",
-	"main": "server.js",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"start": "node built/server.js",

@@ -3,7 +3,7 @@ const spark = require('ciscospark/env');
 import responseFactory from './response-triggers/index';
 import __logger from './logger';
 
-async function respond(messageEvent : {data : {id : string}}) {
+export async function respond(messageEvent : {data : {id : string}}) {
 	try {
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 		__logger.debug('processing message: ' + JSON.stringify(message));
@@ -37,7 +37,3 @@ async function respond(messageEvent : {data : {id : string}}) {
 		__logger.error(`[Responder.respond] Uncaught error in responder: ${e.message}`);
 	}
 };
-
-export default {
-	respond
-}

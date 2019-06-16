@@ -4,7 +4,7 @@ import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
 
-async function respond(messageEvent : any): Promise<void> {
+export async function pmRespond(messageEvent : any): Promise<void> {
 	try {
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
 
@@ -42,7 +42,3 @@ async function respond(messageEvent : any): Promise<void> {
 		__logger.error(`[PmResponder.respond] Uncaught error in direct responder: ${e.message}`);
 	}
 };
-
-export default {
-	respond
-}
