@@ -19,10 +19,8 @@ export default class Help extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
-		return parsedMessage.length >= 2 && parsedMessage[0].name() === 'spark-mention'
-		&& xmlMessageParser.getPersonId(parsedMessage[0].attr('data-object-id').value()) === constants.botId
-			&& parsedMessage[1].text().trim().toLowerCase().startsWith(Command.Help);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.Help);
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {

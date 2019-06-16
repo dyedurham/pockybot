@@ -7,8 +7,7 @@ import constants from '../../constants';
 
 function parsePegMessage(message : MessageObject) : ParsedMessage {
 	try {
-		let xmlMessage : xml.Document = this.getMessageXml(message);
-		let children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
+		let children : xml.Element[] = parseXmlMessage(message);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
 			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' ? getPersonId(children[2].attr('data-object-id').value()) : null,
@@ -30,6 +29,24 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 	}
 }
 
+function parseNonPegMessage(message : MessageObject) : ParsedMessage {
+	let children : xml.Element[] = parseXmlMessage(message);
+	let parsedMessage : ParsedMessage = {
+		fromPerson: message.personId,
+		botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
+		children,
+		command: children.reduce((a, child, index) => {
+			// first three children should be mentions or command words
+			if (index > 0) {
+				return a + child.text();
+			}
+			return a;
+		}, '').trim()
+	}
+
+	return parsedMessage;
+}
+
 function getPersonId(id: string) : string {
 	if (id.indexOf('-') >= 0) {
 		return Buffer.from(constants.sparkTokenPrefix + id).toString('base64').replace(new RegExp('=', 'g'), '');
@@ -39,7 +56,7 @@ function getPersonId(id: string) : string {
 }
 
 function parseXmlMessage(message : MessageObject) : xml.Element[] {
-	const xmlMessage : xml.Document = this.getMessageXml(message);
+	const xmlMessage : xml.Document = getMessageXml(message);
 	const children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
 
 	return children;
@@ -51,6 +68,7 @@ function getMessageXml(message : MessageObject) : xml.Document {
 	unescape.chars['&amp;'] = '&amp;';
 	let unencoded = unescape(message.html);
 
+	// XML parsing requires root node. If it doesn't exist, add one.
 	if (!unencoded.toLowerCase().trim().startsWith('<p>') && !unencoded.toLowerCase().trim().startsWith('<div>')) {
 		unencoded = '<p>' + unencoded.trim();
 	}
@@ -62,6 +80,7 @@ function getMessageXml(message : MessageObject) : xml.Document {
 
 export default {
 	parsePegMessage,
+	parseNonPegMessage,
 	getMessageXml,
 	parseXmlMessage,
 	getPersonId

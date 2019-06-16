@@ -29,10 +29,8 @@ export default class RoleConfig extends Trigger {
 			return false;
 		}
 
-		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
-		return parsedMessage.length >= 2 && parsedMessage[0].name() === 'spark-mention'
-		&& xmlMessageParser.getPersonId(parsedMessage[0].attr('data-object-id').value()) === constants.botId
-			&& parsedMessage[1].text().trim().toLowerCase().startsWith(Command.RoleConfig);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.RoleConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {

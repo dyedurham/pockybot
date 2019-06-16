@@ -5,9 +5,8 @@ import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Default extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
-		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
-		return parsedMessage.length > 0 && parsedMessage[0].name() === 'spark-mention'
-			&& xmlMessageParser.getPersonId(parsedMessage[0].attr('data-object-id').value()) === constants.botId;
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId;
 	}
 
 	isToTriggerOnPM() : boolean {
