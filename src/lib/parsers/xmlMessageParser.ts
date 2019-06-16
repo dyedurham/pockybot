@@ -3,15 +3,15 @@ const unescape = require('unescape');
 import __logger from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { ParsedMessage } from '../../models/parsed-message';
+import constants from '../../constants';
 
 function parsePegMessage(message : MessageObject) : ParsedMessage {
 	try {
-		let xmlMessage : xml.Document = this.getMessageXml(message);
-		let children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
+		let children : xml.Element[] = parseXmlMessage(message);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
-			toPersonId: message.mentionedPeople[1],
-			botId: message.mentionedPeople[0],
+			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' ? getPersonId(children[2].attr('data-object-id').value()) : null,
+			botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
 			children,
 			comment: children.reduce((a, child, index) => {
 				// first three children should be mentions or command words
@@ -29,8 +29,34 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 	}
 }
 
+function parseNonPegMessage(message : MessageObject) : ParsedMessage {
+	let children : xml.Element[] = parseXmlMessage(message);
+	let parsedMessage : ParsedMessage = {
+		fromPerson: message.personId,
+		botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
+		children,
+		command: children.reduce((a, child, index) => {
+			// first child should be mention
+			if (index > 0) {
+				return a + child.text();
+			}
+			return a;
+		}, '').trim()
+	}
+
+	return parsedMessage;
+}
+
+function getPersonId(id: string) : string {
+	if (id.indexOf('-') >= 0) {
+		return Buffer.from(constants.sparkTokenPrefix + id).toString('base64').replace(new RegExp('=', 'g'), '');
+	}
+
+	return id;
+}
+
 function parseXmlMessage(message : MessageObject) : xml.Element[] {
-	const xmlMessage : xml.Document = this.getMessageXml(message);
+	const xmlMessage : xml.Document = getMessageXml(message);
 	const children : xml.Element[] = (xmlMessage.root().childNodes() as xml.Element[]);
 
 	return children;
@@ -41,11 +67,12 @@ function getMessageXml(message : MessageObject) : xml.Document {
 	// Ensure it is encoded correctly
 	unescape.chars['&amp;'] = '&amp;';
 	let unencoded = unescape(message.html);
+
 	// XML parsing requires root node. If it doesn't exist, add one.
-	if (!unencoded.toLowerCase().startsWith('<p>')) {
+	if (!unencoded.toLowerCase().trim().startsWith('<p>') && !unencoded.toLowerCase().trim().startsWith('<div>')) {
 		unencoded = '<p>' + unencoded.trim();
 	}
-	if (!unencoded.toLowerCase().trim().endsWith('</p>')) {
+	if (!unencoded.toLowerCase().trim().endsWith('</p>') && !unencoded.toLowerCase().trim().endsWith('</div>')) {
 		unencoded = unencoded.trim() + '</p>';
 	}
 	return xml.parseXml(unencoded);
@@ -53,8 +80,10 @@ function getMessageXml(message : MessageObject) : xml.Document {
 
 export default {
 	parsePegMessage,
+	parseNonPegMessage,
 	getMessageXml,
-	parseXmlMessage
+	parseXmlMessage,
+	getPersonId
 }
 
 export {

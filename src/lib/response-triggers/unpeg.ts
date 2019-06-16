@@ -43,7 +43,8 @@ export default class  Unpeg extends Trigger {
 			};
 		}
 
-		let toPersonId = message.mentionedPeople[1];
+		let parsedMessage = XmlMessageParser.parsePegMessage(message);
+		let toPersonId = parsedMessage.toPersonId;
 		let fromPersonId = message.personId;
 
 		try {
@@ -76,28 +77,27 @@ export default class  Unpeg extends Trigger {
 
 	validateMessage(message : MessageObject) : boolean {
 		try {
-			let parsedMessage = XmlMessageParser.getMessageXml(message);
-			if (message.mentionedPeople.length < 2 || message.mentionedPeople[0] !== constants.botId) {
+			let parsedMessage = XmlMessageParser.parsePegMessage(message);
+			if (parsedMessage.toPersonId == null || parsedMessage.botId !== constants.botId) {
 				__logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
 				return false;
 			}
 
-			let children = parsedMessage.childNodes();
-			if (children.length < 3) {
+			if (parsedMessage.children.length < 3) {
 				__logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
 				return false;
 			}
 
-			if(children[0].name() !== 'spark-mention' || children[2].name() !== 'spark-mention') {
+			if(parsedMessage.children[0].name() !== 'spark-mention' || parsedMessage.children[2].name() !== 'spark-mention') {
 				__logger.warn('Unpeg candidate message children 0 or 2 are not spark-mentions');
 				return false;
 			}
 
 			let pattern = new RegExp(this.unpegCommand, 'ui');
-			if (pattern.test(children[1].text())) {
+			if (pattern.test(parsedMessage.children[1].text())) {
 				return true;
 			} else {
-				__logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${children[1].text()}`);
+				__logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${parsedMessage.children[1].text()}`);
 				return false;
 			}
 		} catch (e) {

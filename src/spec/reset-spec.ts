@@ -2,7 +2,6 @@ import Reset from '../lib/response-triggers/reset';
 import constants from '../constants';
 import Config from '../lib/config';
 import { PockyDB } from '../lib/database/db-interfaces';
-import { Client } from 'pg';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';

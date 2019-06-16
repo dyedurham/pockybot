@@ -1,11 +1,12 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { MessageObject } from 'ciscospark/env';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Default extends Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId;
 	}
 
 	isToTriggerOnPM() : boolean {

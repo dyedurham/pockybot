@@ -7,8 +7,7 @@ import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
 import { Command } from '../../models/command';
 import Utilities from '../utilities';
-
-const statusCommand = `(?: )*${Command.Status}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Status extends Trigger {
 	spark : CiscoSpark;
@@ -26,8 +25,8 @@ export default class Status extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + statusCommand + constants.optionalMarkdownEnding + '$', 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Status;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
