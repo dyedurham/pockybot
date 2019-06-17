@@ -275,6 +275,12 @@ describe('testing peg triggers', () => {
 		let results = peg.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> peg <spark-mention data-object-type="person" data-object-id="${constants.botId }">${constants.botName}</spark-mention> test`, 'personId');
+		let results = peg.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
 });
 
 describe('testing keywords in peg messages', () => {

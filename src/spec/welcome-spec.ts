@@ -77,6 +77,12 @@ describe('testing welcome triggers', () => {
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> welcome`);
+		let results = welcome.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
 });
 
 describe('testing welcome PM triggers', () => {

@@ -166,7 +166,8 @@ describe('testing status triggers', () => {
 		{ text: `${constants.mentionMe}status`, expectedTriggered: true },
 		{ text: `${constants.mentionMe} status `, expectedTriggered: true },
 		{ text: `<p><spark-mention data-object-type="person" data-object-id="` + constants.botId + `">` + constants.botName + `</spark-mention> status</p>`, expectedTriggered: true },
-		{ text: `${constants.mentionMe} status me`, expectedTriggered: false }];
+		{ text: `${constants.mentionMe} status me`, expectedTriggered: false },
+		{ text: `<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> status`, expectedTriggered: false }];
 	TriggerTestCases.forEach(spec => {
 		it(`should${spec.expectedTriggered ? '':' not'} trigger when ${spec.text}`, () => {
 			const result = status.isToTriggerOn(createMessage(spec.text, 'person'));
