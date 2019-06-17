@@ -10,8 +10,6 @@ import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class NumberConfig extends Trigger {
-	readonly numberConfigCommand : string = `(?: )*${Command.NumberConfig}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -47,7 +45,7 @@ export default class NumberConfig extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
-				newMessage = this.validateConfigActionSet(words);
+				newMessage = NumberConfig.validateConfigActionSet(words);
 				if(newMessage) break;
 
 				const value = Number(words[3]);
@@ -57,11 +55,11 @@ export default class NumberConfig extends Trigger {
 					break;
 				}
 
-				this.config.setConfig(words[2], value);
+				await this.config.setConfig(words[2], value);
 				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
-				this.config.updateConfig();
+				await this.config.updateConfig();
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
@@ -75,7 +73,7 @@ export default class NumberConfig extends Trigger {
 					break;
 				}
 
-				this.config.deleteConfig(words[2]);
+				await this.config.deleteConfig(words[2]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:
@@ -106,7 +104,7 @@ export default class NumberConfig extends Trigger {
 		return message;
 	}
 
-	private validateConfigActionSet(words: string[]) : string {
+	private static validateConfigActionSet(words: string[]) : string {
 		if (words.length < 4) {
 			return 'You must specify a config name and value to set';
 		}
