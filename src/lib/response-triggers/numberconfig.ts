@@ -53,7 +53,7 @@ export default class NumberConfig extends Trigger {
 				const value = Number(words[3]);
 
 				if(words[2] === 'minimum' && value > this.config.getConfig('limit')) {
-					newMessage = 'Minimum pegs must be less than or equal to maximum pegs.';
+					newMessage = 'Minimum pegs must be less than or equal to peg limit.';
 					break;
 				}
 
@@ -118,7 +118,7 @@ export default class NumberConfig extends Trigger {
 		}
 
 		if(value < 0) {
-			return 'Config should be greater than 0.';
+			return 'Config should be greater than or equal to 0.';
 		}
 		return null;
 	}
