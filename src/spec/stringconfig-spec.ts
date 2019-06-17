@@ -55,7 +55,7 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringconfig get` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringconfig get` };
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -68,7 +68,7 @@ test | test
 	});
 
 	it('should create with a number paramater', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig set test 1` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig set test 1` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', '1');
 		expect(response.markdown).toBe('Config has been set');
@@ -76,7 +76,7 @@ test | test
 	});
 
 	it('should create the set string message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig set test value2` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig set test value2` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'value2');
 		expect(response.markdown).toBe('Config has been set');
@@ -84,7 +84,7 @@ test | test
 	});
 
 	it('should create the set string message with mixed input', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig set test test123` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig set test test123` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).toHaveBeenCalledWith('test', 'test123');
 		expect(response.markdown).toBe('Config has been set');
@@ -92,7 +92,7 @@ test | test
 	});
 
 	it('should fail to set the config if the config already exists', async (done: DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig set test value` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig set test value` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config value "value" already exists in string config under name "test".');
@@ -100,7 +100,7 @@ test | test
 	});
 
 	it('should fail to set the config with no config specified', async (done: DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig set` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig set` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config name and value to set');
@@ -108,7 +108,7 @@ test | test
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig refresh` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig refresh` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.updateStringConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe('Config has been updated');
@@ -116,7 +116,7 @@ test | test
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig delete test value` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig delete test value` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).toHaveBeenCalledWith('test', 'value');
 		expect(response.markdown).toBe('Config has been deleted');
@@ -124,7 +124,7 @@ test | test
 	});
 
 	it('should not delete config values which do not exist', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringConfig delete test dummy` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig delete test dummy` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Value "dummy" does not exist in string config under name "test"');
@@ -132,7 +132,7 @@ test | test
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} stringconfig delete`};
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringconfig delete`};
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteStringConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config name and value to be deleted');

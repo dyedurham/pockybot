@@ -28,9 +28,9 @@ export default class Help extends Trigger {
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		const pattern = new RegExp('^@?' + constants.botName, 'ui');
 		const helpPattern = new RegExp('^' + this.helpCommand, 'ui');
-		const command = parsedMessage.command.trim().replace(helpPattern, '').trim();
+		const command = message.text.trim().replace(pattern, '').trim().replace(helpPattern, '').trim();
 		const newMessage = this.createHelpResponseMessage(message, command);
 
 		return {

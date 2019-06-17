@@ -49,7 +49,7 @@ describe('configuration message parsing', () => {
 	});
 
 	it('should create the get message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig get` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig get` };
 		let response = await configuration.createMessage(configMessage);
 		expect(response.markdown).toContain(
 `Here is the current config:
@@ -62,7 +62,7 @@ test | 1
 	});
 
 	it('should create the set message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig set test 1` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig set test 1` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).toHaveBeenCalledWith('test', 1);
 		expect(response.markdown).toBe('Config has been set');
@@ -70,7 +70,7 @@ test | 1
 	});
 
 	it('should fail to create with a string paramater', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig set test test` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig set test test` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config must be set to a number');
@@ -78,7 +78,7 @@ test | 1
 	});
 
 	it('should fail to create with mixed input', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig set test test123` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig set test test123` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.setConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config must be set to a number');
@@ -86,7 +86,7 @@ test | 1
 	});
 
 	it('should create the refresh message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig refresh` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig refresh` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.updateConfig).toHaveBeenCalled();
 		expect(response.markdown).toBe('Config has been updated');
@@ -94,7 +94,7 @@ test | 1
 	});
 
 	it('should create the delete message', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig delete test` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig delete test` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).toHaveBeenCalledWith('test');
 		expect(response.markdown).toBe('Config has been deleted');
@@ -102,7 +102,7 @@ test | 1
 	});
 
 	it('should not delete configs which don\'t exist', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig delete dummy` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig delete dummy` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('Config value "dummy" does not exist');
@@ -110,7 +110,7 @@ test | 1
 	});
 
 	it('should fail to create the delete message with no config specified', async (done : DoneFn) => {
-		const configMessage = { text: `${constants.botName} numberconfig delete` };
+		const configMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig delete` };
 		let response = await configuration.createMessage(configMessage);
 		expect(config.deleteConfig).not.toHaveBeenCalled();
 		expect(response.markdown).toBe('You must specify a config to be deleted');
@@ -118,14 +118,14 @@ test | 1
 	});
 
 	it('should fail to set minimum higher than limit', async (done : DoneFn) => {
-		const configMinimumMessage = { text: `${constants.botName} numberconfig set minimum 6` };
+		const configMinimumMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig set minimum 6` };
 		let minResponse = await configuration.createMessage(configMinimumMessage);
 		expect(minResponse.markdown).toBe('Minimum pegs must be less than or equal to peg limit.');
 		done();
 	});
 
 	it('should fail to set minimum less than 0', async (done : DoneFn) => {
-		const configMinimumMessage = { text: `${constants.botName} numberconfig set minimum -1` };
+		const configMinimumMessage = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> numberconfig set minimum -1` };
 		let minResponse = await configuration.createMessage(configMinimumMessage);
 		expect(minResponse.markdown).toBe('Config should be greater than or equal to 0.');
 		done();
