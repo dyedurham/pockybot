@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-        "outDir": "./built",
-        "allowJs": true,
+		"outDir": "./built",
+		"declarationDir": "./built",
 		"target": "es2017",
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"typeRoots": ["node_modules/@types", "@types"],
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"declaration": true
     },
     "include": [
         "./src/**/*"

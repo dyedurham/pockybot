@@ -2,12 +2,14 @@
 	"name": "pockybot",
 	"version": "1.7.1-preview",
 	"description": "Spark bot that handles team recognition",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "built/index.js",
+	"types": "built/index.d.ts",
+	"files": ["/built"],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"start": "node built/server.js",
-		"test": "jasmine-ts --config=jasmine.json"
+		"test": "jasmine-ts --config=jasmine.json",
+		"publish": "npm publish"
 	},
 	"repository": {
 		"type": "git",
