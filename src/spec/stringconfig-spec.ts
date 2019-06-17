@@ -26,12 +26,7 @@ beforeAll(() => {
 	spyOn(config, 'deleteStringConfig').and.stub();
 
 	spyOn(config, 'checkRole').and.callFake((userid : string, value : Role) => {
-		if (userid === 'mockAdminID' && value === Role.Admin) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return userid === 'mockAdminID' && value === Role.Admin;
 	});
 
 	spyOn(config, 'getStringConfig').and.callFake((config : string) => {
@@ -41,7 +36,7 @@ beforeAll(() => {
 
 		return [];
 	})
-})
+});
 
 describe('configuration message parsing', () => {
 	const configuration = new Stringconfig(config);
@@ -146,56 +141,56 @@ describe('testing configuration triggers', () => {
 	it('should accept trigger', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
 	it('should reject wrong command', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdfstringConfig`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 
 	it('should reject wrong id', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> stringConfig`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 
 	it('should accept no space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>stringConfig`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
 	it('should accept trailing space', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig `,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
 	it('should fail for non admin', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig`,
 			'mockID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 
 	it('should accept an additional parameter', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> stringConfig get`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(true);
 	});
 
 	it('should fail with only config', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> config`,
 			'mockAdminID');
-		let results = configuration.isToTriggerOn(message)
+		let results = configuration.isToTriggerOn(message);
 		expect(results).toBe(false);
 	});
 

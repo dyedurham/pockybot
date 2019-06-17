@@ -10,7 +10,6 @@ import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class StringConfig extends Trigger {
-	readonly stringConfigCommand : string = `(?: )*${Command.StringConfig}(?: )*`;
 
 	config : Config;
 
@@ -39,7 +38,7 @@ export default class StringConfig extends Trigger {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
 		}
 
-		switch (words[1]) {
+		switch (words[1].toLowerCase()) {
 			case ConfigAction.Get:
 				newMessage = this.getConfigMessage();
 				break;
@@ -49,16 +48,19 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				if (this.config.getStringConfig(words[2]).includes(words[3])) {
+				if (this.config.getStringConfig(words[2])
+					.map(x => x.toUpperCase())
+					.includes(words[3].toUpperCase())) {
+
 					newMessage = `Config value "${words[3]}" already exists in string config under name "${words[2]}".`;
 					break;
 				}
 
-				this.config.setStringConfig(words[2], words[3]);
+				await this.config.setStringConfig(words[2].toLowerCase(), words[3]);
 				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
-				this.config.updateStringConfig();
+				await this.config.updateStringConfig();
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
@@ -67,12 +69,14 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				if (!this.config.getStringConfig(words[2]).includes(words[3])) {
+				if (!this.config.getStringConfig(words[2])
+					.map(x => x.toUpperCase())
+					.includes(words[3].toUpperCase())) {
 					newMessage = `Value "${words[3]}" does not exist in string config under name "${words[2]}"`;
 					break;
 				}
 
-				this.config.deleteStringConfig(words[2], words[3]);
+				await this.config.deleteStringConfig(words[2].toLowerCase(), words[3]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:
