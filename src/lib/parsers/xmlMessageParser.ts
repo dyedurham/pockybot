@@ -10,8 +10,10 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 		let children : xml.Element[] = parseXmlMessage(message);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
-			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' ? getPersonId(children[2].attr('data-object-id').value()) : null,
-			botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
+			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' && children[2].attr('data-object-type').value() === 'person'
+				? getPersonId(children[2].attr('data-object-id').value()) : null,
+			botId: children.length > 0 && children[0].name() === 'spark-mention' && children[0].attr('data-object-type').value() === 'person'
+				? getPersonId(children[0].attr('data-object-id').value()) : null,
 			children,
 			comment: children.reduce((a, child, index) => {
 				// first three children should be mentions or command words
