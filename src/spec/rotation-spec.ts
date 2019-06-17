@@ -68,6 +68,12 @@ describe('testing rotation triggers', () => {
 		let results = rotation.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> rotation`);
+		let results = rotation.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
 });
 
 describe('testing rotation PM triggers', () => {

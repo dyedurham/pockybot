@@ -128,4 +128,10 @@ describe('testing results triggers', () => {
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> results`, 'mockAdminID');
+		let triggered = results.isToTriggerOn(message)
+		expect(triggered).toBe(false);
+	});
 });

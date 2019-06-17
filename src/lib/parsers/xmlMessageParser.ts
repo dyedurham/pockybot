@@ -35,7 +35,8 @@ function parseNonPegMessage(message : MessageObject) : ParsedMessage {
 	let children : xml.Element[] = parseXmlMessage(message);
 	let parsedMessage : ParsedMessage = {
 		fromPerson: message.personId,
-		botId: children.length > 0 && children[0].name() === 'spark-mention' ? getPersonId(children[0].attr('data-object-id').value()) : null,
+		botId: children.length > 0 && children[0].name() === 'spark-mention' && children[0].attr('data-object-type').value() === 'person'
+			? getPersonId(children[0].attr('data-object-id').value()) : null,
 		children,
 		command: children.reduce((a, child, index) => {
 			// first child should be mention

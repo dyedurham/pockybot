@@ -136,4 +136,10 @@ describe('testing reset triggers', () => {
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> reset`, 'mockadminID');
+		let results = reset.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
 });

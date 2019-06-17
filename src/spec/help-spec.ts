@@ -97,6 +97,12 @@ describe('testing help triggers', () => {
 		let results = help.isToTriggerOn(message)
 		expect(results).toBe(true);
 	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> help`);
+		let results = help.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
 });
 
 describe('testing help PM triggers', () => {
