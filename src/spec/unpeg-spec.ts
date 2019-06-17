@@ -231,4 +231,24 @@ Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 
 		done();
 	});
+
+	it('should properly unpeg an abstract concept with no "for" keyword', async (done : DoneFn) => {
+		let database = createDatabase();
+		let utilities = createUtilities(1);
+
+		let unpeg = new Unpeg(webex, database, utilities);
+
+		spyOn(webex.messages, 'create').and.callThrough();
+
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg Webex because reasons</p>');
+		let roomId = 'abc';
+
+		let result = await unpeg.createMessage(sentMessage, roomId);
+
+		expect(result).toEqual({
+			markdown: 'It looks like Webex has hidden their pegs too well for me to find them!'
+		});
+
+		done();
+	});
 });
