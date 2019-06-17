@@ -29,10 +29,8 @@ export default class StringConfig extends Trigger {
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		const pattern = new RegExp('^' + constants.botName, 'ui');
-		message.text = message.text.trim().replace(pattern, '').trim();
-
-		let words = message.text.split(' ');
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		let words = parsedMessage.command.trim().split(' ');
 
 		let newMessage : string;
 

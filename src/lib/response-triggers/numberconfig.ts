@@ -28,11 +28,8 @@ export default class NumberConfig extends Trigger {
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		message.text = message.text.toLowerCase();
-		let pattern = new RegExp('^' + constants.botName, 'ui');
-		message.text = message.text.trim().replace(pattern, '').trim();
-
-		let words = message.text.split(' ');
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		let words = parsedMessage.command.trim().split(' ');
 
 		if (words.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
