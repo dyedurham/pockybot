@@ -1,6 +1,6 @@
 import constants from '../../constants';
 import Trigger from '../../models/trigger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import * as pjson from 'pjson';
 import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';

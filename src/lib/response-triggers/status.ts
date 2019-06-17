@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { PockyDB}  from '../database/db-interfaces';
 import Config from '../config';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
 import { Command } from '../../models/command';
@@ -10,15 +10,15 @@ import Utilities from '../utilities';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Status extends Trigger {
-	spark : CiscoSpark;
+	webex : Webex;
 	database : PockyDB;
 	config : Config;
 	utilities : Utilities;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, config : Config, utilities : Utilities) {
+	constructor(webexService : Webex, databaseService : PockyDB, config : Config, utilities : Utilities) {
 		super();
 
-		this.spark = sparkService;
+		this.webex = webexService;
 		this.database = databaseService;
 		this.config = config;
 		this.utilities = utilities;
@@ -71,7 +71,7 @@ ${mapped.penaltyPegs}`
 		const mapToDisplayNameAsync = data.reduce((promises : Promise<PegGivenData>[], item : PegGiven) => {
 			return [...promises,
 				Promise.all([
-					this.spark.people.get(item.receiver),
+					this.webex.people.get(item.receiver),
 					item.comment])
 				.then(([receiver, comment]) => ({receiver: receiver.displayName, comment}))];
 		}, []);

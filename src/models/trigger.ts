@@ -1,4 +1,4 @@
-import { MessageObject } from "ciscospark/env";
+import { MessageObject } from 'webex/env';
 
 export default class Trigger {
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -11,7 +11,7 @@ export default class Trigger {
 
 	async createMessage(message ?: MessageObject, room ?: string) : Promise<MessageObject> {
 		return {
-			markdown: ""
+			markdown: ''
 		}
 	}
 }

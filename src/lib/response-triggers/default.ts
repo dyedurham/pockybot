@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Default extends Trigger {

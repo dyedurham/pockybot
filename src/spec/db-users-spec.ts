@@ -1,5 +1,5 @@
-import { CiscoSpark } from 'ciscospark/env';
-import MockCiscoSpark from './mocks/mock-spark';
+import { Webex } from 'webex/env';
+import MockWebex from './mocks/mock-spark';
 import { QueryConfig, Client, QueryResult } from 'pg';
 import DbUsers from '../lib/database/db-users';
 import MockQueryHandler from './mocks/mock-query-handler';
@@ -7,10 +7,10 @@ import QueryHandler from '../lib/database/query-handler-interface';
 
 let pegCount = 0;
 
-function createSparkMock() : CiscoSpark {
-	let spark = new MockCiscoSpark();
+function createWebexMock() : Webex {
+	let webex = new MockWebex();
 
-	spyOn(spark.people, 'get').and.callFake((userid : string) => {
+	spyOn(webex.people, 'get').and.callFake((userid : string) => {
 		return new Promise((resolve, reject) => {
 			resolve({
 				id: userid,
@@ -22,7 +22,7 @@ function createSparkMock() : CiscoSpark {
 		});
 	});
 
-	return spark;
+	return webex;
 }
 
 function createDbResult(rows: any[]) : QueryResult {
@@ -100,16 +100,16 @@ function handleClientQuery(statement: QueryConfig) : Promise<QueryResult> {
 }
 
 describe('create user', () => {
-	let sparkMock : CiscoSpark;
+	let webexMock : Webex;
 	let queryHandler : QueryHandler;
 
 	beforeEach(() => {
 		queryHandler = new MockQueryHandler('create return');
-		sparkMock = createSparkMock();
+		webexMock = createWebexMock();
 	});
 
 	it('should call query and return the raw output', async (done : DoneFn) => {
-		const database = new DbUsers(sparkMock, queryHandler);
+		const database = new DbUsers(webexMock, queryHandler);
 		let results = await database.createUser('some_sender');
 		expect(results as any).toBe('create return');
 		done();

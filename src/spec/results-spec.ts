@@ -1,6 +1,6 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 import MockConfig from './mocks/mock-config';
 

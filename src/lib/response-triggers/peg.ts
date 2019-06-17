@@ -6,22 +6,22 @@ import { ParsedMessage } from '../../models/parsed-message';
 import { PockyDB, DbUsers } from '../database/db-interfaces';
 import Config from '../config-interface';
 import __logger from '../logger';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { UserRow } from '../../models/database';
 
 export default class Peg extends Trigger {
 	readonly pegCommand : string;
 	readonly pegComment : string;
 
-	spark : CiscoSpark;
+	webex : Webex;
 	database : PockyDB;
 	dbUsers : DbUsers;
 	config : Config;
 
-	constructor(sparkService : CiscoSpark, databaseService : PockyDB, dbUsers : DbUsers, config : Config) {
+	constructor(webexService : Webex, databaseService : PockyDB, dbUsers : DbUsers, config : Config) {
 		super();
 
-		this.spark = sparkService;
+		this.webex = webexService;
 		this.database = databaseService;
 		this.dbUsers = dbUsers;
 		this.config = config;
@@ -185,7 +185,7 @@ export default class Peg extends Trigger {
 		}
 
 		try {
-			this.spark.messages.create(
+			this.webex.messages.create(
 			{
 				markdown: msg,
 				toPersonId: toPersonId

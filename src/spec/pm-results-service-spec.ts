@@ -1,9 +1,9 @@
 import { PockyDB } from '../lib/database/db-interfaces';
-import { CiscoSpark } from 'ciscospark/env';
+import { Webex } from 'webex/env';
 import { DefaultPmResultsService, PmResultsService } from '../lib/services/pm-results-service';
 import { ResultRow } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
-import MockCiscoSpark from './mocks/mock-spark';
+import MockWebex from './mocks/mock-spark';
 
 function createData(): ResultRow[] {
 	return [{
@@ -23,13 +23,13 @@ function createDatabase(success: boolean, data: ResultRow[]): PockyDB {
 describe('pm results service', () => {
 	let data: ResultRow[];
 	let database: PockyDB;
-	let spark: CiscoSpark;
+	let spark: Webex;
 	let pmResultsService: PmResultsService;
 
 	beforeEach(() => {
 		data = createData();
 		database = createDatabase(true, data);
-		spark = new MockCiscoSpark();
+		spark = new MockWebex();
 		pmResultsService = new DefaultPmResultsService(database, spark);
 	});
 
