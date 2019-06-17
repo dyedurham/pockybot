@@ -29,7 +29,6 @@ export default class StringConfig extends Trigger {
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		// message.text = message.text.toLowerCase();
 		const pattern = new RegExp('^' + constants.botName, 'ui');
 		message.text = message.text.trim().replace(pattern, '').trim();
 
@@ -79,7 +78,7 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				await this.config.deleteStringConfig(words[2].toLowerCase(), words[3].toLowerCase());
+				await this.config.deleteStringConfig(words[2].toLowerCase(), words[3]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:
