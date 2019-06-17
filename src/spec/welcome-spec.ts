@@ -1,6 +1,6 @@
 import Welcome from '../lib/response-triggers/welcome';
 import constants from '../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import Config from '../lib/config';
 
 const config = new Config(null);
@@ -76,6 +76,12 @@ describe('testing welcome triggers', () => {
 		let message = createMessage( '<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> welcome ');
 		let results = welcome.isToTriggerOn(message)
 		expect(results).toBe(true);
+	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> welcome`);
+		let results = welcome.isToTriggerOn(message)
+		expect(results).toBe(false);
 	});
 });
 

@@ -2,15 +2,14 @@ import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role, ConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class NumberConfig extends Trigger {
-	readonly numberConfigCommand : string = `(?: )*${Command.NumberConfig}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -24,16 +23,13 @@ export default class NumberConfig extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.numberConfigCommand, 'ui');
-		return pattern.test(message.html.trim());
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.NumberConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		message.text = message.text.toLowerCase();
-		let pattern = new RegExp('^' + constants.botName, 'ui');
-		message.text = message.text.trim().replace(pattern, '').trim();
-
-		let words = message.text.split(' ');
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		let words = parsedMessage.command.trim().split(' ');
 
 		if (words.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
@@ -46,23 +42,21 @@ export default class NumberConfig extends Trigger {
 				newMessage = this.getConfigMessage();
 				break;
 			case ConfigAction.Set:
-				if (words.length < 4) {
-					newMessage = 'You must specify a config name and value to set';
+				newMessage = NumberConfig.validateConfigActionSet(words);
+				if(newMessage) break;
+
+				const value = Number(words[3]);
+
+				if(words[2] === 'minimum' && value > this.config.getConfig('limit')) {
+					newMessage = 'Minimum pegs must be less than or equal to peg limit.';
 					break;
 				}
 
-				const value = Number(words[3])
-
-				if (isNaN(value)) {
-					newMessage = 'Config must be set to a number';
-					break;
-				}
-
-				this.config.setConfig(words[2], value);
+				await this.config.setConfig(words[2], value);
 				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
-				this.config.updateConfig();
+				await this.config.updateConfig();
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
@@ -76,7 +70,7 @@ export default class NumberConfig extends Trigger {
 					break;
 				}
 
-				this.config.deleteConfig(words[2]);
+				await this.config.deleteConfig(words[2]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:
@@ -105,5 +99,22 @@ export default class NumberConfig extends Trigger {
 		message += '```';
 
 		return message;
+	}
+
+	private static validateConfigActionSet(words: string[]) : string {
+		if (words.length < 4) {
+			return 'You must specify a config name and value to set';
+		}
+
+		const value = Number(words[3]);
+
+		if (isNaN(value)) {
+			return 'Config must be set to a number';
+		}
+
+		if(value < 0) {
+			return 'Config should be greater than or equal to 0.';
+		}
+		return null;
 	}
 }

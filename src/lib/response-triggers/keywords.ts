@@ -1,12 +1,11 @@
 import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Keywords extends Trigger {
-	readonly keywordsCommand : string = `(?: )*${Command.Keywords}(?: )*`;
-
 	config : Config;
 
 	constructor(config : Config) {
@@ -16,8 +15,8 @@ export default class Keywords extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.keywordsCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Keywords;
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {

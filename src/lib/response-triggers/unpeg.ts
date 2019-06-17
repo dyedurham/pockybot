@@ -5,7 +5,7 @@ import { ParsedMessage } from '../../models/parsed-message';
 import { DbUsers } from '../database/db-interfaces';
 import Utilities from '../utilities';
 import { Logger } from '../logger';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { UserRow } from '../../models/database';
 import { Command } from '../../models/command';
 
@@ -13,14 +13,14 @@ import { Command } from '../../models/command';
 export default class  Unpeg extends Trigger {
 	readonly unpegCommand : string;
 
-	spark : CiscoSpark;
+	webex : Webex;
 	database : DbUsers;
 	utilities : Utilities;
 
-	constructor(spark : CiscoSpark, database : DbUsers, utilities : Utilities) {
+	constructor(webex : Webex, database : DbUsers, utilities : Utilities) {
 		super();
 
-		this.spark = spark;
+		this.webex = webex;
 		this.database = database;
 		this.utilities = utilities;
 
@@ -43,7 +43,8 @@ export default class  Unpeg extends Trigger {
 			};
 		}
 
-		let toPersonId = message.mentionedPeople[1];
+		let parsedMessage = XmlMessageParser.parsePegMessage(message);
+		let toPersonId = parsedMessage.toPersonId;
 		let fromPersonId = message.personId;
 
 		try {
@@ -76,28 +77,27 @@ export default class  Unpeg extends Trigger {
 
 	validateMessage(message : MessageObject) : boolean {
 		try {
-			let parsedMessage = XmlMessageParser.getMessageXml(message);
-			if (message.mentionedPeople.length < 2 || message.mentionedPeople[0] !== constants.botId) {
+			let parsedMessage = XmlMessageParser.parsePegMessage(message);
+			if (parsedMessage.toPersonId == null || parsedMessage.botId !== constants.botId) {
 				Logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
 				return false;
 			}
 
-			let children = parsedMessage.childNodes();
-			if (children.length < 3) {
+			if (parsedMessage.children.length < 3) {
 				Logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
 				return false;
 			}
 
-			if(children[0].name() !== 'spark-mention' || children[2].name() !== 'spark-mention') {
+			if(parsedMessage.children[0].name() !== 'spark-mention' || parsedMessage.children[2].name() !== 'spark-mention') {
 				Logger.warn('Unpeg candidate message children 0 or 2 are not spark-mentions');
 				return false;
 			}
 
 			let pattern = new RegExp(this.unpegCommand, 'ui');
-			if (pattern.test(children[1].text())) {
+			if (pattern.test(parsedMessage.children[1].text())) {
 				return true;
 			} else {
-				Logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${children[1].text()}`);
+				Logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${parsedMessage.children[1].text()}`);
 				return false;
 			}
 		} catch (e) {
@@ -155,7 +155,7 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 	}
 
 	private async sendFollowUpResponse(initialResponse : string, followUp : string, room : string) : Promise<MessageObject> {
-		this.spark.messages.create({
+		this.webex.messages.create({
 			markdown: initialResponse,
 			roomId: room
 		});

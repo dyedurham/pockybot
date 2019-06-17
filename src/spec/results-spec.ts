@@ -1,6 +1,6 @@
 import Results from '../lib/response-triggers/results';
 import constants from '../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 import MockConfig from './mocks/mock-config';
 
@@ -125,6 +125,12 @@ describe('testing results triggers', () => {
 	it('should fail with non admin', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> results',
 			'mockID');
+		let triggered = results.isToTriggerOn(message)
+		expect(triggered).toBe(false);
+	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> results`, 'mockAdminID');
 		let triggered = results.isToTriggerOn(message)
 		expect(triggered).toBe(false);
 	});

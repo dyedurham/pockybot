@@ -1,10 +1,11 @@
 import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Help extends Trigger {
 	readonly helpCommand : string = `(?: )*${Command.Help}(?: )*`;
@@ -18,8 +19,8 @@ export default class Help extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.helpCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.Help);
 	}
 
 	isToTriggerOnPM(message : MessageObject) : boolean {
@@ -27,7 +28,7 @@ export default class Help extends Trigger {
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		const pattern = new RegExp('^' + constants.botName, 'ui');
+		const pattern = new RegExp('^@?' + constants.botName, 'ui');
 		const helpPattern = new RegExp('^' + this.helpCommand, 'ui');
 		const command = message.text.trim().replace(pattern, '').trim().replace(helpPattern, '').trim();
 		const newMessage = this.createHelpResponseMessage(message, command);

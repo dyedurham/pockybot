@@ -13,5 +13,6 @@ export default {
 	mentionMe: `<spark-mention data-object-type="person" data-object-id="${process.env.BOT_ID}">${process.env.BOT_NAME}<\/spark-mention>`,
 	optionalMarkdownOpening: '(?:<p>)?',
 	optionalMarkdownEnding: '(?:<\/p>)?',
-	optionalSpace: '(?: )*'
+	optionalSpace: '(?: )*',
+	sparkTokenPrefix: 'ciscospark://us/PEOPLE/'
 };

@@ -2,14 +2,14 @@ import Trigger from '../../models/trigger';
 import Config from '../config';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role, StringConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class StringConfig extends Trigger {
-	readonly stringConfigCommand : string = `(?: )*${Command.StringConfig}(?: )*`;
 
 	config : Config;
 
@@ -23,16 +23,14 @@ export default class StringConfig extends Trigger {
 		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config))) {
 			return false;
 		}
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + this.stringConfigCommand, 'ui');
-		return pattern.test(message.html);
+
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.StringConfig);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
-		message.text = message.text.toLowerCase();
-		const pattern = new RegExp('^' + constants.botName, 'ui');
-		message.text = message.text.trim().replace(pattern, '').trim();
-
-		let words = message.text.split(' ');
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		let words = parsedMessage.command.trim().split(' ');
 
 		let newMessage : string;
 
@@ -40,7 +38,7 @@ export default class StringConfig extends Trigger {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
 		}
 
-		switch (words[1]) {
+		switch (words[1].toLowerCase()) {
 			case ConfigAction.Get:
 				newMessage = this.getConfigMessage();
 				break;
@@ -50,16 +48,19 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				if (this.config.getStringConfig(words[2]).includes(words[3])) {
+				if (this.config.getStringConfig(words[2])
+					.map(x => x.toUpperCase())
+					.includes(words[3].toUpperCase())) {
+
 					newMessage = `Config value "${words[3]}" already exists in string config under name "${words[2]}".`;
 					break;
 				}
 
-				this.config.setStringConfig(words[2], words[3]);
+				await this.config.setStringConfig(words[2].toLowerCase(), words[3]);
 				newMessage = 'Config has been set';
 				break;
 			case ConfigAction.Refresh:
-				this.config.updateStringConfig();
+				await this.config.updateStringConfig();
 				newMessage = 'Config has been updated';
 				break;
 			case ConfigAction.Delete:
@@ -68,12 +69,14 @@ export default class StringConfig extends Trigger {
 					break;
 				}
 
-				if (!this.config.getStringConfig(words[2]).includes(words[3])) {
+				if (!this.config.getStringConfig(words[2])
+					.map(x => x.toUpperCase())
+					.includes(words[3].toUpperCase())) {
 					newMessage = `Value "${words[3]}" does not exist in string config under name "${words[2]}"`;
 					break;
 				}
 
-				this.config.deleteStringConfig(words[2], words[3]);
+				await this.config.deleteStringConfig(words[2].toLowerCase(), words[3]);
 				newMessage = 'Config has been deleted';
 				break;
 			default:

@@ -3,21 +3,20 @@ import constants from '../../constants';
 import DbUsers from '../database/db-users';
 import Config from '../config';
 import { Logger } from '../logger';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { UserRow, Role } from '../../models/database';
 import { Command } from '../../models/command';
-
-const updateCommand = `(?: )*${Command.Update}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Update extends Trigger {
-	spark : CiscoSpark;
+	webex : Webex;
 	database : DbUsers;
 	config : Config;
 
-	constructor(sparkService : CiscoSpark, databaseService : DbUsers, config : Config) {
+	constructor(webexService : Webex, databaseService : DbUsers, config : Config) {
 		super();
 
-		this.spark = sparkService;
+		this.webex = webexService;
 		this.database = databaseService;
 		this.config = config;
 	}
@@ -27,8 +26,8 @@ export default class Update extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + updateCommand + constants.optionalMarkdownEnding + '$', 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Update;
 	}
 
 	async createMessage() : Promise<MessageObject> {
@@ -74,7 +73,7 @@ export default class Update extends Trigger {
 
 	private async getUsername(personId : string) : Promise<string> {
 		try {
-			const data = await this.spark.people.get(personId);
+			const data = await this.webex.people.get(personId);
 			return data.displayName;
 		}
 		catch (error) {

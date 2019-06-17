@@ -1,7 +1,7 @@
 import Rotation from '../lib/response-triggers/rotation';
 import constants from '../constants';
 import Config from '../lib/config';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 
 const config = new Config(null);
 beforeAll(() => {
@@ -67,6 +67,12 @@ describe('testing rotation triggers', () => {
 		let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> rotation `);
 		let results = rotation.isToTriggerOn(message)
 		expect(results).toBe(true);
+	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> rotation`);
+		let results = rotation.isToTriggerOn(message)
+		expect(results).toBe(false);
 	});
 });
 

@@ -2,8 +2,7 @@ import Reset from '../lib/response-triggers/reset';
 import constants from '../constants';
 import Config from '../lib/config';
 import { PockyDB } from '../lib/database/db-interfaces';
-import { Client } from 'pg';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
 
@@ -134,6 +133,12 @@ describe('testing reset triggers', () => {
 	it('should fail with non admin', () => {
 		let message = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> reset',
 		'mockID');
+		let results = reset.isToTriggerOn(message)
+		expect(results).toBe(false);
+	});
+
+	it('should reject group mention', () => {
+		let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> reset`, 'mockadminID');
 		let results = reset.isToTriggerOn(message)
 		expect(results).toBe(false);
 	});

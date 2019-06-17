@@ -3,11 +3,10 @@ import constants from '../../constants';
 import { PockyDB } from '../database/db-interfaces';
 import Config from '../config';
 import { Logger } from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { Command } from '../../models/command';
-
-const resetCommand = `(?: )*${Command.Reset}(?: )*`;
+import xmlMessageParser from '../parsers/xmlMessageParser';
 
 export default class Reset extends Trigger {
 	database : PockyDB;
@@ -25,8 +24,8 @@ export default class Reset extends Trigger {
 			return false;
 		}
 
-		let pattern = new RegExp('^' + constants.optionalMarkdownOpening + constants.mentionMe + resetCommand, 'ui');
-		return pattern.test(message.html);
+		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Reset;
 	}
 
 	async createMessage() : Promise<MessageObject> {

@@ -1,4 +1,4 @@
-declare module 'ciscospark/env' {
+declare module 'webex/env' {
 	interface WebhookObject {
 		id ?: string;
 		resource ?: string;
@@ -54,7 +54,7 @@ declare module 'ciscospark/env' {
 		[Symbol.iterator] : () => Iterator<T>;
 	}
 
-	interface CiscoSpark {
+	interface Webex {
 		ciscospark : boolean;
 		version : string;
 		webhooks : {
@@ -83,8 +83,8 @@ declare module 'ciscospark/env' {
 		}
 	}
 
-	const spark : CiscoSpark;
-	export default spark;
+	const webex : Webex;
+	export default webex;
 
 	export {
 		WebhookObject,
@@ -92,6 +92,6 @@ declare module 'ciscospark/env' {
 		MessageObject,
 		Page,
 		PersonObject,
-		CiscoSpark
+		Webex
 	}
 }
