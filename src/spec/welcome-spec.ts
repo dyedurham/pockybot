@@ -1,6 +1,6 @@
 import Welcome from '../lib/response-triggers/welcome';
 import constants from '../constants';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import Config from '../lib/config';
 
 const config = new Config(null);

@@ -1,6 +1,6 @@
 import constants from '../constants';
 import Ping from '../lib/response-triggers/ping';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import * as pjson from 'pjson';
 
 import sinon = require('sinon');

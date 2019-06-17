@@ -1,14 +1,14 @@
-import { MessageObject, PersonObject } from 'ciscospark/env';
-const spark = require("ciscospark/env");
+import { MessageObject, PersonObject } from 'webex/env';
+const webex = require('webex/env');
 import constants from '../constants';
 import responseFactory from './response-triggers/pm-index';
 import __logger from './logger';
 
 async function respond(messageEvent : any): Promise<void> {
 	try {
-		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
+		let message : MessageObject = await webex.messages.get(messageEvent.data.id);
 
-		let person : PersonObject = await spark.people.get(message.personId);
+		let person : PersonObject = await webex.people.get(message.personId);
 		if (person.type === 'bot') {
 			__logger.debug('Message was sent by a bot, ignoring this message.');
 			return;
@@ -28,7 +28,7 @@ async function respond(messageEvent : any): Promise<void> {
 
 			if (responseMessage) {
 				try {
-					let data = await spark.messages.create({
+					let data = await webex.messages.create({
 						roomId: room,
 						...responseMessage
 					});

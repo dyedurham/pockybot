@@ -3,7 +3,7 @@ import Reset from './reset';
 import Config from '../config';
 import constants from '../../constants';
 import __logger from '../logger';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { Role } from '../../models/database';
 import { PmResultsService } from '../services/pm-results-service';
 import { ResultsService } from '../services/results-service';
@@ -17,10 +17,10 @@ export default class Finish extends Trigger {
 	pmResultsService: PmResultsService;
 	reset : Reset;
 	config : Config;
-	spark : CiscoSpark;
+	webex : Webex;
 
 	constructor(winnersService : WinnersService, resultsService : ResultsService, pmResultsService: PmResultsService,
-		resetService : Reset, config : Config, spark : CiscoSpark) {
+		resetService : Reset, config : Config, webex : Webex) {
 		super();
 
 		this.winnersService = winnersService;
@@ -28,7 +28,7 @@ export default class Finish extends Trigger {
 		this.pmResultsService = pmResultsService;
 		this.reset = resetService;
 		this.config = config;
-		this.spark = spark;
+		this.webex = webex;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -59,7 +59,7 @@ export default class Finish extends Trigger {
 		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
 		message += resultsMarkdown;
 
-		this.spark.messages.create({
+		this.webex.messages.create({
 			markdown: message,
 			roomId: room
 		});

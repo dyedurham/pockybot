@@ -1,7 +1,7 @@
 import * as xml from 'libxmljs';
 const unescape = require('unescape');
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { ParsedMessage } from '../../models/parsed-message';
 import constants from '../../constants';
 

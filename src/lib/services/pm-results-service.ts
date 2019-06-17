@@ -4,7 +4,7 @@ import { Receiver } from '../../models/receiver';
 import TableHelper from '../parsers/tableHelper';
 import __logger from '../logger';
 import { PegReceivedData } from '../../models/peg-received-data';
-import { CiscoSpark } from 'ciscospark/env';
+import { Webex } from 'webex/env';
 
 const lineEnding = '\r\n';
 
@@ -14,11 +14,11 @@ export interface PmResultsService {
 
 export class DefaultPmResultsService implements PmResultsService {
 	database : PockyDB;
-	spark : CiscoSpark;
+	webex : Webex;
 
-	constructor(database : PockyDB, spark : CiscoSpark) {
+	constructor(database : PockyDB, webex : Webex) {
 		this.database = database;
-		this.spark = spark;
+		this.webex = webex;
 	}
 
 	async pmResults() : Promise<void> {
@@ -51,7 +51,7 @@ export class DefaultPmResultsService implements PmResultsService {
 
 		for (let receiver in pegsReceived) {
 			try {
-				this.spark.messages.create({
+				this.webex.messages.create({
 					markdown:
 						`Here are the pegs your have received this cycle:
 \`\`\`

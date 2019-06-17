@@ -1,7 +1,7 @@
 import QueryHandler from './query-handler-interface';
 import __logger from '../logger';
 import { QueryResult, QueryConfig } from 'pg';
-import { CiscoSpark, PersonObject } from 'ciscospark/env';
+import { Webex, PersonObject } from 'webex/env';
 import dbConstants from '../db-constants';
 import { UserRow } from '../../models/database';
 import { DbUsers as DbUsersInterface } from './db-interfaces';
@@ -13,11 +13,11 @@ export default class DbUsers implements DbUsersInterface {
 	private readonly sqlCreateUser : string;
 	private readonly sqlExists : string;
 
-	private spark : CiscoSpark;
+	private webex : Webex;
 	private queryHandler : QueryHandler;
 
-	constructor(sparkService : CiscoSpark, queryHandler : QueryHandler) {
-		this.spark = sparkService;
+	constructor(webexService : Webex, queryHandler : QueryHandler) {
+		this.webex = webexService;
 		this.queryHandler = queryHandler;
 
 		this.sqlUpdate = this.queryHandler.readFile('../../../database/queries/update_pocky_user.sql');
@@ -31,7 +31,7 @@ export default class DbUsers implements DbUsersInterface {
 	async createUser(userid : string) : Promise<QueryResult> {
 		let user : PersonObject;
 		try {
-			user = await this.spark.people.get(userid);
+			user = await this.webex.people.get(userid);
 		} catch (error) {
 			__logger.error(`[DbUsers.createUser] Error getting user from userid ${userid}: ${error.message}`);
 			throw new Error(`Error getting ${userid} user in createUser`);

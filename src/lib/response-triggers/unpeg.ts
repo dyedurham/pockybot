@@ -5,7 +5,7 @@ import { ParsedMessage } from '../../models/parsed-message';
 import { DbUsers } from '../database/db-interfaces';
 import Utilities from '../utilities';
 import __logger from '../logger';
-import { MessageObject, CiscoSpark } from 'ciscospark/env';
+import { MessageObject, Webex } from 'webex/env';
 import { UserRow } from '../../models/database';
 import { Command } from '../../models/command';
 
@@ -13,14 +13,14 @@ import { Command } from '../../models/command';
 export default class  Unpeg extends Trigger {
 	readonly unpegCommand : string;
 
-	spark : CiscoSpark;
+	webex : Webex;
 	database : DbUsers;
 	utilities : Utilities;
 
-	constructor(spark : CiscoSpark, database : DbUsers, utilities : Utilities) {
+	constructor(webex : Webex, database : DbUsers, utilities : Utilities) {
 		super();
 
-		this.spark = spark;
+		this.webex = webex;
 		this.database = database;
 		this.utilities = utilities;
 
@@ -155,7 +155,7 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 	}
 
 	private async sendFollowUpResponse(initialResponse : string, followUp : string, room : string) : Promise<MessageObject> {
-		this.spark.messages.create({
+		this.webex.messages.create({
 			markdown: initialResponse,
 			roomId: room
 		});

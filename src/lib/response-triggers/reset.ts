@@ -3,7 +3,7 @@ import constants from '../../constants';
 import { PockyDB } from '../database/db-interfaces';
 import Config from '../config';
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';
