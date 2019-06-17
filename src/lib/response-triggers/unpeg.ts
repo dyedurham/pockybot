@@ -11,8 +11,6 @@ import { Command } from '../../models/command';
 
 // A joke option. Tells users pegs have been removed, but no pegs will actually be taken.
 export default class  Unpeg extends Trigger {
-	readonly unpegCommand : string;
-
 	webex : Webex;
 	database : DbUsers;
 	utilities : Utilities;
@@ -23,9 +21,6 @@ export default class  Unpeg extends Trigger {
 		this.webex = webex;
 		this.database = database;
 		this.utilities = utilities;
-
-		let s = constants.optionalSpace;
-		this.unpegCommand = `^${s}${Command.Unpeg}${s}$`;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -44,21 +39,16 @@ export default class  Unpeg extends Trigger {
 		}
 
 		let parsedMessage = XmlMessageParser.parsePegMessage(message);
-		let toPersonId = parsedMessage.toPersonId;
 		let fromPersonId = message.personId;
 
 		try {
-			let data : UserRow = await this.database.getUser(toPersonId);
-			if (!data.userid) {
-				throw new Error('No to person was obtained');
-			}
-
+			let toPerson = await this.getToPerson(parsedMessage);
 			let fromData : UserRow = await this.database.getUser(fromPersonId);
 			if (!fromData.userid) {
 				throw new Error('No from person was obtained');
 			}
 
-			return await this.returnRandomResponse(data.username, fromData.username, room);
+			return await this.returnRandomResponse(toPerson, fromData.username, room);
 		} catch (error) {
 			return {
 				markdown: 'User could not be found or created. No peg removed.'
@@ -67,34 +57,27 @@ export default class  Unpeg extends Trigger {
 	}
 
 	validateTrigger(message : ParsedMessage) : boolean {
-		if (message.toPersonId == null || message.botId !== constants.botId) {
+		if (message.botId !== constants.botId) {
 			return false;
 		}
 
-		let pattern = new RegExp(this.unpegCommand, 'ui');
-		return pattern.test(message.children[1].text());
+		return message.children[1].text().toLowerCase().trim().startsWith(Command.Unpeg);
 	}
 
 	validateMessage(message : MessageObject) : boolean {
 		try {
 			let parsedMessage = XmlMessageParser.parsePegMessage(message);
-			if (parsedMessage.toPersonId == null || parsedMessage.botId !== constants.botId) {
-				__logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
+			if (parsedMessage.botId !== constants.botId) {
+				__logger.warn('First person mentioned in unpeg candidate message is not bot');
 				return false;
 			}
 
-			if (parsedMessage.children.length < 3) {
-				__logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
+			if (parsedMessage.children.length < 2) {
+				__logger.warn('Unpeg candidate message does not contain 2 or more xml parts.')
 				return false;
 			}
 
-			if(parsedMessage.children[0].name() !== 'spark-mention' || parsedMessage.children[2].name() !== 'spark-mention') {
-				__logger.warn('Unpeg candidate message children 0 or 2 are not spark-mentions');
-				return false;
-			}
-
-			let pattern = new RegExp(this.unpegCommand, 'ui');
-			if (pattern.test(parsedMessage.children[1].text())) {
+			if (parsedMessage.children[1].text().toLowerCase().trim().startsWith(Command.Unpeg)) {
 				return true;
 			} else {
 				__logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${parsedMessage.children[1].text()}`);
@@ -103,6 +86,36 @@ export default class  Unpeg extends Trigger {
 		} catch (e) {
 			__logger.error(`Error in unpeg validateMessage:\n${e.message}`);
 			throw new Error('Error in unpeg validateMessage');
+		}
+	}
+
+	private async getToPerson(message: ParsedMessage) : Promise<string> {
+		if (message.toPersonId) {
+			let data : UserRow = await this.database.getUser(message.toPersonId);
+
+			if (!data.userid) {
+				throw new Error('No to person was obtained');
+			}
+
+			return data.username;
+		} else {
+			const pattern = new RegExp('^' + Command.Unpeg, 'ui');
+			const text = message.children.reduce((a, child, index) => {
+				// first child should be mention
+				if (index > 0) {
+					return a + child.text();
+				}
+				return a;
+			}, '').trim().replace(pattern, '').trim();
+
+
+			const index = text.indexOf(' for');
+
+			if (index < 0) {
+				return text.split(' ')[0];
+			} else {
+				return text.split(' for')[0];
+			}
 		}
 	}
 

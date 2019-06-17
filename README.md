@@ -80,6 +80,7 @@ Use any of these commands in a room PockyBot is participating in to perform comm
   This can be configured by adding a stringconfig with the name "rotation" and the value corresponding to a list of
   comma separated team names.
 * `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`.
+  * Use `@PockyBot unpeg <concept> for <reason>` to unpeg abstract concepts that can't be tagged.
 
 ##### Direct message commands
 

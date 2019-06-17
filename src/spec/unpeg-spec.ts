@@ -105,6 +105,22 @@ describe('unpeg triggers', () => {
 		let valid = unpeg.validateMessage(sentMessage);
 		expect(valid).toBe(true);
 	});
+
+	it('should accept an unpeg command with an abstract concept', () => {
+		let database = createDatabase();
+		let utilities = createUtilities(1);
+
+		let unpeg = new Unpeg(webex, database, utilities);
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg Webex for a reason</p>');
+
+		try {
+			let message = unpeg.isToTriggerOn(sentMessage);
+			expect(message).toBe(true);
+		} catch(e) {
+			console.log(e);
+			expect(false).toBe(true);
+		}
+	});
 });
 
 describe('unpeg messages', () => {
@@ -194,5 +210,25 @@ Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 
 			done();
 		})
+	});
+
+	it('should properly unpeg an abstract concept', async (done : DoneFn) => {
+		let database = createDatabase();
+		let utilities = createUtilities(1);
+
+		let unpeg = new Unpeg(webex, database, utilities);
+
+		spyOn(webex.messages, 'create').and.callThrough();
+
+		let sentMessage = createMessage('<p><spark-mention data-object-type="person" data-object-id="' + constants.botId + '">' + constants.botName + '</spark-mention> unpeg Webex Teams for a reason</p>');
+		let roomId = 'abc';
+
+		let result = await unpeg.createMessage(sentMessage, roomId);
+
+		expect(result).toEqual({
+			markdown: 'It looks like Webex Teams has hidden their pegs too well for me to find them!'
+		});
+
+		done();
 	});
 });
