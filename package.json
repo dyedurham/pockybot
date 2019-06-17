@@ -4,7 +4,7 @@
 	"description": "Spark bot that handles team recognition",
 	"main": "built/index.js",
 	"types": "built/index.d.ts",
-	"files": ["/built"],
+	"files": ["/built", "/database"],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"start": "node built/server.js",
