@@ -1,7 +1,7 @@
 import Numberconfig from '../lib/response-triggers/numberconfig';
 import constants from '../constants';
 import Config from '../lib/config';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../models/database';
 
 const config = new Config(null);

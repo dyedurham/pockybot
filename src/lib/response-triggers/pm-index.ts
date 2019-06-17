@@ -17,8 +17,8 @@ import Rotation from './rotation';
 import Default from './default';
 
 // Services
-import { MessageObject } from 'ciscospark/env';
-const spark = require("ciscospark/env");
+import { MessageObject } from 'webex/env';
+const webex = require("webex/env");
 import { Client } from 'pg';
 import configService from '../config';
 
@@ -34,7 +34,7 @@ import Utilities from '../utilities';
 const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
-const dbUsers = new DbUsers(spark, queryHandler);
+const dbUsers = new DbUsers(webex, queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new configService(dbConfig);
 
@@ -42,7 +42,7 @@ database.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const status = new Status(spark, database, config, utilities);
+const status = new Status(webex, database, config, utilities);
 const welcome = new Welcome(config);
 const keywords = new Keywords(config);
 const help = new Help(config);

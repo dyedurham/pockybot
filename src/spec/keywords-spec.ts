@@ -1,7 +1,7 @@
 import Keywords from '../lib/response-triggers/keywords';
 import constants from '../constants';
 import Config from '../lib/config';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 
 const config = new Config(null);
 beforeAll(() => {

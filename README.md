@@ -1,6 +1,6 @@
 # Pockybot 📍👏🏆🤖
 
-> Spark bot that handles team recognition. A chatbot for [pegs & pocky](#what-is-pegs--pocky).
+> Webex bot that handles team recognition. A chatbot for [pegs & pocky](#what-is-pegs--pocky).
 
 ## What is Pegs & Pocky?
 
@@ -22,10 +22,10 @@ My name is:
 ## How it works
 
 * Runs on express.js
-* Uses ciscospark client
+* Uses webex client
 * Deployed only on PROD to be accessible by Cisco's Server
 * Results are stored in a postgres database
-* pegs are viewable via text file attached to spark message, txt file hosted localy on the node server, or html uploaded to google cloud
+* pegs are viewable via html uploaded to google cloud
 
 ## Setup
 

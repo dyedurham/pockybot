@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import Config from '../config';
 import __logger from '../logger';
-import { MessageObject } from 'ciscospark/env';
+import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { WinnersService } from '../services/winners-service';
 import { Command } from '../../models/command';
