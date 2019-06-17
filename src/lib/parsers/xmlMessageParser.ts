@@ -10,9 +10,9 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 		let children : xml.Element[] = parseXmlMessage(message);
 		let parsedMessage : ParsedMessage = {
 			fromPerson: message.personId,
-			toPersonId: children.length > 2 && children[2].name() === 'spark-mention' && children[2].attr('data-object-type').value() === 'person'
+			toPersonId: children.length > 2 && isMentionOfPerson(children[2])
 				? getPersonId(children[2].attr('data-object-id').value()) : null,
-			botId: children.length > 0 && children[0].name() === 'spark-mention' && children[0].attr('data-object-type').value() === 'person'
+			botId: children.length > 0 && isMentionOfPerson(children[0])
 				? getPersonId(children[0].attr('data-object-id').value()) : null,
 			children,
 			comment: children.reduce((a, child, index) => {
@@ -35,7 +35,7 @@ function parseNonPegMessage(message : MessageObject) : ParsedMessage {
 	let children : xml.Element[] = parseXmlMessage(message);
 	let parsedMessage : ParsedMessage = {
 		fromPerson: message.personId,
-		botId: children.length > 0 && children[0].name() === 'spark-mention' && children[0].attr('data-object-type').value() === 'person'
+		botId: children.length > 0 && isMentionOfPerson(children[0])
 			? getPersonId(children[0].attr('data-object-id').value()) : null,
 		children,
 		command: children.reduce((a, child, index) => {
@@ -48,6 +48,10 @@ function parseNonPegMessage(message : MessageObject) : ParsedMessage {
 	}
 
 	return parsedMessage;
+}
+
+function isMentionOfPerson(element: xml.Element) {
+	return element.name() === 'spark-mention' && element.attr('data-object-type').value() === 'person';
 }
 
 function getPersonId(id: string) : string {
@@ -86,7 +90,8 @@ export default {
 	parseNonPegMessage,
 	getMessageXml,
 	parseXmlMessage,
-	getPersonId
+	getPersonId,
+	isMentionOfPerson
 }
 
 export {

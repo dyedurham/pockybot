@@ -96,7 +96,7 @@ export default class RoleConfig extends Trigger {
 			throw new Error('You must specify a user and a role to set/delete.');
 		}
 
-		if (parsedMessage[0].name() !== 'spark-mention' || parsedMessage[2].name() !== 'spark-mention') {
+		if (!xmlMessageParser.isMentionOfPerson(parsedMessage[2])) {
 			throw new Error('Please mention a user you want to set/delete a role for');
 		}
 
