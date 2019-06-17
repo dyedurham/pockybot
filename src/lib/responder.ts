@@ -1,17 +1,17 @@
 import { MessageObject, PersonObject } from 'ciscospark/env';
 const spark = require('ciscospark/env');
 import responseFactory from './response-triggers/index';
-import __logger from './logger';
+import { Logger } from './logger';
 
 export async function respond(messageEvent : {data : {id : string}}) {
 	try {
 		let message : MessageObject = await spark.messages.get(messageEvent.data.id);
-		__logger.debug('processing message: ' + JSON.stringify(message));
+		Logger.debug('processing message: ' + JSON.stringify(message));
 		let room = message.roomId;
 
 		let person : PersonObject = await spark.people.get(message.personId);
 		if (person.type === 'bot') {
-			__logger.debug('Message was sent by a bot, ignoring this message.');
+			Logger.debug('Message was sent by a bot, ignoring this message.');
 			return;
 		}
 
@@ -19,7 +19,7 @@ export async function respond(messageEvent : {data : {id : string}}) {
 		try {
 			responseMessage = await responseFactory(message, room);
 		} catch (e) {
-			__logger.error(`[Responder.respond] Error in responder: ${e.message}`);
+			Logger.error(`[Responder.respond] Error in responder: ${e.message}`);
 		}
 
 		if (responseMessage) {
@@ -28,12 +28,12 @@ export async function respond(messageEvent : {data : {id : string}}) {
 					roomId: room,
 					...responseMessage
 				});
-				__logger.debug(data);
+				Logger.debug(data);
 			} catch (e) {
-				__logger.error(`[Responder.respond] Error in sending message: ${e.message}`);
+				Logger.error(`[Responder.respond] Error in sending message: ${e.message}`);
 			}
 		}
 	} catch (e) {
-		__logger.error(`[Responder.respond] Uncaught error in responder: ${e.message}`);
+		Logger.error(`[Responder.respond] Uncaught error in responder: ${e.message}`);
 	}
 };

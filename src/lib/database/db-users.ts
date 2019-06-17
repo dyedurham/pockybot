@@ -1,5 +1,5 @@
 import QueryHandler from './query-handler-interface';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { QueryResult, QueryConfig } from 'pg';
 import { CiscoSpark, PersonObject } from 'ciscospark/env';
 import dbConstants from '../db-constants';
@@ -33,11 +33,11 @@ export default class DbUsers implements DbUsersInterface {
 		try {
 			user = await this.spark.people.get(userid);
 		} catch (error) {
-			__logger.error(`[DbUsers.createUser] Error getting user from userid ${userid}: ${error.message}`);
+			Logger.error(`[DbUsers.createUser] Error getting user from userid ${userid}: ${error.message}`);
 			throw new Error(`Error getting ${userid} user in createUser`);
 		}
 
-		__logger.information(`[DbUsers.createUser] Creating a new user with userid ${userid} and username ${user.displayName}`);
+		Logger.information(`[DbUsers.createUser] Creating a new user with userid ${userid} and username ${user.displayName}`);
 		let query : QueryConfig = {
 			name: 'createUserQuery',
 			text: this.sqlCreateUser,
@@ -47,7 +47,7 @@ export default class DbUsers implements DbUsersInterface {
 		try {
 			return await this.queryHandler.executeNonQuery(query);
 		} catch (error) {
-			__logger.error(`[DbUsers.createUser] Error creating new user ${user.displayName}: ${error.message}`);
+			Logger.error(`[DbUsers.createUser] Error creating new user ${user.displayName}: ${error.message}`);
 			throw new Error(`Error creating new user ${user.displayName}`);
 		}
 	}
@@ -56,7 +56,7 @@ export default class DbUsers implements DbUsersInterface {
 		try {
 			await this.existsOrCanBeCreated(userid);
 		} catch (error) {
-			__logger.error(`[DbUsers.updateUser] Error checking if user exists or can be created for ${userid}: ${error.message}`);
+			Logger.error(`[DbUsers.updateUser] Error checking if user exists or can be created for ${userid}: ${error.message}`);
 			return dbConstants.updateUserError;
 		}
 
@@ -70,7 +70,7 @@ export default class DbUsers implements DbUsersInterface {
 			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.updateUserSuccess;
 		} catch (error) {
-			__logger.error(`[DbUsers.updateUser] Error executing update query for ${userid}: ${error.message}`);
+			Logger.error(`[DbUsers.updateUser] Error executing update query for ${userid}: ${error.message}`);
 			return dbConstants.updateUserError;
 		}
 	}
@@ -97,11 +97,11 @@ export default class DbUsers implements DbUsersInterface {
 			return user[0];
 		} else if (user.length === 0) {
 			// should not occur in normal circumstances
-			__logger.error(`[DbUsers.getUser] Query returned no users for userid ${userid}`);
+			Logger.error(`[DbUsers.getUser] Query returned no users for userid ${userid}`);
 			throw new Error(`No user entities returned by getUser ${userid}`);
 		} else {
 			// should NEVER occur but shouldn't be harmful if it does
-			__logger.warn(`[DbUsers.getUser] More than one user returned by getUser ${userid}`);
+			Logger.warn(`[DbUsers.getUser] More than one user returned by getUser ${userid}`);
 			return user[0];
 		}
 	}
@@ -109,14 +109,14 @@ export default class DbUsers implements DbUsersInterface {
 	async existsOrCanBeCreated(userid : string) : Promise<boolean> {
 		let exists : boolean = await this.exists(userid);
 		if (exists) {
-			__logger.debug(`[DbUsers.existsOrCanBeCreated] User ${userid} already exists`);
+			Logger.debug(`[DbUsers.existsOrCanBeCreated] User ${userid} already exists`);
 			return true;
 		}
 
 		let newUser : QueryResult = await this.createUser(userid);
 
-		__logger.information(`[DbUsers.existsOrCanBeCreated] User ${userid} created`);
-		__logger.debug(`[DbUsers.existsOrCanBeCreated] Created user ${userid} with data: ${newUser}`);
+		Logger.information(`[DbUsers.existsOrCanBeCreated] User ${userid} created`);
+		Logger.debug(`[DbUsers.existsOrCanBeCreated] Created user ${userid} with data: ${newUser}`);
 		return true;
 	}
 
@@ -127,7 +127,7 @@ export default class DbUsers implements DbUsersInterface {
 			values: [userid]
 		};
 
-		__logger.debug(`[DbUsers.exists] Checking if user ${userid} exists`);
+		Logger.debug(`[DbUsers.exists] Checking if user ${userid} exists`);
 		let existingUser = await this.queryHandler.executeQuery(query);
 		return existingUser[0]['exists'];
 	}

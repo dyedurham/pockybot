@@ -4,7 +4,7 @@ import XmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
 import { DbUsers } from '../database/db-interfaces';
 import Utilities from '../utilities';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow } from '../../models/database';
 import { Command } from '../../models/command';
@@ -29,7 +29,7 @@ export default class  Unpeg extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		__logger.debug('entering the unpeg isToTriggerOn');
+		Logger.debug('entering the unpeg isToTriggerOn');
 		let parsedMessage : ParsedMessage = XmlMessageParser.parsePegMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
@@ -78,18 +78,18 @@ export default class  Unpeg extends Trigger {
 		try {
 			let parsedMessage = XmlMessageParser.getMessageXml(message);
 			if (message.mentionedPeople.length < 2 || message.mentionedPeople[0] !== constants.botId) {
-				__logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
+				Logger.warn('Unpeg candidate message does not contain at least 2 people or 1st person is not bot');
 				return false;
 			}
 
 			let children = parsedMessage.childNodes();
 			if (children.length < 3) {
-				__logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
+				Logger.warn('Unpeg candidate message does not contain 3 or more xml parts.')
 				return false;
 			}
 
 			if(children[0].name() !== 'spark-mention' || children[2].name() !== 'spark-mention') {
-				__logger.warn('Unpeg candidate message children 0 or 2 are not spark-mentions');
+				Logger.warn('Unpeg candidate message children 0 or 2 are not spark-mentions');
 				return false;
 			}
 
@@ -97,11 +97,11 @@ export default class  Unpeg extends Trigger {
 			if (pattern.test(children[1].text())) {
 				return true;
 			} else {
-				__logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${children[1].text()}`);
+				Logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${children[1].text()}`);
 				return false;
 			}
 		} catch (e) {
-			__logger.error(`Error in unpeg validateMessage:\n${e.message}`);
+			Logger.error(`Error in unpeg validateMessage:\n${e.message}`);
 			throw new Error('Error in unpeg validateMessage');
 		}
 	}

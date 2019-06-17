@@ -1,4 +1,3 @@
-import __logger from '../logger';
 import HtmlHelper from '../parsers/htmlHelper';
 import { Receiver } from '../../models/receiver';
 

@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { PockyDB } from '../database/db-interfaces';
 import Config from '../config';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject } from 'ciscospark/env';
 import { Role } from '../../models/database';
 import { Command } from '../../models/command';
@@ -36,7 +36,7 @@ export default class Reset extends Trigger {
 				markdown: `Pegs cleared`
 			};
 		} catch (e) {
-			__logger.error(`[Reset.createMessage] Error clearing pegs: ${e.message}`);
+			Logger.error(`[Reset.createMessage] Error clearing pegs: ${e.message}`);
 			return {
 				markdown: `Error clearing pegs`
 			};

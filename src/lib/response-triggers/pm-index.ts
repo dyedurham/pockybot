@@ -4,7 +4,7 @@
 		 and manage it all from one file.
 */
 
-import __logger from '../logger';
+import { Logger } from '../logger';
 
 // Triggers
 import Trigger from '../../models/trigger';
@@ -70,10 +70,10 @@ const triggers : Trigger[] = [
 export default async (message : MessageObject, room : string) => {
 	try {
 		const responder : Trigger = triggers.find(x => x.isToTriggerOnPM(message));
-		__logger.information(`Found a direct trigger: ${responder.constructor.name}`);
+		Logger.information(`Found a direct trigger: ${responder.constructor.name}`);
 		return await responder.createMessage(message, room);
 	} catch (e) {
-		__logger.error(`Error selecting direct trigger:\n${e.message}`);
+		Logger.error(`Error selecting direct trigger:\n${e.message}`);
 		return {
 			markdown: 'An error occurred in selecting the trigger.',
 		};

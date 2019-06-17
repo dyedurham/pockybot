@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import DbUsers from '../database/db-users';
 import Config from '../config';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject, CiscoSpark } from 'ciscospark/env';
 import { UserRow, Role } from '../../models/database';
 import { Command } from '../../models/command';
@@ -36,7 +36,7 @@ export default class Update extends Trigger {
 		try {
 			users = await this.database.getUsers();
 		} catch (error) {
-			__logger.error(`[Update.createMessage] Error in getting users: ${error.message}`);
+			Logger.error(`[Update.createMessage] Error in getting users: ${error.message}`);
 			return {
 				markdown: `Error occurred, some or all users may not have been updated.`
 			};
@@ -50,7 +50,7 @@ export default class Update extends Trigger {
 				if (response === 0) {
 					return 0;
 				} else {
-					__logger.error(`[Update.createMessage] User ${username}, ${user.userid} failed to update`);
+					Logger.error(`[Update.createMessage] User ${username}, ${user.userid} failed to update`);
 					return 1;
 				}
 			}));
@@ -65,7 +65,7 @@ export default class Update extends Trigger {
 				markdown: `Users successfully updated.`
 			};
 		} catch (error) {
-			__logger.error(`[Update.createMessage] Error mapping users into usernames: ${error.message}`);
+			Logger.error(`[Update.createMessage] Error mapping users into usernames: ${error.message}`);
 			return {
 				markdown: `Error occurred, some or all users may not have been updated.`
 			};
@@ -78,7 +78,7 @@ export default class Update extends Trigger {
 			return data.displayName;
 		}
 		catch (error) {
-			__logger.error(`[Update.getUsername] Error getting username for ${personId}: ${error.message}`);
+			Logger.error(`[Update.getUsername] Error getting username for ${personId}: ${error.message}`);
 			throw new Error('Error getting username');
 		}
 	}

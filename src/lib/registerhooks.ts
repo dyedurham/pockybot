@@ -1,7 +1,7 @@
 import { WebhookObject, Page } from 'ciscospark/env';
 const spark = require('ciscospark/env');
 import constants from '../constants';
-import __logger from './logger';
+import { Logger } from './logger';
 import * as fs from "fs";
 
 function filterHooks(webhooks : Page<WebhookObject>) : WebhookObject[] {
@@ -34,7 +34,7 @@ function setGcloudCredentials(){
 try {
 	setGcloudCredentials();
 } catch(e){
-	__logger.error(`[RegisterHooks.base] Unable to create google cloud credentials: ${e.message}`);
+	Logger.error(`[RegisterHooks.base] Unable to create google cloud credentials: ${e.message}`);
 }
 
 try {
@@ -56,7 +56,7 @@ try {
 				spark.webhooks.remove(hook);
 			});
 
-			__logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
+			Logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
 		}).then(() => {
 			spark.webhooks.create({
 				resource: 'messages',
@@ -75,8 +75,8 @@ try {
 			})
 		})
 		.catch(function(e) {
-			__logger.error(`[RegisterHooks.base] Error registering hooks: ${e.message}`);
+			Logger.error(`[RegisterHooks.base] Error registering hooks: ${e.message}`);
 		});
 } catch (e) {
-	__logger.error(`[RegisterHooks.base] Uncaught error registerhooks: ${e.message}`);
+	Logger.error(`[RegisterHooks.base] Uncaught error registerhooks: ${e.message}`);
 }
