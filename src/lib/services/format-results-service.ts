@@ -8,8 +8,6 @@ import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
 import Utilities from '../utilities';
-import { PegRecipient } from '../../models/peg-recipient';
-import { distinct } from '../helpers/helpers';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>

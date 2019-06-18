@@ -85,8 +85,9 @@ function createConfig(): Config{
 describe('format results service', () => {
 	let today = new Date();
 	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	let data: PegRecipient[];
+	let data: ResultRow[];
 	let database: PockyDB;
+	let winners: PegRecipient[];
 	let formatResultsService: FormatResultsService;
 	let categoryResultsService: CategoryResultsService;
 	let winnersService: WinnersService;
@@ -94,17 +95,18 @@ describe('format results service', () => {
 	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 	beforeEach(() => {
-		const utilities = new Utilities(config);
-		data = createData();
+		data = createResultRows();
 		database = createDatabase(true, data);
+		winners = createData();
 		config = createConfig();
+		const utilities = new Utilities(config);
 		categoryResultsService = new MockCategoryResultsService();
 		winnersService = new MockWinnersService(true, '');
 		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
 	});
 
 	xit('should generate the correct html', async (done: DoneFn) => {
-		spyOn(winnersService, 'getWinners').and.returnValue(data);
+		spyOn(winnersService, 'getWinners').and.returnValue(winners);
 
 		let html = await formatResultsService.returnResultsHtml();
 
