@@ -1,49 +1,47 @@
+import { PegRecipient } from '../../models/peg-recipient';
 const stringWidth = require('string-width');
-import __logger from '../logger';
-import { ResultRow, RolesRow, StringConfigRow, ConfigRow } from '../../models/database';
+import { RolesRow, StringConfigRow, ConfigRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';
 
-function mapResults(data : ResultRow[], categories: string[] = null) : Receiver[] {
-	let results : Receiver[] = [];
-	data.forEach((row) => {
-		if (!results.map(person => person.id).includes(row.receiverid)) {
-			results.push({
-				id: row.receiverid,
-				person: row.receiver,
-				pegs: []
-			});
-		}
+function mapResults(pegRecipients : PegRecipient[], categories: string[] = null) : Receiver[] {
+	return pegRecipients.map(user => {
+		const person : string = user.validPegsReceived[0] ? user.validPegsReceived[0].receiver : null;
 
-		results[results.findIndex(winner => winner.id === row.receiverid)].pegs.push({
-			sender: row.sender,
-			comment: row.comment,
-			categories: categories ? parseCategories(row.comment, categories) : null
-		});
+		return {
+			id: user.id,
+			person,
+			pegs: user.validPegsReceived.map(peg => {
+				return {
+					sender: peg.sender,
+					comment: peg.comment,
+					categories: categories ? parseCategories(peg.comment, categories) : null
+				};
+			}),
+			weightedPegsReceived: user.weightedPegResult,
+			validPegsReceived: user.numberOfValidPegsReceived
+		};
 	});
-
-	return results;
 }
 
-function mapPenalties(data: ResultRow[], penaltyKeywords?: string[]) : Receiver[] {
-	let results : Receiver[] = [];
-	data.forEach((row) => {
-		if (!results.map(person => person.id).includes(row.senderid)) {
-			results.push({
-				id: row.senderid,
-				person: row.sender,
-				pegs: []
-			});
-		}
+function mapPenalties(pegRecipients: PegRecipient[], penaltyKeywords?: string[]) : Receiver[] {
+	return pegRecipients.map(user => {
+		const person : string = user.validPegsReceived[0] ? user.validPegsReceived[0].receiver : null;
 
-		results[results.findIndex(value => value.id === row.senderid)].pegs.push({
-			sender: row.receiver,
-			comment: row.comment,
-			categories: penaltyKeywords ? parseCategories(row.comment, penaltyKeywords) : null
-		});
-	})
-
-	return results;
+		return {
+			id: user.id,
+			person,
+			pegs: user.penaltyPegsReceived.map(peg => {
+				return {
+					sender: peg.sender,
+					comment: peg.comment,
+					categories: penaltyKeywords ? parseCategories(peg.comment, penaltyKeywords) : null
+				};
+			}),
+			weightedPegsReceived: user.weightedPegResult,
+			validPegsReceived: user.numberOfValidPegsReceived
+		};
+	});
 }
 
 function parseCategories(comment: string, categories: string[]) : string[] {

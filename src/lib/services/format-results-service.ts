@@ -40,7 +40,7 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const penaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const winnersData = this.winnersService.getWinners(fullData);
 
-		//Get only people who didn't win in the general results so there are no double ups
+		// Get only people who didn't win in the general results so there are no double ups
 		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);

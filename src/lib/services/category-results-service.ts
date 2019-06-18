@@ -1,4 +1,3 @@
-import __logger from '../logger';
 import HtmlHelper from '../parsers/htmlHelper';
 import { Receiver } from '../../models/receiver';
 
@@ -35,7 +34,7 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		});
 
 		categoryResults = categoryResults.filter(x => x.pegs.length > 0);
-		categoryResults.sort((a, b) => b.pegs.length - a.pegs.length); // sort from most to least pegs
+		categoryResults.sort((a, b) => b.weightedPegsReceived - a.weightedPegsReceived); // sort from most to least pegs
 		return categoryResults;
 	}
 }

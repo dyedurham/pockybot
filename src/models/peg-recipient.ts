@@ -1,7 +1,10 @@
 import { ResultRow } from "./database";
 
 export interface PegRecipient {
-	senderid : string;
+	id : string;
+	weightedPegResult : number;
 	numberOfValidPegsReceived : number;
-	validPegsReceived: ResultRow[];
+	numberOfPenaltiesReceived : number;
+	validPegsReceived : ResultRow[];
+	penaltyPegsReceived : ResultRow[];
 }
