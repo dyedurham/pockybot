@@ -36,6 +36,7 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const requireValues = this.config.getConfig('requireValues');
 
 		const fullData: ResultRow[] = await this.database.returnResults();
+
 		const rawResultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const rawPenaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const winnersData = this.winnersService.getWinners(fullData);

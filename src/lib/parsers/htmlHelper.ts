@@ -14,7 +14,7 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person.toString()} &mdash; ${result.weightedPegsReceived} (${result.validPegsReceived}) peg(s) total</th></tr>
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person ? result.person.toString() : 'somebody'} &mdash; ${result.weightedPegsReceived} (${result.validPegsReceived}) peg(s) total</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
