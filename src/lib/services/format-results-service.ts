@@ -8,6 +8,8 @@ import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
 import Utilities from '../utilities';
+import { PegRecipient } from '../../models/peg-recipient';
+import { distinct } from '../helpers/helpers';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>
@@ -36,12 +38,15 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const requireValues = this.config.getConfig('requireValues');
 
 		const fullData: ResultRow[] = await this.database.returnResults();
-		const resultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		const penaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const rawResultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const rawPenaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const winnersData = this.winnersService.getWinners(fullData);
 
 		// Get only people who didn't win in the general results so there are no double ups
-		const losersData = resultsData.filter(x => !winnersData.some(y => y.receiverid == x.receiverid));
+		const rawLosersData = rawResultsData.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
+		const resultsData = this.utilities.getResults(rawResultsData);
+		const losersData = this.utilities.getResults(rawLosersData);
+		const penaltyData = this.utilities.getResults(rawPenaltyData);
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);

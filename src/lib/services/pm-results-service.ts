@@ -5,6 +5,9 @@ import TableHelper from '../parsers/tableHelper';
 import __logger from '../logger';
 import { PegReceivedData } from '../../models/peg-received-data';
 import { Webex } from 'webex/env';
+import { PegRecipient } from '../../models/peg-recipient';
+import { distinct } from '../helpers/helpers';
+import Utilities from '../utilities';
 
 const lineEnding = '\r\n';
 
@@ -15,14 +18,17 @@ export interface PmResultsService {
 export class DefaultPmResultsService implements PmResultsService {
 	database : PockyDB;
 	webex : Webex;
+	utilities: Utilities;
 
-	constructor(database : PockyDB, webex : Webex) {
+	constructor(database : PockyDB, webex : Webex, utilities: Utilities) {
 		this.database = database;
 		this.webex = webex;
+		this.utilities = utilities;
 	}
 
 	async pmResults() : Promise<void> {
-		const data : ResultRow[] = await this.database.returnResults();
+		const rawData : ResultRow[] = await this.database.returnResults();
+		const data = this.utilities.getResults(rawData);
 		const results : Receiver[] = TableHelper.mapResults(data);
 
 		let columnWidths = TableHelper.getReceiverColumnWidths(results);
@@ -33,7 +39,7 @@ export class DefaultPmResultsService implements PmResultsService {
 		results.forEach((result: Receiver) => {
 			result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
 
-			pegsReceived[result.id] = ''
+			pegsReceived[result.id] = '';
 			pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
 			let firstPeg = true;
 			let pegCount = result.pegs.length;
