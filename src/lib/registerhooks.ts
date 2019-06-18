@@ -31,52 +31,54 @@ function setGcloudCredentials(){
 	process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath;
 }
 
-try {
-	setGcloudCredentials();
-} catch(e){
-	Logger.error(`[RegisterHooks.base] Unable to create google cloud credentials: ${e.message}`);
-}
+export function registerHooks(){
+	try {
+		setGcloudCredentials();
+	} catch(e){
+		Logger.error(`[RegisterHooks.base] Unable to create google cloud credentials: ${e.message}`);
+	}
 
-try {
-	webex.webhooks.list()
-		.then(async (webhooks : Page<WebhookObject>) => {
-			let myHooks : WebhookObject[] = [];
-			let first = true;
-			do {
-				if (first) {
-					first = false;
-				} else {
-					webhooks = await webhooks.next();
-				}
+	try {
+		webex.webhooks.list()
+			.then(async (webhooks : Page<WebhookObject>) => {
+				let myHooks : WebhookObject[] = [];
+				let first = true;
+				do {
+					if (first) {
+						first = false;
+					} else {
+						webhooks = await webhooks.next();
+					}
 
-				myHooks = myHooks.concat(filterHooks(webhooks));
-			} while (webhooks.hasNext())
+					myHooks = myHooks.concat(filterHooks(webhooks));
+				} while (webhooks.hasNext())
 
-			myHooks.forEach((hook : WebhookObject) => {
-				webex.webhooks.remove(hook);
-			});
+				myHooks.forEach((hook : WebhookObject) => {
+					webex.webhooks.remove(hook);
+				});
 
-			Logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
-		}).then(() => {
-			webex.webhooks.create({
-				resource: 'messages',
-				event: 'created',
-				filter: 'mentionedPeople=me',
-				targetUrl: constants.postUrl,
-				name: constants.botName + ' webhook'
-			});
+				Logger.debug('[RegisterHooks.base] successfully cleaned up old hooks');
+			}).then(() => {
+				webex.webhooks.create({
+					resource: 'messages',
+					event: 'created',
+					filter: 'mentionedPeople=me',
+					targetUrl: constants.postUrl,
+					name: constants.botName + ' webhook'
+				});
 
-			webex.webhooks.create({
-				resource: 'messages',
-				event: 'created',
-				filter: 'roomType=direct',
-				targetUrl: constants.pmUrl,
-				name: constants.botName + ' direct webhook'
+				webex.webhooks.create({
+					resource: 'messages',
+					event: 'created',
+					filter: 'roomType=direct',
+					targetUrl: constants.pmUrl,
+					name: constants.botName + ' direct webhook'
+				})
 			})
-		})
-		.catch(function(e) {
-			Logger.error(`[RegisterHooks.base] Error registering hooks: ${e.message}`);
-		});
-} catch (e) {
-	Logger.error(`[RegisterHooks.base] Uncaught error registerhooks: ${e.message}`);
+			.catch(function(e) {
+				Logger.error(`[RegisterHooks.base] Error registering hooks: ${e.message}`);
+			});
+	} catch (e) {
+		Logger.error(`[RegisterHooks.base] Uncaught error registerhooks: ${e.message}`);
+	}
 }

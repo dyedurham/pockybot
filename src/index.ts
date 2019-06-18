@@ -1,3 +1,2 @@
-export { respond } from './lib/responder';
-export { pmRespond } from './lib/pm-responder';
+export { PockyBot } from './pockybot.module'
 export { Logger } from './lib/logger';
