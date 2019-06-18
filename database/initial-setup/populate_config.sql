@@ -5,7 +5,8 @@ VALUES
 ('winners', 3),
 ('commentsRequired', 1),
 ('pegWithoutKeyword', 0),
-('requireValues', 1);
+('requireValues', 1),
+('remoteLocationWeighting', 2);
 
 INSERT INTO stringconfig (name, value)
 VALUES
