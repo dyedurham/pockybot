@@ -93,8 +93,7 @@ function createData(): ResultRow[] {
 }
 
 function createDatabase(success: boolean, data: ResultRow[]): PockyDB {
-	let db = new MockPockyDb(true, 1, true, 1, success ? data : undefined);
-	return db;
+	return new MockPockyDb(true, 1, true, 1, success ? data : undefined);
 }
 
 describe('winners service', () => {
@@ -103,7 +102,7 @@ describe('winners service', () => {
 	let data: ResultRow[];
 
 	beforeEach(() => {
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		data = createData();
 		database = createDatabase(true, data);
 		winnersService = new DefaultWinnersService(database, config, utilities);

@@ -83,7 +83,7 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
 
 		let status = new Status(webex, database, config, utilities);
@@ -102,7 +102,7 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
 
 		let status = new Status(webex, database, config, utilities);
@@ -121,7 +121,7 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'trsioetnsrio'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
 
 		let status = new Status(webex, database, config, utilities);
@@ -140,7 +140,7 @@ describe('creating status message', () => {
 				{receiver: 'test3', comment: 'dtsdsrtdrsdpf'},
 				{receiver: 'test2', comment: 'trsioetnsrio'}
 			]);
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake(() => {
 			return [
 				{receiver: 'test', comment: 'trsioetnsrio'},
