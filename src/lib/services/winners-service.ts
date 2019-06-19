@@ -83,14 +83,14 @@ export class DefaultWinnersService implements WinnersService {
 
 			if (validPegsSent.length >= minimum) {
 				const validPegsReceived = results.filter(x => x.receiverid === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
-				const penaltyPegsReceived = results.filter(x => x.receiverid === sender && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const penaltyPegsSent = results.filter(x => x.senderid === sender && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 				eligibleToWinSenders.push({
 					id: sender,
-					weightedPegResult: validPegsReceived.length - penaltyPegsReceived.length,
+					weightedPegResult: validPegsReceived.length - penaltyPegsSent.length,
 					numberOfValidPegsReceived: validPegsReceived.length,
-					numberOfPenaltiesReceived: penaltyPegsReceived.length,
+					numberOfPenaltiesReceived: penaltyPegsSent.length,
 					validPegsReceived,
-					penaltyPegsReceived
+					penaltyPegsSent: penaltyPegsSent
 				});
 			}
 		});

@@ -6,5 +6,5 @@ export interface PegRecipient {
 	numberOfValidPegsReceived : number;
 	numberOfPenaltiesReceived : number;
 	validPegsReceived : ResultRow[];
-	penaltyPegsReceived : ResultRow[];
+	penaltyPegsSent : ResultRow[];
 }

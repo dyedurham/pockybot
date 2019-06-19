@@ -14,7 +14,7 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person ? result.person.toString() : 'somebody'} &mdash; ${result.weightedPegsReceived} (${result.validPegsReceived}) peg(s) total</th></tr>
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person ? result.person.toString() : 'somebody'} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived)}</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
@@ -38,6 +38,30 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 
 function uppercaseFirstChar(word: string) : string {
 	return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+/**
+ * Return a string describing how many pegs the user received, both weighted and unweighted
+ * appropriately pluralising (or not) the word 'peg'
+ */
+function pegsReceived(weightedPegs : number, validPegs : number) : string {
+	const numberOfPegs = (weightedPegs : number, validPegs : number) : string => {
+		if (weightedPegs === validPegs) {
+			return `${weightedPegs}`;
+		} else {
+			return `${weightedPegs} (${validPegs})`
+		}
+	};
+
+	if (Math.abs(weightedPegs) === 1 && validPegs === 1) {
+		return `${numberOfPegs(weightedPegs, validPegs)} peg total`;
+	}
+
+	if (Math.abs(weightedPegs) === 1 || validPegs === 1) {
+		return `${numberOfPegs(weightedPegs, validPegs)} peg(s) total`;
+	}
+
+	return `${numberOfPegs(weightedPegs, validPegs)} pegs total`
 }
 
 export default {

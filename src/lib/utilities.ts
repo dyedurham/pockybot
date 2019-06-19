@@ -78,7 +78,7 @@ export default class Utilities {
 				numberOfValidPegsReceived: validPegsReceived.length,
 				numberOfPenaltiesReceived: penaltyPegsReceived.length,
 				validPegsReceived,
-				penaltyPegsReceived
+				penaltyPegsSent: penaltyPegsReceived
 			});
 		});
 

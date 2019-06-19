@@ -32,7 +32,7 @@ function mapPenalties(pegRecipients: PegRecipient[], penaltyKeywords?: string[])
 		return {
 			id: user.id,
 			person,
-			pegs: user.penaltyPegsReceived.map(peg => {
+			pegs: user.penaltyPegsSent.map(peg => {
 				return {
 					sender: peg.sender,
 					comment: peg.comment,

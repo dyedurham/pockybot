@@ -37,15 +37,15 @@ export class DefaultFormatResultsService implements FormatResultsService {
 
 		const fullData: ResultRow[] = await this.database.returnResults();
 
-		const rawResultsData = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		const rawPenaltyData = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const validPegs = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		const penaltyPegs = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
 		const winnersData = this.winnersService.getWinners(fullData);
 
 		// Get only people who didn't win in the general results so there are no double ups
-		const rawLosersData = rawResultsData.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
-		const resultsData = this.utilities.getResults(rawResultsData);
-		const losersData = this.utilities.getResults(rawLosersData);
-		const penaltyData = this.utilities.getResults(rawPenaltyData);
+		const loserPegs = validPegs.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
+		const resultsData = this.utilities.getResults(validPegs);
+		const losersData = this.utilities.getResults(loserPegs);
+		const penaltyData = this.utilities.getResults(penaltyPegs);
 
 		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
 		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
