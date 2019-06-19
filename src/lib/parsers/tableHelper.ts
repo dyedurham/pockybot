@@ -6,7 +6,6 @@ import { PegReceivedData } from '../../models/peg-received-data';
 
 function mapResults(pegRecipients : PegRecipient[], categories: string[] = null) : Receiver[] {
 	return pegRecipients.map(user => {
-		// TODO: This is where person is getting set to null and needs to not be
 		const person : string = user.validPegsReceived[0] ? user.validPegsReceived[0].receiver : null;
 
 		return {

@@ -8,6 +8,10 @@ import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
 import Utilities from '../utilities';
+import { PegService } from './peg-service';
+import { Peg } from '../../models/peg';
+import { ResultsService } from './results-service';
+import { Result } from '../../models/result';
 
 export interface FormatResultsService {
 	returnResultsHtml() : Promise<string>
@@ -19,16 +23,20 @@ export class DefaultFormatResultsService implements FormatResultsService {
 	categoryResultsService: CategoryResultsService;
 	winnersService: WinnersService;
 	utilities: Utilities;
+	pegService: PegService;
+	resultsService: ResultsService;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService, utilities: Utilities) {
+	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService, utilities: Utilities, pegService: PegService, resultsService: ResultsService) {
 		this.database = database;
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
 		this.winnersService = winnersService;
 		this.utilities = utilities;
+		this.pegService = pegService;
+		this.resultsService = resultsService;
 	}
 
-	async returnResultsHtml() : Promise<string> {
+	async returnResultsHtml(): Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 		const categories = this.config.getStringConfig('keyword');
@@ -36,29 +44,30 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const requireValues = this.config.getConfig('requireValues');
 
 		const fullData: ResultRow[] = await this.database.returnResults();
+		const allPegs: Peg[] = this.pegService.getPegs(fullData);
+		const fullResults: Result[] = this.resultsService.getResults(allPegs);
 
-		const validPegs = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		const penaltyPegs = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		const winnersData = this.winnersService.getWinners(fullData);
-
-		// Get only people who didn't win in the general results so there are no double ups
-		const loserPegs = validPegs.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
-		const resultsData = this.utilities.getResults(validPegs);
-		const losersData = this.utilities.getResults(loserPegs);
-		const penaltyData = this.utilities.getResults(penaltyPegs);
-
-		const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
-		const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
-		const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
-		const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
+		// const validPegs = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		// const penaltyPegs = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
+		// const winnersData = this.winnersService.getWinners(fullData);
+		//
+		// // Get only people who didn't win in the general results so there are no double ups
+		// const loserPegs = validPegs.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
+		// const resultsData = this.utilities.getResults(validPegs);
+		// const losersData = this.utilities.getResults(loserPegs);
+		// const penaltyData = this.utilities.getResults(penaltyPegs);
+		//
+		// const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
+		// const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
+		// const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
+		// const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
 
 		const winnersTable = HtmlHelper.generateTable(winners, 'winners');
 		const losersTable = HtmlHelper.generateTable(losers, 'losers');
 		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
 		const penaltyTable = HtmlHelper.generateTable(penalties, 'penalties');
 
-		const html = this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
-		return html;
+		return this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
 	}
 
 	generateHtml(winnersTable: string, resultsTable: string, categoryResultsTable: string, penaltyTable: string, todayString: string) : string {

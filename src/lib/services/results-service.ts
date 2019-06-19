@@ -3,9 +3,13 @@ import __logger from '../logger';
 import * as fs from 'fs';
 import { FormatResultsService } from './format-results-service';
 import { Storage } from '@google-cloud/storage';
+import { Peg } from '../../models/peg';
+import { Result } from '../../models/result';
+import { distinct } from '../helpers/helpers';
 
 export interface ResultsService {
-	returnResultsMarkdown() : Promise<string>
+	returnResultsMarkdown() : Promise<string>;
+	getResults(pegs : Peg[]) : Result[];
 }
 
 export class DefaultResultsService implements ResultsService {
@@ -39,5 +43,28 @@ export class DefaultResultsService implements ResultsService {
 		const markdown = `[Here are all pegs given this cycle](${fileUrl})`;
 
 		return markdown;
+	}
+
+	getResults(pegs: Peg[]): Result[] {
+		const allPegReceivers = distinct(pegs.map(peg => peg.receiverId));
+		const allPegSenders = distinct(pegs.map(peg => peg.senderId));
+		const allPeople = distinct(allPegSenders.concat(allPegReceivers));
+
+		let results : Result[] = [];
+		allPeople.forEach(personId => {
+			const validPegsReceived = pegs.filter(peg => peg.receiverId === personId && peg.isValid);
+			const penaltyPegsGiven = pegs.filter(peg => peg.senderId === personId && !peg.isValid);
+			const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
+
+			results.push({
+				personId,
+				personName,
+				weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
+				validPegsReceived,
+				penaltyPegsGiven
+			});
+		});
+
+		return results;
 	}
 }
