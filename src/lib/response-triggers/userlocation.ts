@@ -51,35 +51,13 @@ export default class UserLocation extends Trigger {
 
 		switch(args[2].text.toLowerCase()) {
 			case LocationAction.Get:
-				if (args.length !== 4) {
-					response = 'Please specify who you want to get the location for. This can be \'all\', \'me\' or mention a person';
-					break;
-				}
-
-				if (args[3].text.toLowerCase() === 'all') {
-					response = await this.getUserLocationMessage();
-				} else if (args[3].text.toLowerCase() === 'me') {
-					const userLocation = await this.dbLocation.getUserLocation(message.personId);
-					if (userLocation) {
-						response = `Your location is: '${userLocation.location}'`;
-					} else {
-						response = 'Your location is not set';
-					}
-				} else if (args[3].isMention) {
-					const userLocation = await this.dbLocation.getUserLocation(args[3].userId);
-					const user = await this.dbUsers.getUser(args[3].userId);
-					if (userLocation) {
-						response = `User ${user.username}'s location is: '${userLocation.location}'`;
-					} else {
-						response = `User ${user.username}'s location is not set`;
-					}
-				} else {
-					response = 'Unknown command. Please specify \'me\', \'all\', or mention a user.';
-				}
+				response = await this.getUserLocation(args, message.personId);
 				break;
 			case LocationAction.Set:
+				response = await this.setUserLocation(args, message);
 				break;
 			case LocationAction.Delete:
+				response = await this.deleteUserLocation(args, message);
 				break;
 			default:
 				response = 'Unknown command';
@@ -88,6 +66,148 @@ export default class UserLocation extends Trigger {
 		return {
 			markdown: response
 		};
+	}
+
+	private async getUserLocation(args : Argument[], personId : string) : Promise<string> {
+		if (args.length !== 4) {
+			return 'Please specify who you want to get the location for. This can be \'all\', \'me\' or mention a person';
+		}
+
+		if (args[3].isMention) {
+			const userLocation = await this.dbLocation.getUserLocation(args[3].userId);
+			const user = await this.dbUsers.getUser(args[3].userId);
+			if (userLocation) {
+				return `User ${user.username}'s location is: '${userLocation.location}'`;
+			}
+
+			return `User ${user.username}'s location is not set`;
+		}
+
+		if (args[3].text.toLowerCase() === 'all') {
+			return await this.getUserLocationMessage();
+		} else if (args[3].text.toLowerCase() === 'me') {
+			const userLocation = await this.dbLocation.getUserLocation(personId);
+			if (userLocation) {
+				return `Your location is: '${userLocation.location}'`;
+			}
+
+			return 'Your location is not set';
+		} else if (args[3].text.toLowerCase() === 'unset') {
+			const unsetUsers = await this.dbLocation.getUsersWithoutLocation();
+			if (unsetUsers.length === 0) {
+				return 'There are no users without a location set';
+			}
+
+			return `Here are the users without a location set:
+
+${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
+		}
+
+		return 'Unknown command. Please specify \'me\', \'all\', \'unset\', or mention a user.';
+	}
+
+	private async setUserLocation(args : Argument[], message : MessageObject) : Promise<string> {
+		if (args.length < 5 || args[3].isMention) {
+			return 'Please specify the name of a location and a list of mentions/me';
+		}
+
+		const locations = await this.dbLocation.getLocations();
+		if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
+			return `Location ${args[3]} does not exist. Valid values are: ${locations.join(', ')}`;
+		}
+
+		const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
+		const users = args.filter((item, index) => index < 3 );
+
+		if (users.length === 1 && !users[0].isMention) {
+			if (users[0].text !== 'me') {
+				return `Invalid person ${users[0].text}. Either specify 'me' or mention a person`;
+			}
+
+			try {
+				await this.dbLocation.setUserLocation(message.personId, location);
+				return 'Location has been set';
+			} catch (error) {
+				__logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
+				return 'Error setting location';
+			}
+		}
+
+		if (users.some(x => !x.isMention)) {
+			return 'Mixed mentions and non mentions not allowed';
+		}
+
+		const usersPromise = users.map(async x => {
+			try {
+				await this.dbLocation.setUserLocation(x.userId, location);
+				return {
+					user: x.text,
+					success: true
+				};
+			} catch (error) {
+				__logger.error(`[UserLocation.setUserLocation] Error setting location for user ${x.userId}: ${error.message}`);
+				return {
+					user: x.text,
+					success: false
+				}
+			}
+		});
+
+		const result = await Promise.all(usersPromise);
+		if (result.some(x => !x.success)) {
+			return `Location setting was unsuccessful for user(s): ${result.filter(x => !x.success).map(x => `'${x.user}'`).join(', ')}`;
+		}
+
+		return 'Location has been set';
+	}
+
+	private async deleteUserLocation(args : Argument[], message : MessageObject) : Promise<string> {
+		if (args.length < 4) {
+			return 'Please specify a list of mentions/me';
+		}
+
+		const users = args.filter((item, index) => index < 2 );
+
+		if (users.length === 1 && !users[0].isMention) {
+			if (users[0].text !== 'me') {
+				return `Invalid person ${users[0].text}. Either specify 'me' or mention a person`;
+			}
+
+			try {
+				await this.dbLocation.deleteLocation(message.personId);
+				return 'Location has been deleted';
+			} catch (error) {
+				__logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
+				return 'Error deleting location';
+			}
+		}
+
+		if (users.some(x => !x.isMention)) {
+			return 'Mixed mentions and non mentions not allowed';
+		}
+
+		const usersPromise = users.map(async x => {
+			try {
+				await this.dbLocation.deleteUserLocation(x.userId);
+				return {
+					user: x.text,
+					success: true
+				};
+			} catch (error) {
+				__logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${x.userId}: ${error.message}`);
+				return {
+					user: x.text,
+					success: false
+				}
+			}
+		});
+
+		const result = await Promise.all(usersPromise);
+		if (result.some(x => !x.success)) {
+			return `Location deleting was unsuccessful for user(s): ${result.filter(x => !x.success).map(x => `'${x.user}'`).join(', ')}`;
+		}
+
+		return 'Location has been deleted';
 	}
 
 	private async getUserLocationMessage() : Promise<string> {
