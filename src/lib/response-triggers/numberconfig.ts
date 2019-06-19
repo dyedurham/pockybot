@@ -1,5 +1,5 @@
 import Trigger from '../../models/trigger';
-import Config from '../config';
+import Config from '../config-interface';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'webex/env';

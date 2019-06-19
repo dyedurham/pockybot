@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
-import Config from '../config';
+import Config from '../config-interface';
 import { MessageObject } from 'webex/env';
 import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';

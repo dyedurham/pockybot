@@ -1,6 +1,6 @@
 import { QueryResult } from 'pg';
 import { ResultRow, PegGiven, UserRow, RolesRow, ConfigRow, StringConfigRow, Role, UserLocationRow } from '../../models/database';
-import Config from '../config';
+import Config from '../config-interface';
 
 export interface PockyDB {
 	loadConfig : (config : Config) => void;

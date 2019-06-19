@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import DbUsers from '../database/db-users';
-import Config from '../config';
+import Config from '../config-interface';
 import __logger from '../logger';
 import { MessageObject, Webex } from 'webex/env';
 import { UserRow, Role } from '../../models/database';

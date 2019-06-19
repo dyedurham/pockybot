@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { PockyDB}  from '../database/db-interfaces';
-import Config from '../config';
+import Config from '../config-interface';
 import { MessageObject, Webex } from 'webex/env';
 import { PegGiven, Role } from '../../models/database';
 import { PegGivenData } from '../../models/peg-given-data';
