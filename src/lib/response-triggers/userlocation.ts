@@ -26,10 +26,6 @@ export default class UserLocation extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.UserLocation))) {
-			return false;
-		}
-
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
 		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.UserLocation);
 	}
@@ -43,29 +39,71 @@ export default class UserLocation extends Trigger {
 			return { markdown: `Error parsing request: ${error.message}` }
 		}
 
-		let response : string;
-
 		if (args.length < 3 || args[2].isMention) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(LocationAction).join(', ')}` };
 		}
 
-		switch(args[2].text.toLowerCase()) {
-			case LocationAction.Get:
-				response = await this.getUserLocation(args, message.personId);
-				break;
-			case LocationAction.Set:
-				response = await this.setUserLocation(args, message);
-				break;
-			case LocationAction.Delete:
-				response = await this.deleteUserLocation(args, message);
-				break;
-			default:
-				response = 'Unknown command';
+		let response : string;
+
+		if ((this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.UserLocation))) {
+			response = await this.createMessageAdmin(args, message);
+		} else {
+			response = await this.createMessageNonAdmin(args, message);
 		}
 
 		return {
 			markdown: response
 		};
+	}
+
+	private async createMessageAdmin(args : Argument[], message : MessageObject) : Promise<string> {
+		switch(args[2].text.toLowerCase()) {
+			case LocationAction.Get:
+				return await this.getUserLocation(args, message.personId);
+			case LocationAction.Set:
+				return await this.setUserLocationAdmin(args, message);
+			case LocationAction.Delete:
+				return await this.deleteUserLocationAdmin(args, message);
+			default:
+				return 'Unknown command';
+		}
+	}
+
+	private async createMessageNonAdmin(args : Argument[], message : MessageObject) : Promise<string> {
+		switch(args[2].text.toLowerCase()) {
+			case LocationAction.Get:
+				return await this.getUserLocation(args, message.personId);
+			case LocationAction.Set:
+				if (args.length !== 5) {
+					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} <locaton> me\``;
+				}
+
+				const locations = await this.dbLocation.getLocations();
+				if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
+					return `Location ${args[3]} does not exist. Valid values are: ${locations.join(', ')}`;
+				}
+
+				if (args[4].isMention || args[4].text.toLowerCase() !== 'me') {
+					return 'Permission denied. You are only allowed to set the location for yourself (use \'me\')';
+				}
+
+				const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
+				await this.dbLocation.setUserLocation(message.personId, location);
+				return 'Location set successfully';
+			case LocationAction.Delete:
+				if (args.length !== 4) {
+					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\``;
+				}
+
+				if (args[3].isMention || args[3].text.toLowerCase() !== 'me') {
+					return 'Permission denied. You are only allowed to delete the location for yourself (use \'me\')';
+				}
+
+				await this.dbLocation.deleteUserLocation(message.personId);
+				return 'Location deleted successfully';
+			default:
+				return 'Unknown command';
+		}
 	}
 
 	private async getUserLocation(args : Argument[], personId : string) : Promise<string> {
@@ -106,7 +144,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		return 'Unknown command. Please specify \'me\', \'all\', \'unset\', or mention a user.';
 	}
 
-	private async setUserLocation(args : Argument[], message : MessageObject) : Promise<string> {
+	private async setUserLocationAdmin(args : Argument[], message : MessageObject) : Promise<string> {
 		if (args.length < 5 || args[3].isMention) {
 			return 'Please specify the name of a location and a list of mentions/me';
 		}
@@ -161,7 +199,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		return 'Location has been set';
 	}
 
-	private async deleteUserLocation(args : Argument[], message : MessageObject) : Promise<string> {
+	private async deleteUserLocationAdmin(args : Argument[], message : MessageObject) : Promise<string> {
 		if (args.length < 4) {
 			return 'Please specify a list of mentions/me';
 		}
