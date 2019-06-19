@@ -25,6 +25,7 @@ import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
 import Location from './location';
+import UserLocation from './userlocation';
 import Default from './default';
 
 // Services
@@ -80,6 +81,7 @@ const help = new Help(config);
 const ping = new Ping();
 const rotation = new Rotation(config);
 const location = new Location(dbLocation, config);
+const userLocation = new UserLocation(dbUsers, dbLocation, config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -100,6 +102,7 @@ const triggers : Trigger[] = [
 	stringConfig,
 	roleConfig,
 	location,
+	userLocation,
 	defaultTrigger,
 ];
 
