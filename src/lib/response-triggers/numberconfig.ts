@@ -29,7 +29,7 @@ export default class NumberConfig extends Trigger {
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
-		let words = parsedMessage.command.trim().split(' ');
+		let words = parsedMessage.command.trim().split(' ').filter(x => x !== '');
 
 		if (words.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };

@@ -4,6 +4,7 @@ import __logger from '../logger';
 import { MessageObject } from 'webex/env';
 import { ParsedMessage } from '../../models/parsed-message';
 import constants from '../../constants';
+import { Argument } from '../../models/argument';
 
 function parsePegMessage(message : MessageObject) : ParsedMessage {
 	try {
@@ -50,6 +51,36 @@ function parseNonPegMessage(message : MessageObject) : ParsedMessage {
 	return parsedMessage;
 }
 
+function parseOutArgs(message: MessageObject) : Argument[] {
+	const parsedMessage = parseXmlMessage(message);
+	const output : Argument[] = [];
+
+	parsedMessage.forEach(element => {
+		if (element.name() === 'spark-mention') {
+			if (element.attr('data-object-type').value() === 'groupMention') {
+				throw new Error('Group mentions are not allowed');
+			}
+
+			output.push({
+				text: element.text(),
+				isMention: true,
+				userId: getPersonId(element.attr('data-object-id').value())
+			});
+		} else {
+			const text = element.text();
+			let words = text.trim().split(' ').filter(x => x !== '');
+			words.forEach(word => {
+				output.push({
+					text: word,
+					isMention: false
+				});
+			})
+		}
+	});
+
+	return output;
+}
+
 function isMentionOfPerson(element: xml.Element) {
 	return element.name() === 'spark-mention' && element.attr('data-object-type').value() === 'person';
 }
@@ -88,6 +119,7 @@ function getMessageXml(message : MessageObject) : xml.Document {
 export default {
 	parsePegMessage,
 	parseNonPegMessage,
+	parseOutArgs,
 	getMessageXml,
 	parseXmlMessage,
 	getPersonId,

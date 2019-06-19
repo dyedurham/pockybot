@@ -30,7 +30,7 @@ export default class StringConfig extends Trigger {
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
-		let words = parsedMessage.command.trim().split(' ');
+		let words = parsedMessage.command.trim().split(' ').filter(x => x !== '');
 
 		let newMessage : string;
 

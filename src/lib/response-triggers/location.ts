@@ -31,7 +31,7 @@ export default class Location extends Trigger {
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
-		let words = parsedMessage.command.trim().split(' ');
+		let words = parsedMessage.command.trim().split(' ').filter(x => x !== '');
 
 		let response : string;
 
