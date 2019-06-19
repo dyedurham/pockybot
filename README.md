@@ -12,31 +12,91 @@ Pegs & Pocky was created within GlobalX as a merit-based system to encourage goo
 1. At the end of the time period the pegs are counted (an admin calls "finish" on the bot) and the winners are announced in the chat.
 1. The top three peg recipients get physical rewards (Pocky and/or other snacks).
 
-## Details
-
-My name is:
-
-* pockybot@sparkbot.io
-* @PockyBot
-
 ## How it works
 
-* Runs on express.js
-* Uses webex client
-* Deployed only on PROD to be accessible by Cisco's Server
+* Library used to set up a Webex Teams Bot
 * Results are stored in a postgres database
-* pegs are viewable via html uploaded to google cloud
+* Pegs are viewable via html uploaded to google cloud
 
 ## Setup
 
-1. `npm install`
-1. `npm run build`
-1. `npm start`
+Using npm:
+```
+npm i pockybot
+```
+
+Using yarn:
+```
+yarn add pockybot
+```
 
 ## Usage
 
-All commands related to PockyBot must begin with a mention of the bot, or be sent directly to the bot.
-In this readme, mentions will be identified by `@PockyBot`.
+### Environment Variables
+
+The following environment variables must be set so that PockyBot can run properly:
+
+Variable Name | Purpose | Example Value
+:-- | :-- | :--
+BUILD_NUMBER | Allows PockyBot to display the build number that is running when you ping it | 102
+VERSION_BRANCH | Allows PockyBot to display the version of the app that is running when you ping it | 1.0.0
+WEBEX_ACCESS_TOKEN | Used so that the app can connect and post to Webex Teams as the Bot | DFsSdfsdFhgiFg
+BOT_ID | Used to filter the webhooks so that the Bot only responds to messages where it has been mentioned |Y2lzY29zcGFyadsdfEREr
+BOT_NAME | Used to provide a human-readable name for the Bot and to name the webhooks | PockyBot
+POST_URL | The url that the webhook will hit when a message that mentions the bot is created | https://example.com/pocky/respond
+PM_URL | The url that the webhook will hit when a private message is sent to the bot | https://example.com/pocky/pm
+PGUSER | The username of the database user set up for the bot | pockybotuser
+PGPASSWORD | The password used to connect to the database | password
+PGHOST | The url of the [database](###Database) for the bot information | postgres.example.com
+PGDATABASE | The name of the database | pockydatabase
+PGPORT | The port of the database | 5432
+GCLOUD_PROJECT_ID | The ID of the gcloud project where the bucket used to store results information is found | project-123
+GCLOUD_PRIVATE_KEY_ID | The ID of the gcloud private key | a23c87b7127ab7d2
+GCLOUD_PRIVATE_KEY | The private key required to connect to the gcloud bucket | -----BEGIN PRIVATE KEY-----\nMItestingtestingtesting23423\n-----END PRIVATE KEY-----\n
+GCLOUD_CLIENT_EMAIL | Required to connect to the gcloud bucket | pockybot@project-123.iam.gserviceaccount.com
+GCLOUD_CLIENT_ID | Required to connect to the gcloud bucket | 382348239123
+GCLOUD_CLIENT_CERT_URL | Required to connect to the gcloud bucket | https://www.googleapis.com/robot/v1/metadata/x509/pockybot%40project-123.iam.gserviceaccount.com
+GCLOUD_BUCKET_NAME | The name of the gcloud bucket being used to store the pockybot results | pockybucket
+
+### Code
+The following is example code showing usage of the bot with express in a typescript project:
+
+```typescript
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import { PockyBot } from 'pockybot';
+
+// Constants
+const PORT = 80;
+const HOST = '0.0.0.0';
+
+//Startup - note environment variables should already be set up when this is run
+PockyBot.RegisterHooks();
+
+// App
+const app = express();
+app.use(bodyParser.json()); // for parsing application/json
+
+app.post('/respond', async (req, res) => {
+    try {
+        await PockyBot.Respond(req.body);
+        res.status(200).end();
+    } catch (e) {
+        res.status(400).end();
+    }
+});
+
+app.post('/pm', async (req, res) => {
+    try {
+        await PockyBot.PmRespond(req.body);
+        res.status(200).end();
+    } catch (e) {
+        res.status(400).end();
+    }
+});
+
+app.listen(PORT, HOST);
+```
 
 ### Database
 
@@ -63,6 +123,9 @@ Users can have more than one role. Any users with the 'ADMIN' role are considere
 All other roles relate to the commands of the same name displayed below.
 
 ### Commands
+
+All commands related to PockyBot must begin with a mention of the bot, or be sent directly to the bot.
+In this readme, mentions will be identified by `@PockyBot`.
 
 #### General commands
 
