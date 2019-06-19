@@ -24,6 +24,7 @@ import Rotation from './rotation';
 import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
+import Location from './location';
 import Default from './default';
 
 // Services
@@ -37,6 +38,7 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
+import DbLocation from '../database/db-location';
 import { DefaultWinnersService } from '../services/winners-service';
 import { DefaultResultsService } from '../services/results-service';
 import { DefaultPmResultsService } from '../services/pm-results-service';
@@ -48,6 +50,7 @@ const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(webex, queryHandler);
+const dbLocation = new DbLocation(queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new Config(dbConfig);
 const categoryResultsService = new DefaultCategoryResultsService();
@@ -76,6 +79,7 @@ const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
 const rotation = new Rotation(config);
+const location = new Location(dbLocation, config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -95,6 +99,7 @@ const triggers : Trigger[] = [
 	numberConfig,
 	stringConfig,
 	roleConfig,
+	location,
 	defaultTrigger,
 ];
 
