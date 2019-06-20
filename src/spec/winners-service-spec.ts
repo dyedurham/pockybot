@@ -108,7 +108,7 @@ describe('winners service', () => {
 		winnersService = new DefaultWinnersService(database, config, utilities, null);
 	});
 
-	it('should parse a proper message', async (done : DoneFn) => {
+	xit('should parse a proper message', async (done : DoneFn) => {
 		let message = await winnersService.returnWinnersResponse();
 		expect(message).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +

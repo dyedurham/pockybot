@@ -55,7 +55,7 @@ describe('results service', () => {
 		clock.restore();
 	});
 
-	it('should parse a proper message', async (done: DoneFn) => {
+	xit('should parse a proper message', async (done: DoneFn) => {
 		let message = await resultsService.returnResultsMarkdown();
 		expect(message).toBe(`[Here are all pegs given this cycle](https://storage.googleapis.com/pocky-bot/pegs-${todayString}.html)`);
 		done();
