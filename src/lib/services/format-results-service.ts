@@ -1,13 +1,7 @@
-import { ResultRow } from '../../models/database';
-import { PockyDB } from '../database/db-interfaces';
 import HtmlHelper from '../parsers/htmlHelper';
 import __logger from '../logger';
 import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
-import { WinnersService } from './winners-service';
-import Utilities from '../utilities';
-import { PegService } from './peg-service';
-import { ResultsService } from './results-service';
 import { Result } from '../../models/result';
 
 export interface FormatResultsService {

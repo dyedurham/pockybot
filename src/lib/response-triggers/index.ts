@@ -56,7 +56,7 @@ const categoryResultsService = new DefaultCategoryResultsService();
 const winnersService = new DefaultWinnersService(database, config, utilities, pegService);
 const formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
 const resultsService = new DefaultResultsService(database, formatResultsService, pegService, winnersService);
-const pmResultsService = new DefaultPmResultsService(database, webex, utilities);
+const pmResultsService = new DefaultPmResultsService(database, webex, utilities, pegService, resultsService);
 
 database.loadConfig(config);
 config.updateAll();
