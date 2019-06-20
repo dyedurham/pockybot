@@ -47,7 +47,7 @@ POST_URL | The url that the webhook will hit when a message that mentions the bo
 PM_URL | The url that the webhook will hit when a private message is sent to the bot | https://example.com/pocky/pm
 PGUSER | The username of the database user set up for the bot | pockybotuser
 PGPASSWORD | The password used to connect to the database | password
-PGHOST | The url of the [database](###Database) for the bot information | postgres.example.com
+PGHOST | The url of the [database](#database) for the bot information | postgres.example.com
 PGDATABASE | The name of the database | pockydatabase
 PGPORT | The port of the database | 5432
 GCLOUD_PROJECT_ID | The ID of the gcloud project where the bucket used to store results information is found | project-123
@@ -55,7 +55,7 @@ GCLOUD_PRIVATE_KEY_ID | The ID of the gcloud private key | a23c87b7127ab7d2
 GCLOUD_PRIVATE_KEY | The private key required to connect to the gcloud bucket | -----BEGIN PRIVATE KEY-----\nMItestingtestingtesting23423\n-----END PRIVATE KEY-----\n
 GCLOUD_CLIENT_EMAIL | Required to connect to the gcloud bucket | pockybot@project-123.iam.gserviceaccount.com
 GCLOUD_CLIENT_ID | Required to connect to the gcloud bucket | 382348239123
-GCLOUD_CLIENT_CERT_URL | Required to connect to the gcloud bucket | https://www.googleapis.com/robot/v1/metadata/x509/pockybot%40project-123.iam.gserviceaccount.com
+GCLOUD_CLIENT_CERT_URL | Required to connect to the gcloud bucket | https://www.googleapis.com/robot-/v1/metadata/x509/pockybot%40project-123.iam.gserviceaccount.com
 GCLOUD_BUCKET_NAME | The name of the gcloud bucket being used to store the pockybot results | pockybucket
 
 ### Code
