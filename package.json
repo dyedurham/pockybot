@@ -13,8 +13,8 @@
     "start": "node built/server.js",
     "test": "jasmine-ts --config=jasmine.json",
     "semantic-release": "semantic-release",
-	"travis-deploy-once": "travis-deploy-once",
-	"commit": "git-cz"
+    "travis-deploy-once": "travis-deploy-once",
+    "commit": "git-cz"
   },
   "repository": {
     "type": "git",

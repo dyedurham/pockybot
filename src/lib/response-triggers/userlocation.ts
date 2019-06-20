@@ -8,7 +8,7 @@ import constants from '../../constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { LocationAction } from '../../models/location-action';
 import { Argument } from '../../models/argument';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import tableHelper from '../parsers/tableHelper';
 const stringWidth = require('string-width');
 
@@ -35,7 +35,7 @@ export default class UserLocation extends Trigger {
 		try {
 			args = xmlMessageParser.parseOutArgs(message);
 		} catch(error) {
-			__logger.error(`[UserLocation.createMessage] Error parsing args: ${error.message}`);
+			Logger.error(`[UserLocation.createMessage] Error parsing args: ${error.message}`);
 			return { markdown: `Error parsing request: ${error.message}` }
 		}
 
@@ -166,7 +166,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 				await this.dbLocation.setUserLocation(message.personId, location);
 				return 'Location has been set';
 			} catch (error) {
-				__logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
+				Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
 				return 'Error setting location';
 			}
 		}
@@ -183,7 +183,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 					success: true
 				};
 			} catch (error) {
-				__logger.error(`[UserLocation.setUserLocation] Error setting location for user ${x.userId}: ${error.message}`);
+				Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${x.userId}: ${error.message}`);
 				return {
 					user: x.text,
 					success: false
@@ -215,7 +215,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 				await this.dbLocation.deleteLocation(message.personId);
 				return 'Location has been deleted';
 			} catch (error) {
-				__logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
+				Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
 				return 'Error deleting location';
 			}
 		}
@@ -232,7 +232,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 					success: true
 				};
 			} catch (error) {
-				__logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${x.userId}: ${error.message}`);
+				Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${x.userId}: ${error.message}`);
 				return {
 					user: x.text,
 					success: false
@@ -253,7 +253,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		try {
 			userLocations = await this.dbLocation.getAllUserLocations();
 		} catch(e) {
-			__logger.error(`[UserLocation.getUserLocationMessage] Error getting user locations: ${e.message}`);
+			Logger.error(`[UserLocation.getUserLocationMessage] Error getting user locations: ${e.message}`);
 			return 'Error getting user locations';
 		}
 

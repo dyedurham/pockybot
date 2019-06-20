@@ -7,7 +7,7 @@ import { Command } from '../../models/command';
 import constants from '../../constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { LocationAction } from '../../models/location-action';
-import __logger from '../logger';
+import { Logger } from '../logger';
 
 export default class Location extends Trigger {
 	dbLocation : DbLocation;
@@ -43,7 +43,7 @@ export default class Location extends Trigger {
 		try {
 			locations = await this.dbLocation.getLocations();
 		} catch (error) {
-			__logger.error(`[Location.createMessage] Error getting locations ${error.message}`);
+			Logger.error(`[Location.createMessage] Error getting locations ${error.message}`);
 			return { markdown: 'Error getting locations' };
 		}
 

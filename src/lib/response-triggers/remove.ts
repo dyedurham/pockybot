@@ -6,7 +6,7 @@ import { Role, UserRow } from '../../models/database';
 import { Command } from '../../models/command';
 import constants from '../../constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
-import __logger from '../logger';
+import { Logger } from '../logger';
 
 export default class Remove extends Trigger {
 	private config : Config;
@@ -56,7 +56,7 @@ export default class Remove extends Trigger {
 		try {
 			users = await this.dbUsers.getUsers();
 		} catch(error) {
-			__logger.error(`[Remove.createMessage] Error getting users: ${error.message}`);
+			Logger.error(`[Remove.createMessage] Error getting users: ${error.message}`);
 			return { markdown: 'Error getting users' };
 		}
 
@@ -77,7 +77,7 @@ export default class Remove extends Trigger {
 
 			return `User '${username}' has been removed`;
 		} catch(error) {
-			__logger.error(`[Remove.removeUser] Error deleting user ${username}: ${error.message}`);
+			Logger.error(`[Remove.removeUser] Error deleting user ${username}: ${error.message}`);
 			return `Error removing user '${username}'`;
 		}
 	}

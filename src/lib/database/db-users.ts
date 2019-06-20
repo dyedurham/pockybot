@@ -140,7 +140,7 @@ export default class DbUsers implements DbUsersInterface {
 			values: [userid]
 		};
 
-		__logger.debug(`[DbUsers.deleteUser] Deleting user ${userid}`);
+		Logger.debug(`[DbUsers.deleteUser] Deleting user ${userid}`);
 		await this.queryHandler.executeNonQuery(query);
 	}
 }
