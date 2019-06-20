@@ -1,5 +1,4 @@
 const stringWidth = require('string-width');
-import __logger from '../logger';
 import { ResultRow, RolesRow, StringConfigRow, ConfigRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { PegReceivedData } from '../../models/peg-received-data';

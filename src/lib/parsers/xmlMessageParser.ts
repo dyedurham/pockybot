@@ -1,6 +1,6 @@
 import * as xml from 'libxmljs';
 const unescape = require('unescape');
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject } from 'webex/env';
 import { ParsedMessage } from '../../models/parsed-message';
 import constants from '../../constants';
@@ -27,7 +27,7 @@ function parsePegMessage(message : MessageObject) : ParsedMessage {
 
 		return parsedMessage;
 	} catch (e) {
-		__logger.error(`[xmlMessageParser.parsePegMessage] Error parsing message as XML: ${e.message}`);
+		Logger.error(`[xmlMessageParser.parsePegMessage] Error parsing message as XML: ${e.message}`);
 		throw new Error('Error in parseMessage');
 	}
 }

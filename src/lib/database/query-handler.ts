@@ -1,4 +1,4 @@
-import __logger from '../logger';
+import { Logger } from '../logger';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Client, QueryConfig, QueryResult } from 'pg';
@@ -12,7 +12,7 @@ export default class QueryHandler implements QueryHandlerInterface {
 
 		this.client.connect()
 		.catch(function(e) {
-			__logger.error(`[QueryHandler.constructor] Error connecting to database: ${e.message}`);
+			Logger.error(`[QueryHandler.constructor] Error connecting to database: ${e.message}`);
 		});
 	}
 
@@ -26,7 +26,7 @@ export default class QueryHandler implements QueryHandlerInterface {
 			let data = await this.client.query(query);
 			return data['rows'];
 		} catch (error) {
-			__logger.error(`[QueryHandler.executeQuery] Error executing query ${query.name}: ${error.message}`);
+			Logger.error(`[QueryHandler.executeQuery] Error executing query ${query.name}: ${error.message}`);
 			throw new Error(`Error executing query ${query.name}`);
 		}
 	}
@@ -35,7 +35,7 @@ export default class QueryHandler implements QueryHandlerInterface {
 		try {
 			return await this.client.query(query);
 		} catch (error) {
-			__logger.error(`[QueryHandler.executeNonQuery] Error executing query ${query.name}: ${error.message}`);
+			Logger.error(`[QueryHandler.executeNonQuery] Error executing query ${query.name}: ${error.message}`);
 			throw new Error(`Error executing non query ${query.name}`);
 		}
 	}

@@ -3,7 +3,7 @@ import { PockyDB } from '../database/db-interfaces';
 import { Receiver } from '../../models/receiver';
 import TableHelper from '../parsers/tableHelper';
 import HtmlHelper from '../parsers/htmlHelper';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import Config from '../config-interface';
 import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
@@ -127,7 +127,7 @@ ${penaltyTable}
 </html>`;
 			return html;
 		} catch (e) {
-			__logger.error(`[ResultsService.generateHtml] Error in generating html: ${e.message}`);
+			Logger.error(`[ResultsService.generateHtml] Error in generating html: ${e.message}`);
 		}
 	}
 }

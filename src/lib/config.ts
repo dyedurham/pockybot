@@ -1,5 +1,5 @@
 import { DbConfig } from './database/db-interfaces';
-import __logger from './logger';
+import { Logger } from './logger';
 import { ConfigRow, StringConfigRow, RolesRow, Role } from '../models/database';
 import ConfigInterface from './config-interface';
 
@@ -73,21 +73,21 @@ export default class Config implements ConfigInterface {
 		let data = await this.database.getRoles();
 
 		this.roles = data;
-		__logger.debug(`[Config.updateRoles] Roles: ${JSON.stringify(this.roles)}`);
+		Logger.debug(`[Config.updateRoles] Roles: ${JSON.stringify(this.roles)}`);
 	}
 
 	async updateConfig() : Promise<void> {
 		let data = await this.database.getConfig();
 
 		this.config = data;
-		__logger.debug(`[Config.updateConfig] Config: ${JSON.stringify(this.config)}`);
+		Logger.debug(`[Config.updateConfig] Config: ${JSON.stringify(this.config)}`);
 	}
 
 	async updateStringConfig() : Promise<void> {
 		let data = await this.database.getStringConfig();
 
 		this.stringConfig = data;
-		__logger.debug(`[Config.updateStringConfig] ${JSON.stringify(this.stringConfig)}`);
+		Logger.debug(`[Config.updateStringConfig] ${JSON.stringify(this.stringConfig)}`);
 	}
 
 	async setRole(userid : string, role : Role) : Promise<void> {

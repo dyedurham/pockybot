@@ -5,7 +5,7 @@ import xmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
 import { PockyDB, DbUsers } from '../database/db-interfaces';
 import Config from '../config-interface';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject, Webex } from 'webex/env';
 import { UserRow } from '../../models/database';
 
@@ -100,7 +100,7 @@ export default class Peg extends Trigger {
 
 			return this.validateTrigger(message);
 		} catch (e) {
-			__logger.error(`[Peg.validateMessage] Error validating peg message: ${e.message}`);
+			Logger.error(`[Peg.validateMessage] Error validating peg message: ${e.message}`);
 			throw new Error('Error validating peg message');
 		}
 	}
@@ -117,7 +117,7 @@ export default class Peg extends Trigger {
 
 				return pms[1];
 			} catch (error) {
-				__logger.error(`[Peg.givePegWithComment] Error in pmReceiver or pmSender: ${error.message}`);
+				Logger.error(`[Peg.givePegWithComment] Error in pmReceiver or pmSender: ${error.message}`);
 				return {
 					markdown: 'Peg has been given but I was unable to successfully send PMs acknowledging this to both the sender and receiver.'
 				};
@@ -142,7 +142,7 @@ export default class Peg extends Trigger {
 		try {
 			count = await this.database.countPegsGiven(fromPerson, keywords, penaltyKeywords);
 		} catch (error) {
-			__logger.error(`[Peg.pmSender] Error counting pegsGiven from ${fromPerson}: ${error.message}`);
+			Logger.error(`[Peg.pmSender] Error counting pegsGiven from ${fromPerson}: ${error.message}`);
 			return {
 				markdown: 'Giving user\'s count of previously given pegs could not be found. Peg not given.'
 			};
@@ -152,7 +152,7 @@ export default class Peg extends Trigger {
 		try {
 			data = await this.dbUsers.getUser(toPersonId);
 		} catch (error) {
-			__logger.error(`[Peg.pmSender] Error in getting receiver in pmSender: ${error.message}`);
+			Logger.error(`[Peg.pmSender] Error in getting receiver in pmSender: ${error.message}`);
 			return {
 				markdown: 'User could not be found or created. Peg not given.'
 			}
@@ -170,7 +170,7 @@ export default class Peg extends Trigger {
 		try {
 			fromUser = await this.dbUsers.getUser(fromPerson);
 		} catch (error) {
-			__logger.error(`[Peg.pmReceiver] Error getting username of user ${fromPerson} to send peg to ${toPersonId}: ${error.message}`);
+			Logger.error(`[Peg.pmReceiver] Error getting username of user ${fromPerson} to send peg to ${toPersonId}: ${error.message}`);
 			fromUser = {
 				userid: '',
 				username: 'someone'
@@ -191,7 +191,7 @@ export default class Peg extends Trigger {
 				toPersonId: toPersonId
 			});
 		} catch (error) {
-			__logger.error(`[Peg.pmReceiver] Sending PM to ${toPersonId} with message ${msg} failed`);
+			Logger.error(`[Peg.pmReceiver] Sending PM to ${toPersonId} with message ${msg} failed`);
 			throw error;
 		}
 	}

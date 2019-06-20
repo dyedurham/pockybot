@@ -236,8 +236,8 @@ export default class Help extends Trigger {
 	createRoleConfigHelpMessage(message: MessageObject) : string {
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
 			return `### How to configure role config values 🗞️!
-	1. To get/edit/refresh/delete user roles, type \`@${constants.botName} roleconfig ${Object.values(ConfigAction).join('|')} {@User} {role}\`
-	1. I will respond in the room you messaged me in.`;
+1. To get/edit/refresh/delete user roles, type \`@${constants.botName} roleconfig ${Object.values(ConfigAction).join('|')} {@User} {role}\`
+1. I will respond in the room you messaged me in.`;
 		} else {
 			return this.createDefaultHelpMessage();
 		}
