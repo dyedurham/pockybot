@@ -26,6 +26,7 @@ import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
 import Location from './location';
 import UserLocation from './userlocation';
+import Remove from './remove';
 import Default from './default';
 
 // Services
@@ -82,6 +83,7 @@ const ping = new Ping();
 const rotation = new Rotation(config);
 const location = new Location(dbLocation, config);
 const userLocation = new UserLocation(dbUsers, dbLocation, config);
+const remove = new Remove(config, dbUsers, dbLocation);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -103,6 +105,7 @@ const triggers : Trigger[] = [
 	roleConfig,
 	location,
 	userLocation,
+	remove,
 	defaultTrigger,
 ];
 
