@@ -1,7 +1,5 @@
 import { ResultRow } from '../../models/database';
 import { PockyDB } from '../database/db-interfaces';
-import { Receiver } from '../../models/receiver';
-import TableHelper from '../parsers/tableHelper';
 import HtmlHelper from '../parsers/htmlHelper';
 import __logger from '../logger';
 import Config from '../config-interface';
@@ -9,63 +7,36 @@ import { CategoryResultsService } from './category-results-service';
 import { WinnersService } from './winners-service';
 import Utilities from '../utilities';
 import { PegService } from './peg-service';
-import { Peg } from '../../models/peg';
 import { ResultsService } from './results-service';
 import { Result } from '../../models/result';
 
 export interface FormatResultsService {
-	returnResultsHtml() : Promise<string>
+	returnResultsHtml(fullResults: Result[], winners: Result[]) : Promise<string>
 }
 
 export class DefaultFormatResultsService implements FormatResultsService {
-	database: PockyDB;
 	config: Config;
 	categoryResultsService: CategoryResultsService;
-	winnersService: WinnersService;
-	utilities: Utilities;
-	pegService: PegService;
-	resultsService: ResultsService;
 
-	constructor(database: PockyDB, config: Config, categoryResultsService: CategoryResultsService, winnersService: WinnersService, utilities: Utilities, pegService: PegService, resultsService: ResultsService) {
-		this.database = database;
+	constructor(config: Config, categoryResultsService: CategoryResultsService) {
 		this.config = config;
 		this.categoryResultsService = categoryResultsService;
-		this.winnersService = winnersService;
-		this.utilities = utilities;
-		this.pegService = pegService;
-		this.resultsService = resultsService;
 	}
 
-	async returnResultsHtml(): Promise<string> {
+	async returnResultsHtml(fullResults: Result[], winners: Result[]): Promise<string> {
 		const today = new Date();
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 		const categories = this.config.getStringConfig('keyword');
-		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
-		const requireValues = this.config.getConfig('requireValues');
 
-		const fullData: ResultRow[] = await this.database.returnResults();
-		const allPegs: Peg[] = this.pegService.getPegs(fullData);
-		const fullResults: Result[] = this.resultsService.getResults(allPegs);
 
-		// const validPegs = fullData.filter(x => this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		// const penaltyPegs = fullData.filter(x => !this.utilities.pegValid(x.comment, requireValues, categories, penaltyKeywords));
-		// const winnersData = this.winnersService.getWinners(fullData);
-		//
-		// // Get only people who didn't win in the general results so there are no double ups
-		// const loserPegs = validPegs.filter(result => !winnersData.some(winner => winner.id == result.receiverid));
-		// const resultsData = this.utilities.getResults(validPegs);
-		// const losersData = this.utilities.getResults(loserPegs);
-		// const penaltyData = this.utilities.getResults(penaltyPegs);
-		//
-		// const results: Receiver[] = TableHelper.mapResults(resultsData, categories);
-		// const winners: Receiver[] = TableHelper.mapResults(winnersData, categories);
-		// const losers: Receiver[] = TableHelper.mapResults(losersData, categories);
-		// const penalties: Receiver[] = TableHelper.mapPenalties(penaltyData, penaltyKeywords).sort((a, b) => b.pegs.length - a.pegs.length);
+		// Losers are people in fullResults not also in winners
+		const losers = fullResults.filter(result =>
+			!winners.some(winner => winner.personId === result.personId));
 
 		const winnersTable = HtmlHelper.generateTable(winners, 'winners');
 		const losersTable = HtmlHelper.generateTable(losers, 'losers');
-		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(results, categories);
-		const penaltyTable = HtmlHelper.generateTable(penalties, 'penalties');
+		const categoryResultsTable = this.categoryResultsService.returnCategoryResultsTable(fullResults, categories);
+		const penaltyTable = HtmlHelper.generatePenaltyTable(fullResults);
 
 		return this.generateHtml(winnersTable, losersTable, categoryResultsTable, penaltyTable, todayString);
 	}
@@ -75,8 +46,8 @@ export class DefaultFormatResultsService implements FormatResultsService {
 			const html =
 `<!doctype html><html>
 	<head>
-	    <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<title>Pegs ${todayString}</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha256-zVUlvIh3NEZRYa9X/qpNY8P1aBy0d4FrI7bhfZSZVwc=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">

@@ -5,46 +5,49 @@ import { Receiver } from '../../models/receiver';
 import Config from '../config';
 import { distinct } from '../helpers/helpers';
 import Utilities from '../utilities';
-import { PegRecipient } from '../../models/peg-recipient';
+import { Result } from '../../models/result';
+import { Peg } from '../../models/peg';
+import { PegService } from './peg-service';
 
 export interface WinnersService {
-	getWinners(results: ResultRow[]): PegRecipient[]
+	getWinners(results: Peg[]): Result[]
 	returnWinnersResponse(): Promise<string>
 }
 
 export class DefaultWinnersService implements WinnersService {
 	readonly cannotDisplayResults: string = 'Error encountered; cannot display winners.';
-	database : PockyDB;
-	config : Config;
-	utilities : Utilities;
+	database: PockyDB;
+	config: Config;
+	utilities: Utilities;
+	pegService: PegService;
 
-	constructor(database : PockyDB, config: Config, utilities: Utilities) {
+	constructor(database : PockyDB, config: Config, utilities: Utilities, pegService: PegService) {
 		this.database = database;
 		this.config = config;
 		this.utilities = utilities;
+		this.pegService = pegService;
 	}
 
-	getWinners(results: ResultRow[]): PegRecipient[] {
-		let allSenders = results.map(x => x.senderid);
+	getWinners(results: Peg[]): Result[] {
+		let allSenders = results.map(x => x.senderId);
 		allSenders = distinct(allSenders);
 
-		let eligibleToWinSenders = this.getEligibleWinners(allSenders, results);
+		let resultsForEligibleWinners = this.getEligibleWinnerResults(allSenders, results);
 
-		let topNumberOfPegsReceived = eligibleToWinSenders.map(x => x.numberOfValidPegsReceived).sort().reverse()
+		// This two-step process used to prevent array out of bounds exceptions if there are too few winners
+		let topNumberOfPegsReceived = resultsForEligibleWinners.map(x => x.weightedPegsReceived).sort().reverse()
 			.slice(0, this.config.getConfig('winners'));
 		let topCutoff = topNumberOfPegsReceived[topNumberOfPegsReceived.length - 1];
 
-		return eligibleToWinSenders.sort((a, b) => b.numberOfValidPegsReceived - a.numberOfValidPegsReceived)
-			.filter(x => x.numberOfValidPegsReceived >= topCutoff);
-			// .map(x => x.validPegsReceived)
-			// .reduce((prev, cur) => prev.concat(cur), []);
+		return resultsForEligibleWinners.sort((a, b) => b.weightedPegsReceived - a.weightedPegsReceived)
+			.filter(x => x.weightedPegsReceived >= topCutoff);
 	}
 
 	async returnWinnersResponse() : Promise<string> {
 		const data : ResultRow[] = await this.database.returnResults();
-		const winnersData = this.getWinners(data);
+		const pegs = this.pegService.getPegs(data);
+		const winners = this.getWinners(pegs);
 
-		let winners : Receiver[] = TableHelper.mapResults(winnersData);
 		let columnWidths = TableHelper.getReceiverColumnWidths(winners);
 
 		// define table heading
@@ -53,16 +56,16 @@ export class DefaultWinnersService implements WinnersService {
 		winnersTable += ''.padEnd(columnWidths.receiver, '-') + '-+-' + ''.padEnd(columnWidths.sender, '-') + '-+-' + ''.padEnd(columnWidths.comment, '-') + '\n';
 
 		// put in table data
-		winners.forEach((winner: Receiver) => {
-			winnersTable += winner.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | \n';
+		winners.forEach((winner: Result) => {
+			winnersTable += winner.personName.padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | \n';
 			let firstPeg = true;
-			let pegCount = winner.pegs.length;
-			winner.pegs.forEach((peg) => {
+			let pegCount = winner.weightedPegsReceived;
+			winner.validPegsReceived.forEach((peg) => {
 				if (firstPeg) {
-					winnersTable += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + '\n';
+					winnersTable += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.senderName.padEnd(columnWidths.sender) + ' | ' + peg.comment + '\n';
 					firstPeg = false;
 				} else {
-					winnersTable += ''.padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + '\n';
+					winnersTable += ''.padEnd(columnWidths.receiver) + ' | ' + peg.senderName.padEnd(columnWidths.sender) + ' | ' + peg.comment + '\n';
 				}
 			});
 		});
@@ -70,31 +73,37 @@ export class DefaultWinnersService implements WinnersService {
 		return '```\n' + winnersTable + '```';
 	}
 
-	private getEligibleWinners(allSenders : string[], results: ResultRow[]) : PegRecipient[] {
+	/**
+	 *
+	 * @param allSenders a string array of the userIds of every person who has sent any pegs
+	 * @param results an array of every single peg given
+	 * @returns an array of results for all the users who have given above the minimum required to be eligible to win
+	 */
+	private getEligibleWinnerResults(allSenders: string[], results: Peg[]): Result[] {
 		const minimum = this.config.getConfig('minimum');
 		const requireKeywords = this.config.getConfig('requireValues');
 		const keywords = this.config.getStringConfig('keyword');
 		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
 
-		let eligibleToWinSenders : PegRecipient[] = [];
+		let resultsForEligibleWinners: Result[] = [];
 
 		allSenders.forEach(sender => {
-			const validPegsSent = results.filter(x => x.senderid === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+			const validPegsSent = results.filter(x => x.senderId === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 
 			if (validPegsSent.length >= minimum) {
-				const validPegsReceived = results.filter(x => x.receiverid === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
-				const penaltyPegsSent = results.filter(x => x.senderid === sender && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
-				eligibleToWinSenders.push({
-					id: sender,
-					weightedPegResult: validPegsReceived.length - penaltyPegsSent.length,
-					numberOfValidPegsReceived: validPegsReceived.length,
-					numberOfPenaltiesReceived: penaltyPegsSent.length,
+				const validPegsReceived = results.filter(x => x.receiverId === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const penaltyPegsGiven = results.filter(x => x.senderId === sender && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
+				resultsForEligibleWinners.push({
+					personId: sender,
+					personName,
+					weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
 					validPegsReceived,
-					penaltyPegsSent: penaltyPegsSent
+					penaltyPegsGiven
 				});
 			}
 		});
 
-		return eligibleToWinSenders;
+		return resultsForEligibleWinners;
 	}
 }

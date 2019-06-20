@@ -6,6 +6,10 @@ import { Storage } from '@google-cloud/storage';
 import { Peg } from '../../models/peg';
 import { Result } from '../../models/result';
 import { distinct } from '../helpers/helpers';
+import { ResultRow } from '../../models/database/result-row';
+import { PockyDB } from '../database/db-interfaces';
+import { PegService } from './peg-service';
+import { WinnersService } from './winners-service';
 
 export interface ResultsService {
 	returnResultsMarkdown() : Promise<string>;
@@ -13,10 +17,16 @@ export interface ResultsService {
 }
 
 export class DefaultResultsService implements ResultsService {
+	database: PockyDB;
 	formatResultsService: FormatResultsService;
+	pegService: PegService;
+	winnersService: WinnersService;
 
-	constructor(formatResultsService: FormatResultsService) {
+	constructor(database: PockyDB, formatResultsService: FormatResultsService, pegService: PegService, winnersService: WinnersService) {
+		this.database = database;
 		this.formatResultsService = formatResultsService;
+		this.pegService = pegService;
+		this.winnersService = winnersService;
 	}
 
 	async returnResultsMarkdown() : Promise<string> {
@@ -30,7 +40,12 @@ export class DefaultResultsService implements ResultsService {
 		}
 		__logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
 
-		const html = await this.formatResultsService.returnResultsHtml();
+		const fullData: ResultRow[] = await this.database.returnResults();
+		const allPegs: Peg[] = this.pegService.getPegs(fullData);
+		const fullResults: Result[] = this.getResults(allPegs);
+		const winners = this.winnersService.getWinners(allPegs);
+
+		const html = await this.formatResultsService.returnResultsHtml(fullResults, winners);
 
 		fs.writeFileSync(filePath + '.html', html);
 

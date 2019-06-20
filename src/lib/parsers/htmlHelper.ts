@@ -1,7 +1,7 @@
-import { Receiver } from '../../models/receiver';
-import { PegReceivedData } from '../../models/peg-received-data';
+import { Result } from '../../models/result';
+import { Peg } from '../../models/peg';
 
-function generateTable(receivers: Receiver[], section: string = null) : string {
+function generateTable(receivers: Result[], section: string = null) : string {
 	let htmlTable =
 '					<table class="table pb-3">';
 	if(section) {
@@ -9,20 +9,20 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 `					<table id="section-${section}" class="table pb-3 collapse">`;
 	}
 
-	receivers.forEach((result: Receiver, index: number) => {
+	receivers.forEach((result: Result, index: number) => {
 		const subsectionId = section ? `section-${section}-${index}` : null;
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.person ? result.person.toString() : 'somebody'} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived)}</th></tr>
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived.length)}</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
-		result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
+		result.validPegsReceived.sort((a, b) => a.senderName.localeCompare(b.senderName));
 
-		result.pegs.forEach((peg: PegReceivedData) => {
+		result.validPegsReceived.forEach((peg: Peg) => {
 			htmlTable += `
-							<tr><td>${peg.sender}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.senderName}</td><td>${peg.categories.join(', ')}</td></tr>
 `;
 		});
 
@@ -34,6 +34,42 @@ function generateTable(receivers: Receiver[], section: string = null) : string {
 `					</table>`;
 
 	return htmlTable;
+}
+
+function generatePenaltyTable(receivers: Result[]): string {
+	let htmlTable =
+		`					<table id="section-penalty" class="table pb-3 collapse">`;
+
+	receivers.forEach((result: Result, index: number) => {
+		if (result.penaltyPegsGiven.length !== 0) {
+			const subsectionId = `section-penalty-${index}`;
+
+			htmlTable += `
+
+						<thead class="thead-light clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}">
+							<tr><th colspan="3">'<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' ${result.personName} &mdash; ${result.penaltyPegsGiven.length}</th></tr>
+						</thead>
+						<tbody id="${subsectionId}" class="collapse show">`;
+
+			result.penaltyPegsGiven.sort((a, b) => a.receiverName.localeCompare(b.receiverName));
+
+			result.penaltyPegsGiven.forEach((peg: Peg) => {
+				htmlTable += `
+							<tr><td>${peg.senderName}</td><td>${peg.categories.join(', ')}</td></tr>
+`;
+			});
+
+			htmlTable +=
+				`						</tbody>
+`;
+		}
+
+	});
+	htmlTable +=
+		`					</table>`;
+
+	return htmlTable;
+
 }
 
 function uppercaseFirstChar(word: string) : string {
@@ -66,5 +102,6 @@ function pegsReceived(weightedPegs : number, validPegs : number) : string {
 
 export default {
 	generateTable,
+	generatePenaltyTable,
 	uppercaseFirstChar
 }

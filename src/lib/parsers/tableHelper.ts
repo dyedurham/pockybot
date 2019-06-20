@@ -2,7 +2,8 @@ import { PegRecipient } from '../../models/peg-recipient';
 const stringWidth = require('string-width');
 import { RolesRow, StringConfigRow, ConfigRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
-import { PegReceivedData } from '../../models/peg-received-data';
+import { Result } from '../../models/result';
+import { Peg } from '../../models/peg';
 
 function mapResults(pegRecipients : PegRecipient[], categories: string[] = null) : Receiver[] {
 	return pegRecipients.map(user => {
@@ -48,22 +49,22 @@ function parseCategories(comment: string, categories: string[]) : string[] {
 	return categories.filter(category => comment.includes(category));
 }
 
-function getReceiverColumnWidths(results : Receiver[]) : { receiver : number, sender : number, comment : number } {
+function getReceiverColumnWidths(results: Result[]) : { receiver : number, sender : number, comment : number } {
 	let longestReceiver = this.stringLength('receiver');
 	let longestSender = this.stringLength('sender');
 	let longestComment = this.stringLength('comments');
 
-	results.forEach((winner : Receiver) => {
-		if (this.stringLength(winner.person) > longestReceiver) {
-			longestReceiver = this.stringLength(winner.person);
+	results.forEach((winner: Result) => {
+		if (this.stringLength(winner.personName) > longestReceiver) {
+			longestReceiver = this.stringLength(winner.personName);
 		}
 
-		winner.pegs.forEach((pegger : PegReceivedData) => {
-			if (this.stringLength(pegger.sender) > longestSender) {
-				longestSender = this.stringLength(pegger.sender);
+		winner.validPegsReceived.forEach((peg: Peg) => {
+			if (this.stringLength(peg.senderName) > longestSender) {
+				longestSender = this.stringLength(peg.senderName);
 			}
-			if (this.stringLength(pegger.comment) > longestComment) {
-				longestComment = this.stringLength(pegger.comment);
+			if (this.stringLength(peg.comment) > longestComment) {
+				longestComment = this.stringLength(peg.comment);
 			}
 		});
 	});
