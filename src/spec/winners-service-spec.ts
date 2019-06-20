@@ -105,7 +105,7 @@ describe('winners service', () => {
 		const utilities = new Utilities(config);
 		data = createData();
 		database = createDatabase(true, data);
-		winnersService = new DefaultWinnersService(database, config, utilities);
+		winnersService = new DefaultWinnersService(database, config, utilities, null);
 	});
 
 	it('should parse a proper message', async (done : DoneFn) => {

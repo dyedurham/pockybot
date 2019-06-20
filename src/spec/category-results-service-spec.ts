@@ -1,5 +1,4 @@
 import { CategoryResultsService, DefaultCategoryResultsService } from '../lib/services/category-results-service';
-import { Receiver } from '../models/receiver';
 import { Result } from '../models/result';
 
 function createData(): Result[] {
