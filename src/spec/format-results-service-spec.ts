@@ -113,19 +113,17 @@ describe('format results service', () => {
 		database = createDatabase(true, data);
 		winners = createData();
 		config = createConfig();
-		const utilities = new Utilities(config);
 		categoryResultsService = new MockCategoryResultsService();
 		winnersService = new MockWinnersService(true, '');
-		formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
+		formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
 	});
 
 	xit('should generate the correct html', async (done: DoneFn) => {
-		spyOn(winnersService, 'getWinners').and.returnValue(winners);
+		//spyOn(winnersService, 'getWinners').and.returnValue(winners);
 
-		let html = await formatResultsService.returnResultsHtml();
+		//let html = await formatResultsService.returnResultsHtml();
 
-		// TODO: remove this
-		// console.log(html)
+		let html = '';
 
 		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Person One &mdash; 3 pegs total</th></tr>');
 		expect(html).toContain('<tr><td>Person Two</td><td>test awesome</td><td>awesome</td></tr>');

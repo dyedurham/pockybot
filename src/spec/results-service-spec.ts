@@ -21,7 +21,7 @@ describe('results service', () => {
 		});
 
 		formatResultsService = new MockFormatResultsService(true, 'test');
-		resultsService = new DefaultResultsService(formatResultsService);
+		resultsService = new DefaultResultsService(null, formatResultsService, null, null);
 
 		var fakeExistsSync = sinon.fake.returns(false);
 		var fakeWriteFileSync = sinon.fake();

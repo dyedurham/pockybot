@@ -31,7 +31,7 @@ describe('pm results service', () => {
 		data = createData();
 		database = createDatabase(true, data);
 		spark = new MockWebex();
-		pmResultsService = new DefaultPmResultsService(database, spark, null);
+		pmResultsService = new DefaultPmResultsService(database, spark, null, null, null);
 	});
 
 	xit('should pm users with their results', async(done: DoneFn) => {

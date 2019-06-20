@@ -1,6 +1,6 @@
 import { WinnersService } from '../../lib/services/winners-service';
-import { ResultRow } from '../../models/database';
-import { PegRecipient } from '../../models/peg-recipient';
+import { Result } from '../../models/result';
+import { Peg } from '../../models/peg';
 
 export default class MockWinnersService implements WinnersService {
 	success: boolean;
@@ -11,7 +11,7 @@ export default class MockWinnersService implements WinnersService {
 		this.resultString = resultString;
 	}
 
-	getWinners(results: ResultRow[]) : PegRecipient[] {
+	getWinners(results: Peg[]) : Result[] {
 		return [];
 	}
 

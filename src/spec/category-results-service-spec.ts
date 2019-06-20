@@ -1,41 +1,58 @@
 import { CategoryResultsService, DefaultCategoryResultsService } from '../lib/services/category-results-service';
 import { Receiver } from '../models/receiver';
+import { Result } from '../models/result';
 
-function createData(): Receiver[] {
+function createData(): Result[] {
 	return [{
-		id: 'testReceiver',
-		person: 'receiver 1',
-		pegs: [
+		personId: 'testReceiver',
+		personName: 'receiver 1',
+		validPegsReceived: [
 			{
-				sender: 'sender 1',
+				receiverName: 'receiver 1',
+				receiverId: 'testReceiver',
+				senderId: 'sender1',
+				senderName: 'sender 1',
 				comment: 'test awesome',
-				categories: ['awesome']
+				categories: ['awesome'],
+				isValid: true
 			},
 			{
-				sender: 'sender 2',
+				senderName: 'sender 2',
+				senderId: 'sender2',
+				receiverName: 'receiver 1',
+				receiverId: 'testReceiver',
 				comment: 'test awesome brave',
-				categories: ['awesome', 'brave']
+				categories: ['awesome', 'brave'],
+				isValid: true
 			}
 		],
-		validPegsReceived: 2,
+		penaltyPegsGiven: [],
 		weightedPegsReceived: 2
 	},
 	{
-		id: 'testReceiver2',
-		person: 'receiver 2',
-		pegs: [
+		personId: 'testReceiver2',
+		personName: 'receiver 2',
+		validPegsReceived: [
 			{
-				sender: 'sender 1',
+				receiverId: 'testReceiver2',
+				receiverName: 'receiver 2',
+				senderId: 'sender1',
+				senderName: 'sender 1',
 				comment: 'test brave',
-				categories: ['brave']
+				categories: ['brave'],
+				isValid: true
 			},
 			{
-				sender: 'sender 2',
+				receiverId: 'testReceiver2',
+				receiverName: 'receiver 2',
+				senderId: 'sender2',
+				senderName: 'sender 2',
 				comment: 'test shame brave',
-				categories: ['shame', 'brave']
+				categories: ['shame', 'brave'],
+				isValid: true
 			}
 		],
-		validPegsReceived: 2,
+		penaltyPegsGiven: [],
 		weightedPegsReceived: 2
 	}];
 }
@@ -46,7 +63,7 @@ function createCategoriesData(): string[] {
 
 describe('category results service', () => {
 	let categoryResultsService: CategoryResultsService;
-	let results: Receiver[];
+	let results: Result[];
 	let categories: string[];
 
 	beforeEach(() => {
