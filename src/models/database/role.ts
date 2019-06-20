@@ -9,5 +9,5 @@ export enum Role {
 	Config = 'CONFIG',
 	Location = 'LOCATION',
 	UserLocation = 'USERLOCATION',
-	User = 'USER'
+	Remove = 'REMOVE'
 }

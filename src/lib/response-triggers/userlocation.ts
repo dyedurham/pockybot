@@ -45,7 +45,7 @@ export default class UserLocation extends Trigger {
 
 		let response : string;
 
-		if ((this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.UserLocation))) {
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.UserLocation)) {
 			response = await this.createMessageAdmin(args, message);
 		} else {
 			response = await this.createMessageNonAdmin(args, message);
