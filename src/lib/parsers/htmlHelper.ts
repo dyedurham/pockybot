@@ -14,7 +14,7 @@ function generateTable(receivers: Result[], section: string = null) : string {
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived.length)}</th></tr>
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName ? result.personName : 'somebody'} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived.length)}</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
@@ -47,7 +47,7 @@ function generatePenaltyTable(receivers: Result[]): string {
 			htmlTable += `
 
 						<thead class="thead-light clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}">
-							<tr><th colspan="3">'<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' ${result.personName} &mdash; ${result.penaltyPegsGiven.length}</th></tr>
+							<tr><th colspan="3">'<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' ${result.personName ? result.personName : 'somebody shameful'} &mdash; ${result.penaltyPegsGiven.length}</th></tr>
 						</thead>
 						<tbody id="${subsectionId}" class="collapse show">`;
 
