@@ -71,13 +71,15 @@ export class DefaultResultsService implements ResultsService {
 			const penaltyPegsGiven = pegs.filter(peg => peg.senderId === personId && !peg.isValid);
 			const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
 
-			results.push({
-				personId,
-				personName,
-				weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
-				validPegsReceived,
-				penaltyPegsGiven
-			});
+			if (personName != null) {
+				results.push({
+					personId,
+					personName,
+					weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
+					validPegsReceived,
+					penaltyPegsGiven
+				});
+			}
 		});
 
 		return results;
