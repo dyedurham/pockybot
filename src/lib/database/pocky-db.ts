@@ -1,7 +1,7 @@
 import dbConstants from '../db-constants';
 import { QueryResult, QueryConfig } from 'pg';
 import Config from '../config-interface';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { PegGiven, ResultRow, Role } from '../../models/database';
 import { DbUsers } from './db-interfaces';
 import { PockyDB as PockyDbInterface } from './db-interfaces';
@@ -59,7 +59,7 @@ export default class PockyDB implements PockyDbInterface {
 		}
 
 		if (!senderHasPegs) {
-			__logger.information(`[PockyDb.givePegWithComment] Sender ${sender} has no spare pegs`);
+			Logger.information(`[PockyDb.givePegWithComment] Sender ${sender} has no spare pegs`);
 			return dbConstants.pegAllSpent;
 		}
 
@@ -73,7 +73,7 @@ export default class PockyDB implements PockyDbInterface {
 			await this.queryHandler.executeNonQuery(query);
 			return dbConstants.pegSuccess;
 		} catch (e) {
-			__logger.error(`[PockyDb.givePegWithComment] Error executing the givePegWithComment query: ${e.message}`);
+			Logger.error(`[PockyDb.givePegWithComment] Error executing the givePegWithComment query: ${e.message}`);
 			return dbConstants.pegError;
 		}
 	}
@@ -90,7 +90,7 @@ export default class PockyDB implements PockyDbInterface {
 		try {
 			givenPegs = await this.queryHandler.executeQuery(query);
 		} catch (error) {
-			__logger.error(`[PockyDb.countPegsGiven] Error executing query to count pegs given by user ${user}`);
+			Logger.error(`[PockyDb.countPegsGiven] Error executing query to count pegs given by user ${user}`);
 			throw error;
 		}
 
@@ -105,7 +105,7 @@ export default class PockyDB implements PockyDbInterface {
 
 		let count = this.countPegsGiven(user, keywords, penaltyKeywords);
 
-		__logger.debug(`[PockyDb.senderCanPeg] Checking if user ${user} has spare pegs`);
+		Logger.debug(`[PockyDb.senderCanPeg] Checking if user ${user} has spare pegs`);
 
 		if (this.utilities.commentIsPenalty(comment, keywords, penaltyKeywords)) {
 			return true;
@@ -138,7 +138,7 @@ export default class PockyDB implements PockyDbInterface {
 		};
 
 		let results : ResultRow[] = await this.queryHandler.executeQuery(query);
-		__logger.debug('[PockyDb.returnResults] returning results: ' + JSON.stringify(results));
+		Logger.debug('[PockyDb.returnResults] returning results: ' + JSON.stringify(results));
 		return results;
 	}
 

@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import Config from '../config';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { WinnersService } from '../services/winners-service';
@@ -34,7 +34,7 @@ export default class Results extends Trigger {
 		try {
 			response = await this.winnersService.returnWinnersResponse();
 		} catch (error) {
-			__logger.error(`[Winners.createMessage] Error retrieving winners response: ${error.message}`);
+			Logger.error(`[Winners.createMessage] Error retrieving winners response: ${error.message}`);
 			throw new Error(this.cannotDisplayResults);
 		}
 

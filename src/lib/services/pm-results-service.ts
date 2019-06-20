@@ -2,7 +2,7 @@ import { PockyDB } from '../database/db-interfaces';
 import { ResultRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import TableHelper from '../parsers/tableHelper';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { PegReceivedData } from '../../models/peg-received-data';
 import { Webex } from 'webex/env';
 
@@ -60,7 +60,7 @@ ${pegsReceived[receiver]}
 					toPersonId: receiver
 				});
 			} catch(error) {
-				__logger.error(`[PmResultsService.pmResults] Error sending PM to user ${receiver}: ${error.message}`);
+				Logger.error(`[PmResultsService.pmResults] Error sending PM to user ${receiver}: ${error.message}`);
 				fullSuccess = false;
 			}
 		}

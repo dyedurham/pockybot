@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import Config from '../config-interface';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';
 import { ResultsService } from '../services/results-service';
@@ -37,7 +37,7 @@ export default class Results extends Trigger {
 				markdown: response
 			};
 		} catch (error) {
-			__logger.error(`[Results.createMessage] Error obtaining results: ${error.message}`);
+			Logger.error(`[Results.createMessage] Error obtaining results: ${error.message}`);
 			throw new Error(this.cannotDisplayResults);
 		}
 	}
