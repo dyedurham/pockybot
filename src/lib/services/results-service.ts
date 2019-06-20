@@ -69,9 +69,9 @@ export class DefaultResultsService implements ResultsService {
 		allPeople.forEach(personId => {
 			const validPegsReceived = pegs.filter(peg => peg.receiverId === personId && peg.isValid);
 			const penaltyPegsGiven = pegs.filter(peg => peg.senderId === personId && !peg.isValid);
-			const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
-
-			if (personName != null) {
+			
+			if (validPegsReceived.length > 0 || penaltyPegsGiven.length > 0) {
+				const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
 				results.push({
 					personId,
 					personName,
