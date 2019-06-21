@@ -14,7 +14,7 @@ function generateTable(receivers: Result[], section: string = null) : string {
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName ? result.personName : 'somebody'} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived.length)}</th></tr>
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived.length)}</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
@@ -22,7 +22,7 @@ function generateTable(receivers: Result[], section: string = null) : string {
 
 		result.validPegsReceived.forEach((peg: Peg) => {
 			htmlTable += `
-							<tr><td>${peg.senderName}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
 `;
 		});
 
@@ -49,7 +49,7 @@ function generateCategoriesTable(receivers: Result[], section: string): string {
 		result.validPegsReceived.sort((a, b) => a.senderName.localeCompare(b.senderName));
 		result.validPegsReceived.forEach((peg: Peg) => {
 			htmlTable += `
-							<tr><td>${peg.senderName}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
 `;
 		});
 
@@ -75,7 +75,7 @@ function generatePenaltyTable(receivers: Result[]): string {
 			htmlTable += `
 
 						<thead class="thead-light clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}">
-							<tr><th colspan="3">'<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' ${result.personName ? result.personName : 'somebody shameful'} &mdash; ${result.penaltyPegsGiven.length}</th></tr>
+							<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> ${result.personName ? result.personName : 'somebody shameful'} &mdash; ${result.penaltyPegsGiven.length}</th></tr>
 						</thead>
 						<tbody id="${subsectionId}" class="collapse show">`;
 
@@ -83,7 +83,7 @@ function generatePenaltyTable(receivers: Result[]): string {
 
 			result.penaltyPegsGiven.forEach((peg: Peg) => {
 				htmlTable += `
-							<tr><td>${peg.senderName}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td></td></tr>
 `;
 			});
 
@@ -91,7 +91,6 @@ function generatePenaltyTable(receivers: Result[]): string {
 				`						</tbody>
 `;
 		}
-
 	});
 	htmlTable +=
 		`					</table>`;
