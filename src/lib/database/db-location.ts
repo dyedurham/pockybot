@@ -35,7 +35,8 @@ export default class DbLocation implements DbLocationInterface {
 			values: [userid]
 		};
 
-		return await this.queryHandler.executeQuery(query)[0];
+		let result = await this.queryHandler.executeQuery(query);
+		return result[0];
 	}
 
 	async getAllUserLocations() : Promise<UserLocationRow[]> {
