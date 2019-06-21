@@ -29,10 +29,10 @@ export class DefaultWinnersService implements WinnersService {
 	}
 
 	getWinners(results: Peg[]): Result[] {
-		let allSenders = results.map(x => x.senderId);
-		allSenders = distinct(allSenders);
+		let allReceivers = results.map(x => x.receiverId);
+		allReceivers = distinct(allReceivers);
 
-		let resultsForEligibleWinners = this.getEligibleWinnerResults(allSenders, results);
+		let resultsForEligibleWinners = this.getEligibleWinnerResults(allReceivers, results);
 
 		// This two-step process used to prevent array out of bounds exceptions if there are too few winners
 		let topNumberOfPegsReceived = resultsForEligibleWinners.map(x => x.weightedPegsReceived).sort().reverse()
@@ -75,11 +75,11 @@ export class DefaultWinnersService implements WinnersService {
 
 	/**
 	 *
-	 * @param allSenders a string array of the userIds of every person who has sent any pegs
+	 * @param allCandidates a string array of the userIds of every person who has sent any pegs
 	 * @param results an array of every single peg given
 	 * @returns an array of results for all the users who have given above the minimum required to be eligible to win
 	 */
-	private getEligibleWinnerResults(allSenders: string[], results: Peg[]): Result[] {
+	private getEligibleWinnerResults(allCandidates: string[], results: Peg[]): Result[] {
 		const minimum = this.config.getConfig('minimum');
 		const requireKeywords = this.config.getConfig('requireValues');
 		const keywords = this.config.getStringConfig('keyword');
@@ -87,15 +87,18 @@ export class DefaultWinnersService implements WinnersService {
 
 		let resultsForEligibleWinners: Result[] = [];
 
-		allSenders.forEach(sender => {
-			const validPegsSent = results.filter(x => x.senderId === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+		allCandidates.forEach(person => {
+			const validPegsSent = results.filter(x =>
+				x.senderId === person && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 
 			if (validPegsSent.length >= minimum) {
-				const validPegsReceived = results.filter(x => x.receiverId === sender && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
-				const penaltyPegsGiven = results.filter(x => x.senderId === sender && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const validPegsReceived = results.filter(x =>
+					x.receiverId === person && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const penaltyPegsGiven = results.filter(x =>
+					x.senderId === person && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 				const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
 				resultsForEligibleWinners.push({
-					personId: sender,
+					personId: person,
 					personName,
 					weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
 					validPegsReceived,
