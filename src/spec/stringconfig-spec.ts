@@ -35,7 +35,7 @@ beforeAll(() => {
 		}
 
 		return [];
-	})
+	});
 });
 
 describe('configuration message parsing', () => {

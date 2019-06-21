@@ -1,103 +1,103 @@
 import 'jasmine-ts';
 import Config from '../lib/config';
 import DbConfig from '../lib/database/db-config';
-import { Client } from 'pg';
-import QueryHandler from '../lib/database/query-handler';
 import { Role } from '../models/database';
+import MockQueryHandler from './mocks/mock-query-handler';
 
-let database : DbConfig;
+describe('config', () => {
+	let database : DbConfig;
 
-beforeAll(() => {
-	let client = new Client();
-	let queryHandler = new QueryHandler(client);
-	spyOn(queryHandler, 'readFile').and.returnValue(null);
-	database = new DbConfig(queryHandler);
+	beforeAll(() => {
+		let queryHandler = new MockQueryHandler(null);
+		spyOn(queryHandler, 'readFile').and.returnValue(null);
+		database = new DbConfig(queryHandler);
 
-	spyOn(database, 'getRoles').and.returnValue(new Promise((resolve, reject) => resolve([{'userid': 'user', 'role': Role.Admin}])));
-	spyOn(database, 'getConfig').and.returnValue(new Promise((resolve, reject) => resolve([{'name': 'config', 'value': 1}])));
-	spyOn(database, 'getStringConfig').and.returnValue(new Promise((resolve, reject) => resolve([{'name': 'stringconfig', 'value': 'string'}])));
-	spyOn(database, 'setConfig').and.returnValue(new Promise((resolve, reject) => resolve()));
-	spyOn(database, 'setRoles').and.returnValue(new Promise((resolve, reject) => resolve()));
-})
-
-describe('creating config', () => {
-	let config : Config;
-
-	beforeEach(() => {
-		config = new Config(database);
+		spyOn(database, 'getRoles').and.returnValue(new Promise((resolve, reject) => resolve([{'userid': 'user', 'role': Role.Admin}])));
+		spyOn(database, 'getConfig').and.returnValue(new Promise((resolve, reject) => resolve([{'name': 'config', 'value': 1}])));
+		spyOn(database, 'getStringConfig').and.returnValue(new Promise((resolve, reject) => resolve([{'name': 'stringconfig', 'value': 'string'}])));
+		spyOn(database, 'setConfig').and.returnValue(new Promise((resolve, reject) => resolve()));
+		spyOn(database, 'setRoles').and.returnValue(new Promise((resolve, reject) => resolve()));
 	});
 
-	it('should have no users users', (done : DoneFn) => {
-		expect(config.getRoles('user').length).toBe(0);
-		done();
+	describe('creating config', () => {
+		let config : Config;
+
+		beforeEach(() => {
+			config = new Config(database);
+		});
+
+		it('should have no users users', (done : DoneFn) => {
+			expect(config.getRoles('user').length).toBe(0);
+			done();
+		});
+
+		it('should have no users users', (done : DoneFn) => {
+			expect(config.getRoles('config').length).toBe(0);
+			done();
+		});
+
+		it('should populate users and config', async (done : DoneFn) => {
+			await config.updateAll();
+			expect(config.getRoles('user')[0]).toBe(Role.Admin);
+			expect(config.getConfig('config')).toBe(1);
+			expect(config.checkRole('user', Role.Admin)).toBe(true);
+			done();
+		});
 	});
 
-	it('should have no users users', (done : DoneFn) => {
-		expect(config.getRoles('config').length).toBe(0);
-		done();
+	describe('setting config', () => {
+		let config : Config;
+
+		beforeEach(() => {
+			config = new Config(database);
+		});
+
+		it('should update config', async (done : DoneFn) => {
+			await config.setConfig('config', 2);
+			expect(database.setConfig).toHaveBeenCalledWith('config', 2);
+			done();
+		});
 	});
 
-	it('should populate users and config', async (done : DoneFn) => {
-		await config.updateAll();
-		expect(config.getRoles('user')[0]).toBe(Role.Admin);
-		expect(config.getConfig('config')).toBe(1);
-		expect(config.checkRole('user', Role.Admin)).toBe(true);
-		done();
-	});
-});
+	describe('setting role', () => {
+		let config : Config;
 
-describe('setting config', () => {
-	let config : Config;
+		beforeEach(() => {
+			config = new Config(database);
+		});
 
-	beforeEach(() => {
-		config = new Config(database);
+		it('should update role', async (done : DoneFn) => {
+			await config.setRole('user', Role.Unmetered);
+			expect(database.setRoles).toHaveBeenCalledWith('user', Role.Unmetered);
+			done();
+		});
 	});
 
-	it('should update config', async (done : DoneFn) => {
-		await config.setConfig('config', 2);
-		expect(database.setConfig).toHaveBeenCalledWith('config', 2);
-		done();
-	});
-});
+	describe('get all roles', () => {
+		let config : Config;
 
-describe('setting role', () => {
-	let config : Config;
+		beforeEach(() => {
+			config = new Config(database);
+		});
 
-	beforeEach(() => {
-		config = new Config(database);
-	});
-
-	it('should update role', async (done : DoneFn) => {
-		await config.setRole('user', Role.Unmetered);
-		expect(database.setRoles).toHaveBeenCalledWith('user', Role.Unmetered);
-		done();
-	});
-});
-
-describe('get all roles', () => {
-	let config : Config;
-
-	beforeEach(() => {
-		config = new Config(database);
+		it('should update role', async (done : DoneFn) => {
+			await config.updateAll();
+			expect(config.getAllRoles()).toEqual([ { userid: 'user', role: Role.Admin } ]);
+			done();
+		});
 	});
 
-	it('should update role', async (done : DoneFn) => {
-		await config.updateAll();
-		expect(config.getAllRoles()).toEqual([ { userid: 'user', role: Role.Admin } ]);
-		done();
-	});
-});
+	describe('get all config', () => {
+		let config : Config;
 
-describe('get all config', () => {
-	let config : Config;
+		beforeEach(() => {
+			config = new Config(database);
+		});
 
-	beforeEach(() => {
-		config = new Config(database);
-	});
-
-	it('should update config', async (done : DoneFn) => {
-		await config.updateAll();
-		expect(config.getAllConfig()).toEqual([ { name: 'config', value: 1 } ]);
-		done();
+		it('should update config', async (done : DoneFn) => {
+			await config.updateAll();
+			expect(config.getAllConfig()).toEqual([ { name: 'config', value: 1 } ]);
+			done();
+		});
 	});
 });

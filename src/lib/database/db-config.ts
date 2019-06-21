@@ -1,4 +1,4 @@
-import QueryHandler from './query-handler';
+import QueryHandler from './query-handler-interface';
 import { QueryConfig } from 'pg';
 import { ConfigRow, RolesRow, StringConfigRow, Role } from '../../models/database';
 import { DbConfig as DbConfigInterface } from './db-interfaces';

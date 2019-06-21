@@ -59,7 +59,7 @@ export default class Location extends Trigger {
 
 				if (locations.map(x => x.toLowerCase()).includes(words[2].toLowerCase())) {
 					response = `Location value "${words[2]}" has already been set`;
-					return;
+					break;
 				}
 
 				await this.dbLocation.setLocation(words[2]);
@@ -73,14 +73,14 @@ export default class Location extends Trigger {
 
 					if (!locations.map(x => x.toLowerCase()).includes(words[2].toLowerCase())) {
 						response = `Location value "${words[2]}" does not exist`;
-						return;
+						break;
 					}
 
 					await this.dbLocation.deleteLocation(words[2]);
 					response = 'Location has been deleted';
 				break;
 			default:
-				response = 'Unknown config command';
+				response = `Unknown command. Possible values are ${Object.values(LocationAction).join(', ')}`;
 				break;
 		}
 
