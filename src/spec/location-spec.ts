@@ -29,10 +29,10 @@ describe('location trigger', () => {
 	beforeEach(() => {
 		dbLocation = new DbLocation(new MockQueryHandler(null));
 		location = new Location(dbLocation, config);
-	})
+	});
 
-	describe('location message parsing', () => {
-		it('should create the message no command', async (done : DoneFn) => {
+	describe('message parsing', () => {
+		it('should create the message with no command', async (done : DoneFn) => {
 			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ` };
 
 			let response = await location.createMessage(message);

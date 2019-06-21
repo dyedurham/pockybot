@@ -45,12 +45,16 @@ export default class Remove extends Trigger {
 			return { markdown: response };
 		}
 
-		if (parsedMessage.length > 2) {
+		if (parsedMessage.length < 2) {
 			return { markdown: 'Please mention or provide the name of the person you want to remove' };
 		}
 
 		const pattern = new RegExp(`^${Command.Remove}`, 'ui');
-		const name = parsedMessage[2].text().trim().replace(pattern, '').trim();
+		const name = parsedMessage[1].text().trim().replace(pattern, '').trim();
+
+		if (name === '') {
+			return { markdown: 'Please mention or provide the name of the person you want to remove' };
+		}
 
 		let users : UserRow[];
 		try {
