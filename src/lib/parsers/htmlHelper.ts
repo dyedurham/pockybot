@@ -83,7 +83,7 @@ function generatePenaltyTable(receivers: Result[]): string {
 
 			result.penaltyPegsGiven.forEach((peg: Peg) => {
 				htmlTable += `
-							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td></td></tr>
+							<tr><td>${peg.receiverName}</td><td>${peg.comment}</td><td></td></tr>
 `;
 			});
 

@@ -22,7 +22,6 @@ export class DefaultFormatResultsService implements FormatResultsService {
 		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 		const categories = this.config.getStringConfig('keyword');
 
-
 		// Losers are people in fullResults not also in winners
 		const losers = fullResults.filter(result =>
 			!winners.some(winner => winner.personId === result.personId));

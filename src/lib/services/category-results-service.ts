@@ -34,7 +34,8 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		});
 
 		categoryResults = categoryResults.filter(x => x.validPegsReceived.length > 0);
-		categoryResults.sort((a, b) => b.weightedPegsReceived - a.weightedPegsReceived); // sort from most to least pegs
+		// sort from most to least pegs
+		categoryResults.sort((a, b) => b.validPegsReceived.length - a.validPegsReceived.length);
 		return categoryResults;
 	}
 }
