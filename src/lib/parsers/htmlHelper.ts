@@ -43,7 +43,7 @@ function generateCategoriesTable(receivers: Result[], section: string): string {
 		const subsectionId = `section-${section}-${index}`;
 		htmlTable += `
 						<thead class="thead-light clickable" data-toggle="collapse" data-target="#${subsectionId}" area-expanded="true" aria-controls="${subsectionId}">
-							<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> ${result.personName} &mdash; ${receivers.length}</th></tr>
+							<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> ${result.personName} &mdash; ${result.validPegsReceived.length}</th></tr>
 						</thead>
 						<tbody id="${subsectionId}" class="collapse show">`;
 		result.validPegsReceived.sort((a, b) => a.senderName.localeCompare(b.senderName));
@@ -66,11 +66,11 @@ function generateCategoriesTable(receivers: Result[], section: string): string {
 
 function generatePenaltyTable(receivers: Result[]): string {
 	let htmlTable =
-		`					<table id="section-penalty" class="table pb-3 collapse">`;
+		`					<table id="section-penalties" class="table pb-3 collapse">`;
 
 	receivers.forEach((result: Result, index: number) => {
 		if (result.penaltyPegsGiven.length !== 0) {
-			const subsectionId = `section-penalty-${index}`;
+			const subsectionId = `section-penalties-${index}`;
 
 			htmlTable += `
 
