@@ -35,7 +35,7 @@ export class DefaultWinnersService implements WinnersService {
 		let resultsForEligibleWinners = this.getEligibleWinnerResults(allReceivers, results);
 
 		// This two-step process used to prevent array out of bounds exceptions if there are too few winners
-		let topNumberOfPegsReceived = resultsForEligibleWinners.map(x => x.weightedPegsReceived).sort().reverse()
+		let topNumberOfPegsReceived = resultsForEligibleWinners.map(x => x.weightedPegsReceived).sort((a, b) => b - a)
 			.slice(0, this.config.getConfig('winners'));
 		let topCutoff = topNumberOfPegsReceived[topNumberOfPegsReceived.length - 1];
 
