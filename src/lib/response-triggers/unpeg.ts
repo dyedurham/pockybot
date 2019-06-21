@@ -4,7 +4,7 @@ import XmlMessageParser from '../parsers/xmlMessageParser';
 import { ParsedMessage } from '../../models/parsed-message';
 import { DbUsers } from '../database/db-interfaces';
 import Utilities from '../utilities';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject, Webex } from 'webex/env';
 import { UserRow } from '../../models/database';
 import { Command } from '../../models/command';
@@ -24,7 +24,7 @@ export default class  Unpeg extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		__logger.debug('entering the unpeg isToTriggerOn');
+		Logger.debug('entering the unpeg isToTriggerOn');
 		let parsedMessage : ParsedMessage = XmlMessageParser.parsePegMessage(message);
 		return this.validateTrigger(parsedMessage);
 	}
@@ -68,23 +68,23 @@ export default class  Unpeg extends Trigger {
 		try {
 			let parsedMessage = XmlMessageParser.parsePegMessage(message);
 			if (parsedMessage.botId !== constants.botId) {
-				__logger.warn('First person mentioned in unpeg candidate message is not bot');
+				Logger.warn('First person mentioned in unpeg candidate message is not bot');
 				return false;
 			}
 
 			if (parsedMessage.children.length < 2) {
-				__logger.warn('Unpeg candidate message does not contain 2 or more xml parts.')
+				Logger.warn('Unpeg candidate message does not contain 2 or more xml parts.')
 				return false;
 			}
 
 			if (parsedMessage.children[1].text().toLowerCase().trim().startsWith(Command.Unpeg)) {
 				return true;
 			} else {
-				__logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${parsedMessage.children[1].text()}`);
+				Logger.warn(`Unpeg candidate message child 1 does not contain unpegCommand: ${parsedMessage.children[1].text()}`);
 				return false;
 			}
 		} catch (e) {
-			__logger.error(`Error in unpeg validateMessage:\n${e.message}`);
+			Logger.error(`Error in unpeg validateMessage:\n${e.message}`);
 			throw new Error('Error in unpeg validateMessage');
 		}
 	}

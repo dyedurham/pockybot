@@ -2,7 +2,7 @@ import Trigger from '../../models/trigger';
 import Reset from './reset';
 import Config from '../config';
 import constants from '../../constants';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import { MessageObject, Webex } from 'webex/env';
 import { Role } from '../../models/database';
 import { PmResultsService } from '../services/pm-results-service';
@@ -51,10 +51,10 @@ export default class Finish extends Trigger {
 				winnersMarkdown = values[0];
 				resultsMarkdown = values[1];
 			}).catch(function(error){
-				__logger.error(`[Finish.createMessage] Error returning winners or results: ${error.message}`);
+				Logger.error(`[Finish.createMessage] Error returning winners or results: ${error.message}`);
 				return { markdown: `error returning winners or results` };
 			});
-		__logger.debug('[Finish.createMessage] Got winners and responses');
+		Logger.debug('[Finish.createMessage] Got winners and responses');
 
 		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
 		message += resultsMarkdown;
@@ -66,9 +66,9 @@ export default class Finish extends Trigger {
 
 		try {
 			await this.pmResultsService.pmResults();
-			__logger.information(`[Finish.createMessage] Finished sending PMs.`);
+			Logger.information(`[Finish.createMessage] Finished sending PMs.`);
 		} catch(error) {
-			__logger.error(`[Finish.createMessage] Error PMing results: ${error.message}`);
+			Logger.error(`[Finish.createMessage] Error PMing results: ${error.message}`);
 			return { markdown: `Error while trying to PM results` };
 		}
 

@@ -2,6 +2,21 @@ language: node_js
 node_js:
   - "10"
 
-script:
-  - npm test
-  - npm run build
+stages:
+  - test
+  - build
+  - name: release
+    if: branch = master
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - npm test
+    - stage: build
+      script:
+        - npm run build
+    - stage: release
+      node_js: lts/*
+      script:
+        - npx semantic-release

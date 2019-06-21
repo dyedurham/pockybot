@@ -10,6 +10,22 @@ While you participate in this project you are bound by our [Code of Conduct](htt
 
 If you would like to contribute to PockyBot, feel free to do so! Please note that master is a protected branch so all pull requests need to be approved by at least two contributors with push access to the repository. If you would like to work on new features then head on over to the Projects tab. Here we have a kanban board with upcoming work for the project, and you can see what's currently in progress as well as what needs to be done.
 
+### Commit message guidelines
+
+In order for the automatic publishing of releases to occur when branches are merged to master, commit messages must be formatted in a specific format.
+
+Example:
+```
+feat(packages): Add commitizen
+
+Add commitizen so that commit messages can be standardised to work with semantic-release
+```
+
+Rather than learning this format, it is recommended to use commitizen as your tool for committing, **instead** of using git commit. In order to use commitizen, you can execute the following commands:
+1. ```git add -a``` — Add your files to the commit.
+2. ```npm run commit``` — Execute the commitizen commit wizard. This step assumes you have already run `npm i`.
+
+
 ### Environment setup
 
 Please install [Editor Config](http://editorconfig.org/) for your editor of choice.

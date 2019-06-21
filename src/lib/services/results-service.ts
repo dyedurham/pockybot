@@ -1,5 +1,5 @@
 import constants from '../../constants';
-import __logger from '../logger';
+import { Logger } from '../logger';
 import * as fs from 'fs';
 import { FormatResultsService } from './format-results-service';
 import { Storage } from '@google-cloud/storage';
@@ -38,7 +38,7 @@ export class DefaultResultsService implements ResultsService {
 		if (fs.existsSync(filePath + '.txt')) {
 			fs.unlinkSync(filePath + '.txt');
 		}
-		__logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
+		Logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
 
 		const fullData: ResultRow[] = await this.database.returnResults();
 		const allPegs: Peg[] = this.pegService.getPegs(fullData);
