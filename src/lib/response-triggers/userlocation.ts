@@ -88,8 +88,14 @@ export default class UserLocation extends Trigger {
 				}
 
 				const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
-				await this.dbLocation.setUserLocation(message.personId, location);
-				return 'Location set successfully';
+
+				try {
+					await this.setUserLocation(message.personId, location);
+					return 'Location has been set';
+				} catch (error) {
+					Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
+					return 'Error setting location';
+				}
 			case LocationAction.Delete:
 				if (args.length !== 4) {
 					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\``;
@@ -99,8 +105,13 @@ export default class UserLocation extends Trigger {
 					return 'Permission denied. You are only allowed to delete the location for yourself (use \'me\')';
 				}
 
-				await this.dbLocation.deleteUserLocation(message.personId);
-				return 'Location deleted successfully';
+				try {
+					await this.deleteUserLocation(message.personId);
+					return 'Location has been deleted';
+				} catch (error) {
+					Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
+					return 'Error deleting location';
+				}
 			default:
 				return 'Unknown command';
 		}
@@ -163,7 +174,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 			}
 
 			try {
-				await this.dbLocation.setUserLocation(message.personId, location);
+				await this.setUserLocation(message.personId, location);
 				return 'Location has been set';
 			} catch (error) {
 				Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
@@ -177,7 +188,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		const usersPromise = users.map(async x => {
 			try {
-				await this.dbLocation.setUserLocation(x.userId, location);
+				await this.setUserLocation(x.userId, location);
 				return {
 					user: x.text,
 					success: true
@@ -199,6 +210,20 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		return 'Location has been set';
 	}
 
+	private async setUserLocation(userId : string, location : string) : Promise<void> {
+		try {
+			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
+			if (!exists) {
+				throw new Error(`User ${userId} could not be found or created.`);
+			}
+		} catch (error) {
+			Logger.error(`[UserLocation.setUserLocation] Error finding or creating user ${userId}: ${error.message}`);
+			throw new Error(`Error: User ${userId} could not be found or created.`);
+		}
+
+		await this.dbLocation.setUserLocation(userId, location);
+	}
+
 	private async deleteUserLocationAdmin(args : Argument[], message : MessageObject) : Promise<string> {
 		if (args.length < 4) {
 			return 'Please specify a list of mentions/me';
@@ -212,7 +237,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 			}
 
 			try {
-				await this.dbLocation.deleteLocation(message.personId);
+				await this.deleteUserLocation(message.personId);
 				return 'Location has been deleted';
 			} catch (error) {
 				Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
@@ -226,7 +251,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		const usersPromise = users.map(async x => {
 			try {
-				await this.dbLocation.deleteUserLocation(x.userId);
+				await this.deleteUserLocation(x.userId);
 				return {
 					user: x.text,
 					success: true
@@ -246,6 +271,20 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		}
 
 		return 'Location has been deleted';
+	}
+
+	private async deleteUserLocation(userId : string) : Promise<void> {
+		try {
+			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
+			if (!exists) {
+				throw new Error(`User ${userId} could not be found or created.`);
+			}
+		} catch (error) {
+			Logger.error(`[UserLocation.setUserLocation] Error finding or creating user ${userId}: ${error.message}`);
+			throw new Error(`Error: User ${userId} could not be found or created.`);
+		}
+
+		await this.dbLocation.deleteUserLocation(userId);
 	}
 
 	private async getUserLocationMessage() : Promise<string> {
