@@ -49,7 +49,7 @@ export default class RoleConfig extends Trigger {
 					response = await this.getConfigMessage();
 					break;
 				case ConfigAction.Set: {
-					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
+					const { userId, username, role } = await this.parseSetDeleteMessage(parsedMessage);
 
 					if (this.config.getRoles(userId).includes(role)) {
 						response = `Role "${role}" is already set for user "${username}".`;
@@ -65,7 +65,7 @@ export default class RoleConfig extends Trigger {
 					response = 'Roles has been updated';
 					break;
 				case ConfigAction.Delete: {
-					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
+					const { userId, username, role } = await this.parseSetDeleteMessage(parsedMessage);
 
 					if (!this.config.getRoles(userId).includes(role)) {
 						response = `Role "${role}" is not set for user "${username}"`;
@@ -89,7 +89,7 @@ export default class RoleConfig extends Trigger {
 		};
 	}
 
-	private parseSetDeleteMessage(message: MessageObject, parsedMessage : Element[]) : { userId : string, username : string, role : Role } {
+	private async parseSetDeleteMessage(parsedMessage : Element[]) : Promise<{ userId : string, username : string, role : Role }> {
 		if (parsedMessage.length < 4) {
 			throw new Error('You must specify a user and a role to set/delete.');
 		}
@@ -107,7 +107,7 @@ export default class RoleConfig extends Trigger {
 		const username = parsedMessage[2].text();
 
 		try {
-			let exists = this.dbUsers.existsOrCanBeCreated(userId);
+			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
 			if (!exists) {
 				throw new Error(`User ${username} could not be found or created. Exiting.`);
 			}
