@@ -21,10 +21,6 @@ export default class Location extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Location))) {
-			return false;
-		}
-
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
 		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.Location);
 	}
@@ -52,6 +48,11 @@ export default class Location extends Trigger {
 				response = await this.getLocationMessage(locations);
 				break;
 			case LocationAction.Set:
+				if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Location))) {
+					response = 'Permission denied. You may only use the \'get\' command';
+					break;
+				}
+
 				if (words.length !== 3) {
 					response = 'You must specify a location name to set';
 					break;
@@ -66,18 +67,23 @@ export default class Location extends Trigger {
 				response = 'Location has been set';
 				break;
 			case LocationAction.Delete:
-					if (words.length !== 3) {
-						response = 'You must specify a location name to delete';
-						break;
-					}
+				if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Location))) {
+					response = 'Permission denied. You may only use the \'get\' command';
+					break;
+				}
 
-					if (!locations.map(x => x.toLowerCase()).includes(words[2].toLowerCase())) {
-						response = `Location value "${words[2]}" does not exist`;
-						break;
-					}
+				if (words.length !== 3) {
+					response = 'You must specify a location name to delete';
+					break;
+				}
 
-					await this.dbLocation.deleteLocation(words[2]);
-					response = 'Location has been deleted';
+				if (!locations.map(x => x.toLowerCase()).includes(words[2].toLowerCase())) {
+					response = `Location value "${words[2]}" does not exist`;
+					break;
+				}
+
+				await this.dbLocation.deleteLocation(words[2]);
+				response = 'Location has been deleted';
 				break;
 			default:
 				response = `Unknown command. Possible values are ${Object.values(LocationAction).join(', ')}`;

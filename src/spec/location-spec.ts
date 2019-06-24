@@ -33,7 +33,8 @@ describe('location trigger', () => {
 
 	describe('message parsing', () => {
 		it('should create the message with no command', async (done : DoneFn) => {
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} `,
+				'mockID');
 
 			let response = await location.createMessage(message);
 			expect(response.markdown).toBe('Please specify a command. Possible values are get, set, delete');
@@ -42,7 +43,8 @@ describe('location trigger', () => {
 
 		it('should create the message with unknown command', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} blah` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} blah`,
+				'mockID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -53,7 +55,8 @@ describe('location trigger', () => {
 
 		it('should create the get message with locations set', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Get}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Get}`,
+				'mockID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -69,7 +72,8 @@ describe('location trigger', () => {
 
 		it('should create the get message with no locations set', async (done : DoneFn) => {
 			const locations : string[] = [];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Get}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Get}`,
+				'mockID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -78,9 +82,25 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the set message with no location name provided', async (done : DoneFn) => {
+		it('should create the set message with non admin', async (done : DoneFn) => {
+			const locations : string[] = [ 'TestLocation2' ];
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set} TestLocation`,
+				'mockID');
+
+			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
+			const locationSpy = spyOn(dbLocation, 'setLocation').and.stub();
+
+			let response = await location.createMessage(message);
+			expect(response.markdown).toBe('Permission denied. You may only use the \'get\' command');
+			expect(locationSpy).not.toHaveBeenCalled();
+			done();
+		});
+
+
+		it('should create the set message with admin with no location name provided', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set}`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -89,9 +109,10 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the set message when the location has already been set', async (done : DoneFn) => {
+		it('should create the set message with admin when the location has already been set', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set} TestLocation` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set} TestLocation`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -100,10 +121,11 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the set message when the location given is valid', async (done : DoneFn) => {
+		it('should create the set message with admin when the location given is valid', async (done : DoneFn) => {
 			const locationToAdd = 'TestLocation';
 			const locations : string[] = [ 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set} ${locationToAdd}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Set} ${locationToAdd}`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 			let setLocationSpy = spyOn(dbLocation, 'setLocation').and.stub();
@@ -114,9 +136,24 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the delete message with no location name provided', async (done : DoneFn) => {
+		it('should create the delete message with non admin', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete} TestLocation`,
+				'mockID');
+
+			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
+			const locationSpy = spyOn(dbLocation, 'deleteLocation').and.stub();
+
+			let response = await location.createMessage(message);
+			expect(response.markdown).toBe('Permission denied. You may only use the \'get\' command');
+			expect(locationSpy).not.toHaveBeenCalled();
+			done();
+		});
+
+		it('should create the delete message with admin with no location name provided', async (done : DoneFn) => {
+			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete}`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -125,9 +162,10 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the delete message when the location does not exist', async (done : DoneFn) => {
+		it('should create the delete message with admin when the location does not exist', async (done : DoneFn) => {
 			const locations : string[] = [ 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete} TestLocation` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete} TestLocation`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 
@@ -136,10 +174,11 @@ describe('location trigger', () => {
 			done();
 		});
 
-		it('should create the delete message when the location given is valid', async (done : DoneFn) => {
+		it('should create the delete message with admin when the location given is valid', async (done : DoneFn) => {
 			const locationToAdd = 'TestLocation';
 			const locations : string[] = [ 'TestLocation', 'TestLocation2' ];
-			const message = { html: `<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete} ${locationToAdd}` };
+			const message = createMessage(`<spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} ${LocationAction.Delete} ${locationToAdd}`,
+				'mockAdminID');
 
 			spyOn(dbLocation, 'getLocations').and.returnValue(Promise.resolve(locations));
 			let setLocationSpy = spyOn(dbLocation, 'deleteLocation').and.stub();
@@ -154,56 +193,49 @@ describe('location trigger', () => {
 	describe('triggers', () => {
 		it('should accept trigger', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location}`,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(true);
 		});
 
 		it('should reject wrong command', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> asdf${Command.Location}`,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(false);
 		});
 
 		it('should reject wrong id', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="wrongId">${constants.botName}</spark-mention> ${Command.Location}`,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(false);
 		});
 
 		it('should accept no space', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention>${Command.Location}`,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(true);
 		});
 
 		it('should accept trailing space', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} `,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(true);
 		});
 
-		it('should fail for non admin', () => {
-			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location}`,
-				'mockID');
-			let results = location.isToTriggerOn(message);
-			expect(results).toBe(false);
-		});
-
 		it('should accept an additional parameter', () => {
 			let message = createMessage(`<p><spark-mention data-object-type="person" data-object-id="${constants.botId}">${constants.botName}</spark-mention> ${Command.Location} get`,
-				'mockAdminID');
+				'mockID');
 			let results = location.isToTriggerOn(message);
 			expect(results).toBe(true);
 		});
 
 
 		it('should reject group mention', () => {
-			let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> stringconfig`, 'mockAdminID');
+			let message = createMessage(`<p><spark-mention data-object-type="groupMention" data-group-type="all">All</spark-mention> stringconfig`, 'mockID');
 			let results = location.isToTriggerOn(message)
 			expect(results).toBe(false);
 		});
