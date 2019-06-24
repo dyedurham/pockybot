@@ -144,6 +144,9 @@ Use any of these commands in a room PockyBot is participating in to perform comm
   comma separated team names.
 * `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`.
   * Use `@PockyBot unpeg <concept> for <reason>` to unpeg abstract concepts that can't be tagged.
+* `@PockyBot location get` &mdash; get the list of available locations.
+* `@PockyBot userlocation get|set|delete {location} me|all|unset|@User` &mdash; configure user locations. Note that normal users may not
+configure locations for people other than themselves, but admins can access the full functionality of this command.
 
 ##### Direct message commands
 
@@ -168,6 +171,7 @@ These commands can only be performed by users with the role of 'ADMIN' or users 
 * `@PockyBot numberconfig get|set|refresh|delete {name} {number}` &mdash; get or change config values
 * `@PockyBot stringconfig get|set|refresh|delete {name} {value}` &mdash; get or change string config values
 * `@PockyBot roleconfig get|set|refresh|delete {@User} {role}` &mdash; get or change user roles
+* `@PockyBot remove @User|username` &mdash; remove a user
 
 ## Contributing
 
