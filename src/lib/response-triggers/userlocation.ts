@@ -65,7 +65,7 @@ export default class UserLocation extends Trigger {
 			case LocationAction.Delete:
 				return await this.deleteUserLocationAdmin(args, message);
 			default:
-				return 'Unknown command';
+				return `Unknown command. Possible values are ${Object.values(LocationAction).join(', ')}`;
 		}
 	}
 
@@ -75,12 +75,12 @@ export default class UserLocation extends Trigger {
 				return await this.getUserLocation(args, message.personId);
 			case LocationAction.Set:
 				if (args.length !== 5) {
-					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} <locaton> me\``;
+					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} <location> me\``;
 				}
 
 				const locations = await this.dbLocation.getLocations();
 				if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
-					return `Location ${args[3]} does not exist. Valid values are: ${locations.join(', ')}`;
+					return `Location ${args[3].text} does not exist. Valid values are: ${locations.join(', ')}`;
 				}
 
 				if (args[4].isMention || args[4].text.toLowerCase() !== 'me') {
@@ -106,34 +106,33 @@ export default class UserLocation extends Trigger {
 				}
 
 				try {
-					await this.deleteUserLocation(message.personId);
+					await this.dbLocation.deleteUserLocation(message.personId);
 					return 'Location has been deleted';
 				} catch (error) {
 					Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
 					return 'Error deleting location';
 				}
 			default:
-				return 'Unknown command';
+				return `Unknown command. Possible values are ${Object.values(LocationAction).join(', ')}`;
 		}
 	}
 
 	private async getUserLocation(args : Argument[], personId : string) : Promise<string> {
 		if (args.length !== 4) {
-			return 'Please specify who you want to get the location for. This can be \'all\', \'me\' or mention a person';
+			return 'Please specify who you want to get the location for. This can be \'all\', \'me\', \'unset\', or mention a person';
 		}
 
 		if (args[3].isMention) {
 			const userLocation = await this.dbLocation.getUserLocation(args[3].userId);
-			const user = await this.dbUsers.getUser(args[3].userId);
 			if (userLocation) {
-				return `User ${user.username}'s location is: '${userLocation.location}'`;
+				return `User ${args[3].text}'s location is: '${userLocation.location}'`;
 			}
 
-			return `User ${user.username}'s location is not set`;
+			return `User ${args[3].text}'s location is not set`;
 		}
 
 		if (args[3].text.toLowerCase() === 'all') {
-			return await this.getUserLocationMessage();
+			return await this.getAllUserLocationMessage();
 		} else if (args[3].text.toLowerCase() === 'me') {
 			const userLocation = await this.dbLocation.getUserLocation(personId);
 			if (userLocation) {
@@ -162,11 +161,11 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		const locations = await this.dbLocation.getLocations();
 		if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
-			return `Location ${args[3]} does not exist. Valid values are: ${locations.join(', ')}`;
+			return `Location ${args[3].text} does not exist. Valid values are: ${locations.join(', ')}`;
 		}
 
 		const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
-		const users = args.filter((item, index) => index < 3 );
+		const users = args.filter((item, index) => index > 3 );
 
 		if (users.length === 1 && !users[0].isMention) {
 			if (users[0].text !== 'me') {
@@ -229,7 +228,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 			return 'Please specify a list of mentions/me';
 		}
 
-		const users = args.filter((item, index) => index < 2 );
+		const users = args.filter((item, index) => index > 2 );
 
 		if (users.length === 1 && !users[0].isMention) {
 			if (users[0].text !== 'me') {
@@ -237,7 +236,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 			}
 
 			try {
-				await this.deleteUserLocation(message.personId);
+				await this.dbLocation.deleteUserLocation(message.personId);
 				return 'Location has been deleted';
 			} catch (error) {
 				Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
@@ -251,7 +250,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		const usersPromise = users.map(async x => {
 			try {
-				await this.deleteUserLocation(x.userId);
+				await this.dbLocation.deleteUserLocation(x.userId);
 				return {
 					user: x.text,
 					success: true
@@ -273,27 +272,17 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		return 'Location has been deleted';
 	}
 
-	private async deleteUserLocation(userId : string) : Promise<void> {
-		try {
-			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
-			if (!exists) {
-				throw new Error(`User ${userId} could not be found or created.`);
-			}
-		} catch (error) {
-			Logger.error(`[UserLocation.setUserLocation] Error finding or creating user ${userId}: ${error.message}`);
-			throw new Error(`Error: User ${userId} could not be found or created.`);
-		}
-
-		await this.dbLocation.deleteUserLocation(userId);
-	}
-
-	private async getUserLocationMessage() : Promise<string> {
+	private async getAllUserLocationMessage() : Promise<string> {
 		let userLocations : UserLocationRow[];
 		try {
 			userLocations = await this.dbLocation.getAllUserLocations();
 		} catch(e) {
 			Logger.error(`[UserLocation.getUserLocationMessage] Error getting user locations: ${e.message}`);
 			return 'Error getting user locations';
+		}
+
+		if (userLocations.length === 0) {
+			return 'No user locations set';
 		}
 
 		const mappedPromise = userLocations.map(async x => {
@@ -315,7 +304,7 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		for (const config of userLocations) {
 			const user = await this.dbUsers.getUser(config.userid);
-			message += config.location.padEnd(columnWidths.username) + ' | ' + user.username + '\n';
+			message += user.username.padEnd(columnWidths.username) + ' | ' + config.location + '\n';
 		}
 
 		message += '```';
