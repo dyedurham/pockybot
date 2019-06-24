@@ -461,5 +461,6 @@ describe('winners service', () => {
 		];
 		let response = winnersService.getWinners(results);
 		expect(response.length).toBeGreaterThanOrEqual(3);
+		done();
 	})
 });
