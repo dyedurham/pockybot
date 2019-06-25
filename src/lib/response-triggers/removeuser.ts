@@ -8,7 +8,7 @@ import constants from '../../constants';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import { Logger } from '../logger';
 
-export default class Remove extends Trigger {
+export default class RemoveUser extends Trigger {
 	private config : Config;
 	private dbUsers : DbUsers;
 	private dbLocation : DbLocation;
@@ -22,18 +22,18 @@ export default class Remove extends Trigger {
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
-		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Remove))) {
+		if (!(this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.RemoveUser))) {
 			return false;
 		}
 
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
-		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.Remove);
+		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase().startsWith(Command.RemoveUser);
 	}
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let parsedMessage = xmlMessageParser.parseXmlMessage(message);
 		if (parsedMessage.length === 3) {
-			if (parsedMessage[1].text().trim().toLowerCase() !== Command.Remove
+			if (parsedMessage[1].text().trim().toLowerCase() !== Command.RemoveUser
 				|| parsedMessage[2].name() !== 'spark-mention' || parsedMessage[2].attr('data-object-type').value() !== 'person') {
 				return {
 					markdown: 'Please mention or provide the name of the person you want to remove'
@@ -49,7 +49,7 @@ export default class Remove extends Trigger {
 			return { markdown: 'Please mention or provide the name of the person you want to remove' };
 		}
 
-		const pattern = new RegExp(`^${Command.Remove}`, 'ui');
+		const pattern = new RegExp(`^${Command.RemoveUser}`, 'ui');
 		const name = parsedMessage[1].text().trim().replace(pattern, '').trim();
 
 		if (name === '') {

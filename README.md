@@ -172,7 +172,7 @@ These commands can only be performed by users with the role of 'ADMIN' or users 
 * `@PockyBot stringconfig get|set|refresh|delete {name} {value}` &mdash; get or change string config values
 * `@PockyBot roleconfig get|set|refresh|delete {@User} {role}` &mdash; get or change user roles
 * `@PockyBot locationconfig get|set|delete {location}` &mdash; get or change locations
-* `@PockyBot remove @User|username` &mdash; remove a user
+* `@PockyBot removeuser @User|username` &mdash; remove a user
 
 ## Contributing
 

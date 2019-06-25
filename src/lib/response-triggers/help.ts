@@ -77,8 +77,8 @@ export default class Help extends Trigger {
 				return this.createLocationConfigHelpMessage(message);
 			case Command.UserLocation:
 				return this.createUserLocationHelpMessage(message);
-			case Command.Remove:
-				return this.createRemoveHelpMessage(message);
+			case Command.RemoveUser:
+				return this.createRemoveUserHelpMessage(message);
 			default:
 				return this.createDefaultHelpMessage();
 		}
@@ -122,8 +122,8 @@ export default class Help extends Trigger {
 * ${Command.RoleConfig}\n`;
 		}
 
-		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Remove)) {
-			newMessage += `* ${Command.Remove}\n`;
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.RemoveUser)) {
+			newMessage += `* ${Command.RemoveUser}\n`;
 		}
 
 		newMessage += `\nFor more information on a command type \`@${constants.botName} help command-name\` or direct message me with \`help command-name\`\n`;
@@ -287,10 +287,10 @@ export default class Help extends Trigger {
 		}
 	}
 
-	createRemoveHelpMessage(message: MessageObject) : string {
-		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Remove)) {
+	createRemoveUserHelpMessage(message: MessageObject) : string {
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.RemoveUser)) {
 			return `### How to remove users!
-1. To remove a user, type \`@${constants.botName} ${Command.Remove} {@User}|'{username}'\`
+1. To remove a user, type \`@${constants.botName} ${Command.RemoveUser} {@User}|'{username}'\`
 1. I will respond in the room you messaged me in.`;
 		} else {
 			return this.createDefaultHelpMessage();

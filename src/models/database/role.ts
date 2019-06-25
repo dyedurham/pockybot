@@ -8,5 +8,5 @@ export enum Role {
 	Winners = 'WINNERS',
 	Config = 'CONFIG',
 	UserLocation = 'USERLOCATION',
-	Remove = 'REMOVE'
+	RemoveUser = 'REMOVEUSER'
 }
