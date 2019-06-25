@@ -73,8 +73,8 @@ export default class Help extends Trigger {
 				return this.createStringConfigHelpMessage(message);
 			case Command.RoleConfig:
 				return this.createRoleConfigHelpMessage(message);
-			case Command.Location:
-				return this.createLocationHelpMessage(message);
+			case Command.LocationConfig:
+				return this.createLocationConfigHelpMessage(message);
 			case Command.UserLocation:
 				return this.createUserLocationHelpMessage(message);
 			case Command.Remove:
@@ -93,7 +93,7 @@ export default class Help extends Trigger {
 * ${Command.Ping}
 * ${Command.Welcome}
 * ${Command.Rotation}
-* ${Command.Location}
+* ${Command.LocationConfig}
 * ${Command.UserLocation}\n`;
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Winners)) {
@@ -257,14 +257,14 @@ export default class Help extends Trigger {
 		}
 	}
 
-	createLocationHelpMessage(message: MessageObject) : string {
-		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Location)) {
-			return `### How to configure location values!
-1. To get/edit/delete locations, type \`@${constants.botName} ${Command.Location} ${Object.values(LocationAction).join('|')} {location}\`
+	createLocationConfigHelpMessage(message: MessageObject) : string {
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
+			return `### How to configure location config values!
+1. To get/edit/delete locations, type \`@${constants.botName} ${Command.LocationConfig} ${Object.values(LocationAction).join('|')} {location}\`
 1. I will respond in the room you messaged me in.`;
 		} else {
 			return `### How to get location values!
-1. To get a list of locations, type \'@${constants.botName} ${Command.Location} ${LocationAction.Get}\`
+1. To get a list of locations, type \'@${constants.botName} ${Command.LocationConfig} ${LocationAction.Get}\`
     * To configure locations, please ask an admin.
 1. I will respond in the room you messaged me in.`
 		}

@@ -7,7 +7,6 @@ export enum Role {
 	Update = 'UPDATE',
 	Winners = 'WINNERS',
 	Config = 'CONFIG',
-	Location = 'LOCATION',
 	UserLocation = 'USERLOCATION',
 	Remove = 'REMOVE'
 }

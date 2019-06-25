@@ -24,7 +24,7 @@ import Rotation from './rotation';
 import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
-import Location from './location';
+import LocationConfig from './locationconfig';
 import UserLocation from './userlocation';
 import Remove from './remove';
 import Default from './default';
@@ -81,7 +81,7 @@ const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
 const rotation = new Rotation(config);
-const location = new Location(dbLocation, config);
+const locationConfig = new LocationConfig(dbLocation, config);
 const userLocation = new UserLocation(dbUsers, dbLocation, config);
 const remove = new Remove(config, dbUsers, dbLocation);
 const defaultTrigger = new Default();
@@ -103,7 +103,7 @@ const triggers : Trigger[] = [
 	numberConfig,
 	stringConfig,
 	roleConfig,
-	location,
+	locationConfig,
 	userLocation,
 	remove,
 	defaultTrigger,
