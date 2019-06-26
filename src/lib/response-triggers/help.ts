@@ -273,16 +273,16 @@ export default class Help extends Trigger {
 	createUserLocationHelpMessage(message: MessageObject) : string {
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.UserLocation)) {
 			return `### How to configure user location values!
-1. To get user locations for yourself or others, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Get} me|all|unset|@User\`
-1. To set user locations, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} {location} me|@User1 @User2\`
-1. To delete user locations, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me|@User1 @User2\`
+1. To get user locations for yourself or others, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Get} me|all|unset|@User\`
+1. To set user locations, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} {location} me|@User1 @User2\`
+1. To delete user locations, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me|@User1 @User2\`
 1. I will respond in the room you messaged me in.`
 		} else {
 			return `### How to config your user location value!
-1. To get user locations for yourself or others, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Get} me|all|unset|@User\`
-1. To set your user location, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} {location} me\`
+1. To get user locations for yourself or others, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Get} me|all|unset|@User\`
+1. To set your user location, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} {location} me\`
 	* To bulk configure user locations, please ask an admin.
-1. To delete your user location, type \'@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\`
+1. To delete your user location, type \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\`
 1. I will respond in the room you messaged me in.`
 		}
 	}
