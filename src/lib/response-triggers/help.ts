@@ -264,7 +264,7 @@ export default class Help extends Trigger {
 1. I will respond in the room you messaged me in.`;
 		} else {
 			return `### How to get location values!
-1. To get a list of locations, type \'@${constants.botName} ${Command.LocationConfig} ${LocationAction.Get}\`
+1. To get a list of locations, type \`@${constants.botName} ${Command.LocationConfig} ${LocationAction.Get}\`
     * To configure locations, please ask an admin.
 1. I will respond in the room you messaged me in.`
 		}
