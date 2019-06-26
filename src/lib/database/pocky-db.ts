@@ -12,6 +12,7 @@ import { PegGivenData } from '../../models/peg-given-data';
 export default class PockyDB implements PockyDbInterface {
 	private readonly sqlGivePegWithComment : string;
 	private readonly sqlPegsGiven : string;
+	private readonly sqlPegsReceived : string;
 	private readonly sqlReset : string;
 	private readonly sqlReturnResults : string;
 	private readonly sqlReturnGives : string;
@@ -29,6 +30,7 @@ export default class PockyDB implements PockyDbInterface {
 
 		this.sqlGivePegWithComment = this.queryHandler.readFile('../../../database/queries/give_peg_with_comment.sql');
 		this.sqlPegsGiven = this.queryHandler.readFile('../../../database/queries/pegs_given.sql');
+		this.sqlPegsReceived = this.queryHandler.readFile('../../../database/queries/pegs_received.sql');
 		this.sqlReset = this.queryHandler.readFile('../../../database/queries/reset.sql');
 		this.sqlReturnResults = this.queryHandler.readFile('../../../database/queries/return_results.sql');
 		this.sqlReturnGives = this.queryHandler.readFile('../../../database/queries/return_gives.sql');
@@ -97,6 +99,46 @@ export default class PockyDB implements PockyDbInterface {
 		const nonPenaltyPegs = this.utilities.getNonPenaltyPegs(givenPegs, keywords, penaltyKeywords);
 
 		return nonPenaltyPegs.length;
+	}
+
+	async countPenaltyPegsGiven(user : string, keywords : string[], penaltyKeywords : string[]) : Promise<number> {
+		let query : QueryConfig = {
+			name: 'pegsGiven',
+			text: this.sqlPegsGiven,
+			values: [user]
+		};
+
+		let givenPegs : PegGivenData[];
+
+		try {
+			givenPegs = await this.queryHandler.executeQuery(query);
+		} catch (error) {
+			Logger.error(`[PockyDb.countPenaltyPegsGiven] Error executing query to count pegs given by user ${user}`);
+			throw error;
+		}
+
+		const penaltyPegs = this.utilities.getPenaltyPegs(givenPegs, keywords, penaltyKeywords);
+
+		return penaltyPegs.length;
+	}
+
+	async countPegsReceived(user : string) : Promise<number> {
+		let query : QueryConfig = {
+			name: 'pegsReceived',
+			text: this.sqlPegsReceived,
+			values: [user]
+		};
+
+		let receivedPegs : PegGivenData[];
+
+		try {
+			receivedPegs = await this.queryHandler.executeQuery(query);
+		} catch (error) {
+			Logger.error(`[PockyDb.countPegsReceived] Error executing query to count pegs received by user ${user}`);
+			throw error;
+		}
+
+		return receivedPegs.length;
 	}
 
 	async senderCanPeg(user : string, comment : string) : Promise<boolean> {

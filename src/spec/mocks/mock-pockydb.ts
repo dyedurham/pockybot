@@ -39,6 +39,14 @@ export default class MockPockyDb implements PockyDB {
 		}
 	}
 
+	async countPenaltyPegsGiven(user: string) : Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	async countPegsReceived(user: string) : Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
 	async senderCanPeg(user: string) : Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}

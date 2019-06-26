@@ -53,24 +53,24 @@ const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
 const dbUsers = new DbUsers(webex, queryHandler);
 const dbLocation = new DbLocation(queryHandler);
-const database = new PockyDB(queryHandler, dbUsers, utilities);
+const pockyDb = new PockyDB(queryHandler, dbUsers, utilities);
 const config = new Config(dbConfig);
 const categoryResultsService = new DefaultCategoryResultsService();
-const winnersService = new DefaultWinnersService(database, config, utilities);
-const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
+const winnersService = new DefaultWinnersService(pockyDb, config, utilities);
+const formatResultsService = new DefaultFormatResultsService(pockyDb, config, categoryResultsService, winnersService, utilities);
 const resultsService = new DefaultResultsService(formatResultsService);
-const pmResultsService = new DefaultPmResultsService(database, webex);
+const pmResultsService = new DefaultPmResultsService(pockyDb, webex);
 
-database.loadConfig(config);
+pockyDb.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const peg = new Peg(webex, database, dbUsers, config);
+const peg = new Peg(webex, pockyDb, dbUsers, config);
 const unpeg = new Unpeg(webex, dbUsers, utilities);
-const reset = new Reset(database, config);
+const reset = new Reset(pockyDb, config);
 const winners = new Winners(winnersService, config);
 const results = new Results(resultsService, config);
-const status = new Status(webex, database, config, utilities);
+const status = new Status(webex, pockyDb, config, utilities);
 const update = new Update(webex, dbUsers, config);
 const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config, webex);
 const welcome = new Welcome(config);
@@ -83,7 +83,7 @@ const ping = new Ping();
 const rotation = new Rotation(config);
 const locationConfig = new LocationConfig(dbLocation, config);
 const userLocation = new UserLocation(dbUsers, dbLocation, config);
-const removeUser = new RemoveUser(config, dbUsers, dbLocation);
+const removeUser = new RemoveUser(config, dbUsers, dbLocation, pockyDb);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [

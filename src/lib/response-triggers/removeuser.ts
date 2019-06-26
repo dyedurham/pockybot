@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import Config from '../config-interface';
-import { DbUsers, DbLocation } from '../database/db-interfaces';
+import { DbUsers, DbLocation, PockyDB } from '../database/db-interfaces';
 import { MessageObject } from 'webex/env';
 import { Role, UserRow } from '../../models/database';
 import { Command } from '../../models/command';
@@ -12,13 +12,15 @@ export default class RemoveUser extends Trigger {
 	private config : Config;
 	private dbUsers : DbUsers;
 	private dbLocation : DbLocation;
+	private pockyDb : PockyDB;
 
-	constructor(config : Config, dbUsers : DbUsers, dbLocation : DbLocation) {
+	constructor(config : Config, dbUsers : DbUsers, dbLocation : DbLocation, pockyDb: PockyDB) {
 		super();
 
 		this.config = config;
 		this.dbUsers = dbUsers;
 		this.dbLocation = dbLocation;
+		this.pockyDb = pockyDb;
 	}
 
 	isToTriggerOn(message : MessageObject) : boolean {
@@ -75,6 +77,17 @@ export default class RemoveUser extends Trigger {
 	}
 
 	private async removeUser(userId : string, username : string) : Promise<string> {
+		const keywords = this.config.getStringConfig('keyword');
+		const penaltyKeywords = this.config.getStringConfig('penaltyKeyword');
+
+		const pegsGiven = await this.pockyDb.countPegsGiven(userId, keywords, penaltyKeywords);
+		const penaltyPegsGiven = await this.pockyDb.countPenaltyPegsGiven(userId, keywords, penaltyKeywords);
+		const pegsReceived = await this.pockyDb.countPegsReceived(userId);
+
+		if (pegsGiven > 0 || penaltyPegsGiven > 0 || pegsReceived > 0) {
+			return `Cannot remove user '${username}', they still have outstanding pegs`
+		}
+
 		try {
 			await this.dbLocation.deleteUserLocation(userId);
 			await this.dbUsers.deleteUser(userId);
