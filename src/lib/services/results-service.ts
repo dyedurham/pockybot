@@ -65,7 +65,7 @@ export class DefaultResultsService implements ResultsService {
 		const allPegSenders = distinct(pegs.map(peg => peg.senderId));
 		const allPeople = distinct(allPegSenders.concat(allPegReceivers));
 
-		let results : Result[] = [];
+		let results: Result[] = [];
 		allPeople.forEach(personId => {
 			const validPegsReceived = pegs.filter(peg => peg.receiverId === personId && peg.isValid);
 			const penaltyPegsGiven = pegs.filter(peg => peg.senderId === personId && !peg.isValid);
