@@ -2,7 +2,7 @@ import * as fs from 'fs';
 const storage = require('@google-cloud/storage');
 
 import sinon = require('sinon');
-import { Substitute } from '@fluffy-spoon/substitute';
+import { Arg, Substitute } from '@fluffy-spoon/substitute';
 import { DefaultResultsService, ResultsService } from '../lib/services/results-service';
 import { FormatResultsService } from '../lib/services/format-results-service';
 import { PegService } from '../lib/services/peg-service';
@@ -11,6 +11,7 @@ import { PockyDB } from '../lib/database/db-interfaces';
 import { Peg } from '../models/peg';
 import { Result } from '../models/result';
 import TestEqualityService from './services/test-equality-services';
+import MockDataService from './services/mock-data-service';
 
 class ResultsServiceSpec {
 	private clock: sinon.SinonFakeTimers;
@@ -106,23 +107,23 @@ class ResultsServiceSpec {
 	}
 
 	private givenResultsArrayExist() {
-		this.database.returnResults().returns(this.promiseResolvingTo([]));
-		this.formatResultsService.returnResultsHtml(null, null).returns(this.promiseResolvingTo(''));
-		this.pegService.getPegs(null).returns([]);
-		this.winnersService.getWinners(null).returns([]);
+		this.database.returnResults().returns(MockDataService.promiseResolvingTo([]));
+		this.formatResultsService.returnResultsHtml(Arg.any(), Arg.any()).returns(MockDataService.promiseResolvingTo(''));
+		this.pegService.getPegs(Arg.any()).returns([]);
+		this.winnersService.getWinners(Arg.any()).returns([]);
 	}
 
 	private givenPegsExist() {
 		this.pegs = [
-			this.createPeg('p2', 'Gillian', 'p3', 'Dula', '', [], true),
-			this.createPeg('p2', 'Gillian', 'p1', 'Luke', '', [], true),
-			this.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
-			this.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
-			this.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
-			this.createPeg('p3', 'Dula', 'p2', 'Gillian', '', [], true),
-			this.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false),
-			this.createPeg('b1', 'Gif', 'p4', 'Jim', '', [], false),
-			this.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true)
+			MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', '', [], true),
+			MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', '', [], true),
+			MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
+			MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
+			MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
+			MockDataService.createPeg('p3', 'Dula', 'p2', 'Gillian', '', [], true),
+			MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false),
+			MockDataService.createPeg('b1', 'Gif', 'p4', 'Jim', '', [], false),
+			MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true)
 		];
 	}
 
@@ -146,13 +147,13 @@ class ResultsServiceSpec {
 				personName: 'Luke',
 				weightedPegsReceived: 3,
 				validPegsReceived: [
-					this.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
-					this.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
-					this.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
-					this.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', '', [], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', '', [], true),
 				],
 				penaltyPegsGiven: [
-					this.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false)
+					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false)
 				]
 			},
 			{
@@ -160,8 +161,8 @@ class ResultsServiceSpec {
 				personName: 'Gillian',
 				weightedPegsReceived: 2,
 				validPegsReceived: [
-					this.createPeg('p2', 'Gillian', 'p3', 'Dula', '', [], true),
-					this.createPeg('p2', 'Gillian', 'p1', 'Luke', '', [], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', '', [], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', '', [], true),
 				],
 				penaltyPegsGiven: []
 			},
@@ -170,7 +171,7 @@ class ResultsServiceSpec {
 				personName: 'Dula',
 				weightedPegsReceived: 1,
 				validPegsReceived: [
-					this.createPeg('p3', 'Dula', 'p2', 'Gillian', '', [], true),
+					MockDataService.createPeg('p3', 'Dula', 'p2', 'Gillian', '', [], true),
 				],
 				penaltyPegsGiven: []
 			},
@@ -180,26 +181,12 @@ class ResultsServiceSpec {
 				weightedPegsReceived: -1,
 				validPegsReceived: [],
 				penaltyPegsGiven: [
-					this.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false),
+					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', '', [], false),
 				]
 			}
 		];
 		expect(TestEqualityService.resultArrayIsEqual(this.results, expected)).toBe(true);
 	}
-
-	private promiseResolvingTo(response: any) {
-		return new Promise((resolve) => {
-			resolve(response);
-		});
-	}
-
-	private createPeg(receiverId: string, receiverName: string, senderId: string, senderName: string, comment: string, categories: string[], isValid: boolean): Peg {
-		return {
-			receiverId, receiverName, senderId, senderName, comment, categories, isValid
-		};
-	}
-
-
 }
 
 let spec = new ResultsServiceSpec();

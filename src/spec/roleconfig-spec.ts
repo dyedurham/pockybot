@@ -69,7 +69,7 @@ describe('configuration message parsing', () => {
 	beforeEach(() => {
 		let dbUsers = createDbUsers();
 		configuration = new Roleconfig(dbUsers, config);
-	})
+	});
 
 	beforeEach(() => {
 		(config.getAllRoles as jasmine.Spy).calls.reset();
