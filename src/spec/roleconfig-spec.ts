@@ -85,8 +85,9 @@ describe('configuration message parsing', () => {
 		expect(response.markdown).toContain(
 `Here is the current config:
 \`\`\`
-  Name    | Value
-UNMETERED | Username
+  Name   | Value
+---------+----------
+Username | UNMETERED
 \`\`\``
 		);
 		done();

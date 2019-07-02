@@ -303,40 +303,21 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 
 		const mapped = await Promise.all(mappedPromise);
 
-		const columnWidths = this.getColumnWidths(mapped);
+		const columnWidths = tableHelper.getColumnWidths(
+			mapped, [x => x.username, x => x.location], ['Username', 'Location']);
 
 		let message = 'Here is the current config:\n```\n';
 
-		message += tableHelper.padString('Username', columnWidths.username) + ' | Location\n';
-		message += ''.padEnd(columnWidths.username, '-') + '-+-' + ''.padEnd(columnWidths.location, '-') + '\n';
+		message += tableHelper.padString('Username', columnWidths[0]) + ' | Location\n';
+		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '\n';
 
 		for (const config of userLocations) {
 			const user = await this.dbUsers.getUser(config.userid);
-			message += user.username.padEnd(columnWidths.username) + ' | ' + config.location + '\n';
+			message += user.username.padEnd(columnWidths[0]) + ' | ' + config.location + '\n';
 		}
 
 		message += '```';
 
 		return message;
-	}
-
-	private getColumnWidths(values : { username: string; location: string; }[]) : { username : number, location : number } {
-		let longestname = stringWidth('username');
-		let longestlocation = stringWidth('location');
-
-		values.forEach((value : { username: string; location: string; }) => {
-			if (stringWidth(value.username) > longestname) {
-				longestname = stringWidth(value.username);
-			}
-
-			if (stringWidth(value.location) > longestlocation) {
-				longestlocation = stringWidth(value.location);
-			}
-		});
-
-		return {
-			username: longestname,
-			location: longestlocation
-		}
 	}
 }

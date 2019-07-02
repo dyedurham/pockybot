@@ -55,6 +55,7 @@ describe('configuration message parsing', () => {
 `Here is the current config:
 \`\`\`
 Name | Value
+-----+------
 test | 1
 \`\`\``
 		);

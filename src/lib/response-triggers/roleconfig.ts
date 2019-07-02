@@ -3,7 +3,7 @@ import Config from '../config-interface';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'webex/env';
-import { Role } from '../../models/database';
+import { Role, RolesRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import DbUsers from '../database/db-users';
@@ -125,15 +125,26 @@ export default class RoleConfig extends Trigger {
 	private async getConfigMessage() : Promise<string> {
 		const roles = this.config.getAllRoles();
 
-		let columnWidths = tableHelper.getRolesColumnWidths(roles);
+		const mappedPromise = roles.map(async x => {
+			const user = await this.dbUsers.getUser(x.userid);
+			return {
+				username: user.username,
+				role: x.role
+			};
+		});
+
+		const mapped = await Promise.all(mappedPromise);
+
+		let columnWidths = tableHelper.getColumnWidths(
+			mapped, [x => x.username, x => x.role], ['Name', 'Value']);
 
 		let message = 'Here is the current config:\n```\n';
 
-		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
+		message += TableHelper.padString('Name', columnWidths[0]) + ' | Value\n';
+		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '\n';
 
-		for (const config of roles) {
-			const user = await this.dbUsers.getUser(config.userid);
-			message += config.role.padEnd(columnWidths.name) + ' | ' + user.username + '\n';
+		for (const config of mapped) {
+			message += config.username.padEnd(columnWidths[0]) + ' | ' + config.role + '\n';
 		}
 
 		message += '```';

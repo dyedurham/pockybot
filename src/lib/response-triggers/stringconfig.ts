@@ -92,14 +92,16 @@ export default class StringConfig extends Trigger {
 	private getConfigMessage() : string {
 		const stringConfig = this.config.getAllStringConfig();
 
-		let columnWidths = tableHelper.getStringConfigColumnWidths(stringConfig);
+		let columnWidths = tableHelper.getColumnWidths(
+			stringConfig, [(x: StringConfigRow) => x.name, (x: StringConfigRow) => x.value], ['Name', 'Value']);
 
 		let message = 'Here is the current config:\n```\n';
 
-		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
+		message += TableHelper.padString('Name', columnWidths[0]) + ' | Value\n';
+		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '\n';
 
 		stringConfig.forEach((config : StringConfigRow) => {
-			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n';
+			message += config.name.padEnd(columnWidths[0]) + ' | ' + config.value + '\n';
 		});
 
 		message += '```';
