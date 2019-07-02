@@ -74,44 +74,9 @@ export default class UserLocation extends Trigger {
 			case LocationAction.Get:
 				return await this.getUserLocation(args, message.personId);
 			case LocationAction.Set:
-				if (args.length !== 5) {
-					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} <location> me\``;
-				}
-
-				const locations = await this.dbLocation.getLocations();
-				if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
-					return `Location ${args[3].text} does not exist. Valid values are: ${locations.join(', ')}`;
-				}
-
-				if (args[4].isMention || args[4].text.toLowerCase() !== 'me') {
-					return 'Permission denied. You are only allowed to set the location for yourself (use \'me\')';
-				}
-
-				const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
-
-				try {
-					await this.setUserLocation(message.personId, location);
-					return 'Location has been set';
-				} catch (error) {
-					Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${message.personId}: ${error.message}`);
-					return 'Error setting location';
-				}
+				return await this.setUserLocationNonAdmin(args, message.personId);
 			case LocationAction.Delete:
-				if (args.length !== 4) {
-					return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\``;
-				}
-
-				if (args[3].isMention || args[3].text.toLowerCase() !== 'me') {
-					return 'Permission denied. You are only allowed to delete the location for yourself (use \'me\')';
-				}
-
-				try {
-					await this.dbLocation.deleteUserLocation(message.personId);
-					return 'Location has been deleted';
-				} catch (error) {
-					Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${message.personId}: ${error.message}`);
-					return 'Error deleting location';
-				}
+				return await this.deleteUserLocationNonAdmin(args, message.personId);
 			default:
 				return `Unknown command. Possible values are ${Object.values(LocationAction).join(', ')}`;
 		}
@@ -209,6 +174,31 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		return 'Location has been set';
 	}
 
+	private async setUserLocationNonAdmin(args : Argument[], personId : string) : Promise<string> {
+		if (args.length !== 5) {
+			return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Set} <location> me\``;
+		}
+
+		const locations = await this.dbLocation.getLocations();
+		if (!locations.map(x => x.toLowerCase()).includes(args[3].text.toLowerCase())) {
+			return `Location ${args[3].text} does not exist. Valid values are: ${locations.join(', ')}`;
+		}
+
+		if (args[4].isMention || args[4].text.toLowerCase() !== 'me') {
+			return 'Permission denied. You are only allowed to set the location for yourself (use \'me\')';
+		}
+
+		const location = locations.filter(x => x.toLowerCase() === args[3].text.toLowerCase())[0];
+
+		try {
+			await this.setUserLocation(personId, location);
+			return 'Location has been set';
+		} catch (error) {
+			Logger.error(`[UserLocation.setUserLocation] Error setting location for user ${personId}: ${error.message}`);
+			return 'Error setting location';
+		}
+	}
+
 	private async setUserLocation(userId : string, location : string) : Promise<void> {
 		try {
 			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
@@ -270,6 +260,24 @@ ${unsetUsers.map(x => `'${x.username}'`).join(', ')}`;
 		}
 
 		return 'Location has been deleted';
+	}
+
+	private async deleteUserLocationNonAdmin(args : Argument[], personId : string) : Promise<string> {
+		if (args.length !== 4) {
+			return `Usage: \`@${constants.botName} ${Command.UserLocation} ${LocationAction.Delete} me\``;
+		}
+
+		if (args[3].isMention || args[3].text.toLowerCase() !== 'me') {
+			return 'Permission denied. You are only allowed to delete the location for yourself (use \'me\')';
+		}
+
+		try {
+			await this.dbLocation.deleteUserLocation(personId);
+			return 'Location has been deleted';
+		} catch (error) {
+			Logger.error(`[UserLocation.setUserLocation] Error deleting location for user ${personId}: ${error.message}`);
+			return 'Error deleting location';
+		}
 	}
 
 	private async getAllUserLocationMessage() : Promise<string> {
