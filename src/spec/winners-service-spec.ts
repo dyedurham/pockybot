@@ -4,8 +4,9 @@ import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultWinnersService, WinnersService } from '../lib/services/winners-service';
 import Config from '../lib/config';
 import Utilities from '../lib/utilities';
-import { PegService } from '../lib/services/peg-service';
+import { DefaultPegService, PegService } from '../lib/services/peg-service';
 import { Peg } from '../models/peg';
+import { Arg, Substitute } from '@fluffy-spoon/substitute';
 
 const config = new Config(null);
 
@@ -102,15 +103,116 @@ describe('winners service', () => {
 	let winnersService: WinnersService;
 	let database: PockyDB;
 	let data: ResultRow[];
+	let pegService;
 
 	beforeEach(() => {
 		const utilities = new Utilities(config);
 		data = createData();
 		database = createDatabase(true, data);
-		winnersService = new DefaultWinnersService(database, config, utilities, null);
+		pegService = Substitute.for<PegService>();
+		// pegService = new DefaultPegService(config, utilities)
+		winnersService = new DefaultWinnersService(database, config, utilities, pegService);
 	});
 
-	xit('should parse a proper message', async (done : DoneFn) => {
+	it('should parse a proper message', async (done : DoneFn) => {
+		pegService.getPegs(Arg.any()).returns([
+			{
+				"receiverId": "r1ID",
+				"receiverName": "mock receiver",
+				"senderId": "s1ID",
+				"senderName": "mock sender",
+				"comment": "test awesome",
+				"categories": [
+					"awesome",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "r1ID",
+				"receiverName": "mock receiver",
+				"senderId": "s1ID",
+				"senderName": "mock sender",
+				"comment": "test brave",
+				"categories": [
+					"brave",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "r2ID",
+				"receiverName": "receiver 2",
+				"senderId": "s2ID",
+				"senderName": "mock sender 2",
+				"comment": "test brave",
+				"categories": [
+					"brave",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "s1ID",
+				"receiverName": "mock sender",
+				"senderId": "r1ID",
+				"senderName": "mock receiver",
+				"comment": "test customer",
+				"categories": [
+					"customer",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "s1ID",
+				"receiverName": "mock sender",
+				"senderId": "r1ID",
+				"senderName": "mock receiver",
+				"comment": "test customer",
+				"categories": [
+					"customer",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "s1ID",
+				"receiverName": "mock sender",
+				"senderId": "r1ID",
+				"senderName": "mock receiver",
+				"comment": "test customer",
+				"categories": [
+					"customer",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "s1ID",
+				"receiverName": "mock sender",
+				"senderId": "r1ID",
+				"senderName": "mock receiver",
+				"comment": "test customer",
+				"categories": [
+					"customer",
+					"test"
+				],
+				"isValid": true
+			},
+			{
+				"receiverId": "s1ID",
+				"receiverName": "mock sender",
+				"senderId": "r1ID",
+				"senderName": "mock receiver",
+				"comment": "test customer",
+				"categories": [
+					"customer",
+					"test"
+				],
+				"isValid": true
+			}
+		]);
 		let message = await winnersService.returnWinnersResponse();
 		expect(message).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +

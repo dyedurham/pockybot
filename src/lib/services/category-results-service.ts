@@ -11,7 +11,7 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		let tables = '';
 
 		categories.forEach((category: string, index: number) => {
-			const sectionId = `categoryresults-${index}`
+			const sectionId = `categoryresults-${index}`;
 			const categoryResults: Result[] = this.sortCategoryPegs(results, category);
 			if (categoryResults.length > 0) {
 				tables += `
