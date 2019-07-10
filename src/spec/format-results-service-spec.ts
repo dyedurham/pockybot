@@ -1,143 +1,177 @@
-import { PockyDB } from '../lib/database/db-interfaces';
-import { ResultRow } from '../models/database';
-
-import MockPockyDb from './mocks/mock-pockydb';
 import { DefaultFormatResultsService, FormatResultsService } from '../lib/services/format-results-service';
-import MockConfig from './mocks/mock-config';
 import Config from '../lib/config-interface';
 import { CategoryResultsService } from '../lib/services/category-results-service';
-import MockCategoryResultsService from './mocks/mock-category-results-service';
-import { WinnersService } from '../lib/services/winners-service';
-import MockWinnersService from './mocks/mock-winners-service';
-import Utilities from '../lib/utilities';
-import { PegRecipient } from '../models/peg-recipient';
+import { Arg, Substitute } from '@fluffy-spoon/substitute';
+import { Result } from '../models/result';
+import MockDataService from './services/mock-data-service';
 
-function createData(): PegRecipient[] {
-	const resultRows = createResultRows();
-	return [
-		{
-			id: resultRows[0].receiver,
-			weightedPegResult: 2,
-			numberOfValidPegsReceived: 2,
-			numberOfPenaltiesReceived: 0,
-			validPegsReceived: resultRows.slice(0, 2),
-			penaltyPegsSent: []
-		},
-		{
-			id: resultRows[1].receiver,
-			weightedPegResult: 2,
-			numberOfValidPegsReceived: 2,
-			numberOfPenaltiesReceived: 0,
-			validPegsReceived: resultRows.slice(2, 4),
-			penaltyPegsSent: []
-		}
-	]
+class FormatResultsServiceSpec {
+	private readonly config;
+	private readonly categoryResultsService;
+	private formatResultsService: FormatResultsService;
+
+	private fullResults: Result[];
+	private winners: Result[];
+	private htmlResultsOutput: string;
+
+	public constructor() {
+		this.config = Substitute.for<Config>();
+		this.categoryResultsService = Substitute.for<CategoryResultsService>();
+		this.formatResultsService = new DefaultFormatResultsService(this.config, this.categoryResultsService);
+	}
+
+	public runTests() {
+		describe('format results service', () => {
+			fit('should generate the correct html', async (done: DoneFn) => {
+				this.givenResultsAndWinners();
+				this.givenWorkingConfig();
+				this.givenCategoryResultsServiceReturnsCategoryResults();
+				await this.whenReturnResultsHtmlIsCalled();
+				this.thenTheOutputShouldBeReturned();
+				done();
+			});
+		});
+	}
+
+	private givenResultsAndWinners() {
+		this.fullResults = [
+			{
+				personId: 'p1',
+				personName: 'Luke',
+				weightedPegsReceived: 3,
+				validPegsReceived: [
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'b', ['cat1', 'cat2'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'c', ['cat2'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true),
+				],
+				penaltyPegsGiven: [
+					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', 'e', ['shame'], false)
+				]
+			},
+			{
+				personId: 'p2',
+				personName: 'Gillian',
+				weightedPegsReceived: 2,
+				validPegsReceived: [
+					MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', 'f', ['cat1'], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true),
+				],
+				penaltyPegsGiven: []
+			},
+			{
+				personId: 'p3',
+				personName: 'Dula',
+				weightedPegsReceived: 1,
+				validPegsReceived: [
+					MockDataService.createPeg('p3', 'Dula', 'p2', 'Gillian', 'h', [], true),
+				],
+				penaltyPegsGiven: []
+			},
+			{
+				personId: 'p4',
+				personName: 'Jim',
+				weightedPegsReceived: -1,
+				validPegsReceived: [],
+				penaltyPegsGiven: [
+					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', 'i', [], false),
+				]
+			}
+		];
+
+		this.winners = [
+			{
+				personId: 'p1',
+				personName: 'Luke',
+				weightedPegsReceived: 3,
+				validPegsReceived: [
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'b', ['cat1', 'cat2'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'c', ['cat2'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true),
+				],
+				penaltyPegsGiven: [
+					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', 'e', ['shame'], false)
+				]
+			},
+			{
+				personId: 'p2',
+				personName: 'Gillian',
+				weightedPegsReceived: 2,
+				validPegsReceived: [
+					MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', 'f', ['cat1'], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true),
+				],
+				penaltyPegsGiven: []
+			}
+		];
+	}
+
+	private givenWorkingConfig() {
+		this.config.getStringConfig('keyword').returns(['keyword1']);
+	}
+
+	private givenCategoryResultsServiceReturnsCategoryResults() {
+		this.categoryResultsService.returnCategoryResultsTable(Arg.any(), Arg.any()).returns('<categoryResults>');
+	}
+
+	private async whenReturnResultsHtmlIsCalled() {
+		this.htmlResultsOutput = await this.formatResultsService.returnResultsHtml(this.fullResults, this.winners);
+	}
+
+	private thenTheOutputShouldBeReturned() {
+		const today = new Date();
+		const todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+		// remove whitespace to make testing easier
+		const html = this.htmlResultsOutput.replace(/>\s+</g, '><');
+		expect(this.htmlResultsOutput).toContain(`<title>Pegs ${todayString}</title>`);
+		expect(this.htmlResultsOutput).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
+
+		let testString = `<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke &mdash; 3 (4) pegs total</th></tr>
+			</thead><tbody id="section-winners-0" class="collapse show">
+			<tr><td>Dula</td><td>b</td><td>cat1, cat2</td></tr>
+			<tr><td>Dula</td><td>c</td><td>cat2</td></tr>
+			<tr><td>Gillian</td><td>a</td><td>cat1</td></tr>
+			<tr><td>Gillian</td><td>d</td><td>cat3</td></tr>
+			</tbody>`
+			.replace(/>\s+</g, '><');
+		expect(html).toContain(testString);
+
+		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-winners-1" aria-expanded="true" aria-controls="section-winners-1">
+			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Gillian &mdash; 2 pegs total</th></tr>
+			</thead><tbody id="section-winners-1" class="collapse show">
+			<tr><td>Dula</td><td>f</td><td>cat1</td></tr>
+			<tr><td>Luke</td><td>g</td><td>cat2, cat3</td></tr></tbody>`
+			.replace(/>\s+</g, '><');
+		expect(html).toContain(testString);
+
+		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-0" aria-expanded="true" aria-controls="section-losers-0">
+			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Dula &mdash; 1 peg total</th></tr>
+			</thead><tbody id="section-losers-0" class="collapse show">
+			<tr><td>Gillian</td><td>h</td><td></td></tr></tbody>
+			<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-1" aria-expanded="true" aria-controls="section-losers-1">
+			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Jim &mdash; -1 (0) peg(s) total</th></tr>
+			</thead><tbody id="section-losers-1" class="collapse show"></tbody>`
+			.replace(/>\s+</g, '><');
+		expect(html).toContain(testString);
+
+		testString = `<div class="tab-pane fade show" id="categoryResults" role="tabpanel" aria-labelledby="categoryResults-tab">
+			<categoryResults></div>`
+			.replace(/>\s+</g, '><');
+		expect(html).toContain(testString);
+
+		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-penalties-0" aria-expanded="true" aria-controls="section-penalties-0">
+			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke &mdash; 1</th></tr>
+			</thead><tbody id="section-penalties-0" class="collapse show">
+			<tr><td>Gif</td><td>e</td><td></td></tr></tbody>
+			<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-penalties-3" aria-expanded="true" aria-controls="section-penalties-3">
+			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Jim &mdash; 1</th></tr>
+			</thead><tbody id="section-penalties-3" class="collapse show">
+			<tr><td>Gif</td><td>i</td><td></td></tr></tbody>`
+			.replace(/>\s+</g, '><');
+		expect(html).toContain(testString);
+	}
 }
 
-function createResultRows(): ResultRow[] {
-	return [
-		{
-			receiver: 'Person One',
-			receiverid: 'p1',
-			sender: 'Person Two',
-			senderid: 'p2',
-			comment: 'test awesome'
-		},
-		{
-			receiver: 'Person One',
-			receiverid: 'p1',
-			sender: 'Person Three',
-			senderid: 'p3',
-			comment: 'test brave'
-		},
-		{
-			receiver: 'Person Two',
-			receiverid: 'p2',
-			sender: 'Person Three',
-			senderid: 'p3',
-			comment: 'test brave'
-		},
-		{
-			receiver: 'Person Three',
-			receiverid: 'p3',
-			sender: 'Person One',
-			senderid: 'p1',
-			comment: 'test customer'
-		},
-		{
-			receiver: 'Person One',
-			receiverid: 'p1',
-			sender: 'Person Two',
-			senderid: 'p2',
-			comment: 'test brave'
-		},
-		{
-			receiver: 'Person Two',
-			receiverid: 'p2',
-			sender: 'Person One',
-			senderid: 'p1',
-			comment: 'awesome brave'
-		},
-		{
-			receiver: 'GifBot',
-			receiverid: 'b1',
-			sender: 'Person Three',
-			senderid: 'p3',
-			comment: 'shame shame shame'
-		}
-	];
-}
-
-function createDatabase(success: boolean, data): PockyDB {
-	return new MockPockyDb(true, 0, true, 2, success ? data : undefined);
-}
-
-function createConfig(): Config{
-	return new MockConfig(5, 1, 3, 1, 1, 1, ['brave', 'awesome', 'customer'], ['shame']);
-}
-
-describe('format results service', () => {
-	let today = new Date();
-	let todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	let data: ResultRow[];
-	let database: PockyDB;
-	let winners: PegRecipient[];
-	let formatResultsService: FormatResultsService;
-	let categoryResultsService: CategoryResultsService;
-	let winnersService: WinnersService;
-	let config: Config;
-	jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
-	beforeEach(() => {
-		data = createResultRows();
-		database = createDatabase(true, data);
-		winners = createData();
-		config = createConfig();
-		categoryResultsService = new MockCategoryResultsService();
-		winnersService = new MockWinnersService(true, '');
-		formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
-	});
-
-	xit('should generate the correct html', async (done: DoneFn) => {
-		//spyOn(winnersService, 'getWinners').and.returnValue(winners);
-
-		//let html = await formatResultsService.returnResultsHtml();
-
-		let html = '';
-
-		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Person One &mdash; 3 pegs total</th></tr>');
-		expect(html).toContain('<tr><td>Person Two</td><td>test awesome</td><td>awesome</td></tr>');
-		expect(html).toContain('<tr><td>Person Three</td><td>test brave</td><td>brave</td></tr>');
-		expect(html).toContain('<tr><td>Person Two</td><td>test brave</td><td>brave</td></tr>');
-
-		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Person Two &mdash; 2 pegs total</th></tr>');
-		expect(html).toContain('<tr><td>Person Three</td><td>test brave</td><td>brave</td></tr>');
-		expect(html).toContain('<tr><td>Person One</td><td>awesome brave</td>');
-
-		expect(html).toContain('<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Person Three &mdash; 0 (1) peg(s) total</th></tr>');
-		expect(html).toContain('<tr><td>Person One</td><td>test customer</td><td>customer</td></tr>');
-
-		expect(html).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
-		done();
-	});
-});
+let spec = new FormatResultsServiceSpec();
+spec.runTests();
