@@ -22,7 +22,7 @@ class FormatResultsServiceSpec {
 
 	public runTests() {
 		describe('format results service', () => {
-			fit('should generate the correct html', async (done: DoneFn) => {
+			it('should generate the correct html', async (done: DoneFn) => {
 				this.givenResultsAndWinners();
 				this.givenWorkingConfig();
 				this.givenCategoryResultsServiceReturnsCategoryResults();
