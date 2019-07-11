@@ -46,11 +46,13 @@ import { DefaultResultsService } from '../services/results-service';
 import { DefaultPmResultsService } from '../services/pm-results-service';
 import { DefaultFormatResultsService } from '../services/format-results-service';
 import { DefaultCategoryResultsService } from '../services/category-results-service';
+import { DefaultPegService } from '../services/peg-service';
 
 // Service instantiation
-const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
+const config = new Config(dbConfig);
+const utilities = new Utilities(config);
 const dbUsers = new DbUsers(webex, queryHandler);
 const dbLocation = new DbLocation(queryHandler);
 const pockyDb = new PockyDB(queryHandler, dbUsers, utilities);

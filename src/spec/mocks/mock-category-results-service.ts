@@ -1,8 +1,8 @@
 import { CategoryResultsService } from '../../lib/services/category-results-service';
-import { Receiver } from '../../models/receiver';
+import { Result } from '../../models/result';
 
 export default class MockCategoryResultsService implements CategoryResultsService {
-	returnCategoryResultsTable(results: Receiver[], categories: string[]): string {
+	returnCategoryResultsTable(results: Result[], categories: string[]): string {
 		return '';
 	}
 }

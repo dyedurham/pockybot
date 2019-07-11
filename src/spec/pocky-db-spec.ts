@@ -82,7 +82,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return true for default_user', async (done : DoneFn) => {
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
@@ -92,7 +92,7 @@ describe('has spare pegs', () => {
 	});
 
 	it('should return true for mockunmeteredID', async (done : DoneFn) => {
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
@@ -103,7 +103,7 @@ describe('has spare pegs', () => {
 
 	it('should return false for other users', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock(createGoodPegs(10));
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
@@ -115,7 +115,7 @@ describe('has spare pegs', () => {
 	it('should return true for no pegs spent', async (done : DoneFn) => {
 		let config = new MockConfig(10, 5, 3, 1, 0, 1, ['one', 'two', 'three'], ['shame'], false);
 
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'commentIsPenalty').and.callFake(() => false);
 		const database = new PockyDB(queryHandler, null, utilities);
 
@@ -130,7 +130,7 @@ describe('count pegs', () => {
 	it('should return count of good pegs', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock(createGoodPegs(125689));
 
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
 		const database = new PockyDB(queryHandler, null, utilities);
 		database.loadConfig(config);
@@ -144,7 +144,7 @@ describe('give peg with comment', () => {
 	it('should return 0', async (done : DoneFn) => {
 		let queryHandler = createQueryHandlerMock([]);
 		let dbUsers = new MockDbUsers();
-		const utilities = new Utilities();
+		const utilities = new Utilities(config);
 		spyOn(utilities, 'getNonPenaltyPegs').and.callFake((givenPegs : []) => new Array(givenPegs.length));
 
 		const database = new PockyDB(queryHandler, dbUsers, utilities);

@@ -1,4 +1,6 @@
 import { ResultsService } from '../../lib/services/results-service';
+import { Peg } from '../../models/peg';
+import { Result } from '../../models/result';
 
 export default class MockResultsService implements ResultsService {
 
@@ -16,5 +18,9 @@ export default class MockResultsService implements ResultsService {
 		} else {
 			return Promise.resolve(this.resultString);
 		}
+	}
+
+	getResults(pegs: Peg[]): Result[] {
+		throw new Error('not implemented');
 	}
 }

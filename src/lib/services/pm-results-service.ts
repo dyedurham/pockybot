@@ -5,6 +5,11 @@ import TableHelper from '../parsers/tableHelper';
 import { Logger } from '../logger';
 import { PegReceivedData } from '../../models/peg-received-data';
 import { Webex } from 'webex/env';
+import Utilities from '../utilities';
+import { Peg } from '../../models/peg';
+import { Result } from '../../models/result';
+import { PegService } from './peg-service';
+import { ResultsService } from './results-service';
 
 const lineEnding = '\r\n';
 
@@ -15,34 +20,41 @@ export interface PmResultsService {
 export class DefaultPmResultsService implements PmResultsService {
 	database : PockyDB;
 	webex : Webex;
+	utilities: Utilities;
+	pegService: PegService;
+	resultsService: ResultsService;
 
-	constructor(database : PockyDB, webex : Webex) {
+	constructor(database : PockyDB, webex : Webex, utilities: Utilities, pegService: PegService, resultsService: ResultsService) {
 		this.database = database;
 		this.webex = webex;
+		this.utilities = utilities;
+		this.pegService = pegService;
+		this.resultsService = resultsService;
 	}
 
 	async pmResults() : Promise<void> {
-		const data : ResultRow[] = await this.database.returnResults();
-		const results : Receiver[] = TableHelper.mapResults(data);
+		const fullData: ResultRow[] = await this.database.returnResults();
+		const allPegs: Peg[] = this.pegService.getPegs(fullData);
+		const fullResults: Result[] = this.resultsService.getResults(allPegs);
 
-		let columnWidths = TableHelper.getReceiverColumnWidths(results);
+		let columnWidths = TableHelper.getReceiverColumnWidths(fullResults);
 
 		let pegsReceived = {};
 
 		// map table data
-		results.forEach((result: Receiver) => {
-			result.pegs.sort((a, b) => a.sender.localeCompare(b.sender));
+		fullResults.forEach((result: Result) => {
+			result.validPegsReceived.sort((a, b) => a.senderName.localeCompare(b.senderName));
 
-			pegsReceived[result.id] = ''
-			pegsReceived[result.id] += result.person.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
+			pegsReceived[result.personId] = '';
+			pegsReceived[result.personId] += result.personName.toString().padEnd(columnWidths.receiver) + ' | ' + ''.padEnd(columnWidths.sender) + ' | ' + lineEnding;
 			let firstPeg = true;
-			let pegCount = result.pegs.length;
-			result.pegs.forEach((peg: PegReceivedData) => {
+			let pegCount = result.validPegsReceived.length;
+			result.validPegsReceived.forEach((peg: Peg) => {
 				if (firstPeg) {
-					pegsReceived[result.id] += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
+					pegsReceived[result.personId] += pegCount.toString().padEnd(columnWidths.receiver) + ' | ' + peg.senderName.padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
 					firstPeg = false;
 				} else {
-					pegsReceived[result.id] += ''.padEnd(columnWidths.receiver) + ' | ' + peg.sender.toString().padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
+					pegsReceived[result.personId] += ''.padEnd(columnWidths.receiver) + ' | ' + peg.senderName.padEnd(columnWidths.sender) + ' | ' + peg.comment + lineEnding;
 				}
 			});
 		});
