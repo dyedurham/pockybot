@@ -24,7 +24,7 @@ function createDatabase() : DbUsers {
 	let db = new MockDbUsers();
 
 	spyOn(db, 'getUser').and.callFake((userid : string) => {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			resolve({
 				username: userid + ' Name',
 				userid: userid
@@ -36,9 +36,9 @@ function createDatabase() : DbUsers {
 }
 
 function createUtilities(numToReturn : number) : Utilities {
-	let utilities = new Utilities();
+	let utilities = new Utilities(null);
 
-	spyOn(utilities, 'sleep').and.returnValue(new Promise((resolve, reject) => resolve()));
+	spyOn(utilities, 'sleep').and.returnValue(new Promise((resolve) => resolve()));
 	spyOn(utilities, 'getRandomInt').and.returnValue(numToReturn);
 
 	return utilities;
@@ -181,7 +181,7 @@ Error: Access Denied user Ke$ha *6* Name does not have the correct privileges
 	at DecrementPegs (pockybot.js:1535)
 \`\`\``
 		}
-	]
+	];
 
 	testCases.forEach((test : UnpegTestData) => {
 		it(`should fake unpeg in case ${test.case}`, async (done : DoneFn) => {

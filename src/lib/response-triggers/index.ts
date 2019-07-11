@@ -42,19 +42,21 @@ import { DefaultResultsService } from '../services/results-service';
 import { DefaultPmResultsService } from '../services/pm-results-service';
 import { DefaultFormatResultsService } from '../services/format-results-service';
 import { DefaultCategoryResultsService } from '../services/category-results-service';
+import { DefaultPegService } from '../services/peg-service';
 
 // Service instantiation
-const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
+const config = new Config(dbConfig);
+const utilities = new Utilities(config);
 const dbUsers = new DbUsers(webex, queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
-const config = new Config(dbConfig);
+const pegService = new DefaultPegService(config, utilities);
 const categoryResultsService = new DefaultCategoryResultsService();
-const winnersService = new DefaultWinnersService(database, config, utilities);
-const formatResultsService = new DefaultFormatResultsService(database, config, categoryResultsService, winnersService, utilities);
-const resultsService = new DefaultResultsService(formatResultsService);
-const pmResultsService = new DefaultPmResultsService(database, webex);
+const winnersService = new DefaultWinnersService(database, config, utilities, pegService);
+const formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
+const resultsService = new DefaultResultsService(database, formatResultsService, pegService, winnersService);
+const pmResultsService = new DefaultPmResultsService(database, webex, utilities, pegService, resultsService);
 
 database.loadConfig(config);
 config.updateAll();

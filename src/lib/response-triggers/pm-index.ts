@@ -31,12 +31,12 @@ import Utilities from '../utilities';
 
 
 // Service instantiation
-const utilities = new Utilities();
 const queryHandler = new QueryHandler(new Client());
 const dbConfig = new DbConfig(queryHandler);
+const config = new configService(dbConfig);
+const utilities = new Utilities(config);
 const dbUsers = new DbUsers(webex, queryHandler);
 const database = new PockyDB(queryHandler, dbUsers, utilities);
-const config = new configService(dbConfig);
 
 database.loadConfig(config);
 config.updateAll();

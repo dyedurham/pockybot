@@ -1,18 +1,18 @@
 import HtmlHelper from '../parsers/htmlHelper';
-import { Receiver } from '../../models/receiver';
+import { Result } from '../../models/result';
 
 export interface CategoryResultsService {
-	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string
+	returnCategoryResultsTable(results: Result[], categories: string[]) : string
 }
 
 export class DefaultCategoryResultsService implements CategoryResultsService {
 
-	returnCategoryResultsTable(results: Receiver[], categories: string[]) : string {
+	returnCategoryResultsTable(results: Result[], categories: string[]) : string {
 		let tables = '';
 
 		categories.forEach((category: string, index: number) => {
-			const sectionId = `categoryresults-${index}`
-			const categoryResults: Receiver[] = this.sortCategoryPegs(results, category);
+			const sectionId = `categoryresults-${index}`;
+			const categoryResults: Result[] = this.sortCategoryPegs(results, category);
 			if (categoryResults.length > 0) {
 				tables += `
 					<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-${sectionId}" aria-expanded="false" aria-controls="section-${sectionId}"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
@@ -27,14 +27,15 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 		return tables;
 	}
 
-	sortCategoryPegs(results: Receiver[], category: string) : Receiver[] {
-		let categoryResults: Receiver[] = results.map(x => Object.assign({}, x)); // deep copy array
+	sortCategoryPegs(results: Result[], category: string) : Result[] {
+		let categoryResults: Result[] = results.map(x => Object.assign({}, x)); // deep copy array
 		categoryResults.forEach(catResult => {
-			catResult.pegs = catResult.pegs.filter(x => x.categories.includes(category));
+			catResult.validPegsReceived = catResult.validPegsReceived.filter(x => x.categories.includes(category));
 		});
 
-		categoryResults = categoryResults.filter(x => x.pegs.length > 0);
-		categoryResults.sort((a, b) => b.pegs.length - a.pegs.length); // sort from most to least pegs
+		categoryResults = categoryResults.filter(x => x.validPegsReceived.length > 0);
+		// sort from most to least pegs
+		categoryResults.sort((a, b) => b.validPegsReceived.length - a.validPegsReceived.length);
 		return categoryResults;
 	}
 }

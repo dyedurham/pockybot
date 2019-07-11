@@ -1,6 +1,13 @@
 import { PegGivenData } from '../models/peg-given-data';
+import Config from './config-interface';
 
 export default class Utilities {
+	config: Config;
+
+	constructor(config: Config) {
+		this.config = config;
+	}
+
 	sleep(seconds : number) : Promise<void> {
 		return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 	}
@@ -44,8 +51,10 @@ export default class Utilities {
 
 	pegValid(comment: string, requireKeywords: number, keywords: string[], penaltyKeywords: string[]): boolean {
 		if (requireKeywords) {
+			// Comment must include one of the keywords
 			return keywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
 		} else {
+			// Comment must not include one of the penalty keywords
 			return !penaltyKeywords.some(x => comment.toLowerCase().includes(x.toLowerCase()));
 		}
 	}

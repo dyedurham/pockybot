@@ -13,8 +13,8 @@
     "start": "node built/server.js",
     "test": "jasmine-ts --config=jasmine.json",
     "semantic-release": "semantic-release",
-	"travis-deploy-once": "travis-deploy-once",
-	"commit": "git-cz"
+    "travis-deploy-once": "travis-deploy-once",
+    "commit": "git-cz"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "webex": "^1.60.2"
   },
   "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.89.0",
     "@types/jasmine": "^3.3.13",
     "@types/libxmljs": "^0.18.3",
     "@types/node": "^12.0.8",
