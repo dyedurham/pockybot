@@ -1,6 +1,5 @@
 import { PegRecipient } from '../../models/peg-recipient';
 const stringWidth = require('string-width');
-import { ResultRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { Result } from '../../models/result';
 import { Peg } from '../../models/peg';

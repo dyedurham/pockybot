@@ -56,12 +56,12 @@ const utilities = new Utilities(config);
 const dbUsers = new DbUsers(webex, queryHandler);
 const dbLocation = new DbLocation(queryHandler);
 const pockyDb = new PockyDB(queryHandler, dbUsers, utilities);
-const config = new Config(dbConfig);
+const pegService = new DefaultPegService(config, utilities);
 const categoryResultsService = new DefaultCategoryResultsService();
-const winnersService = new DefaultWinnersService(pockyDb, config, utilities);
-const formatResultsService = new DefaultFormatResultsService(pockyDb, config, categoryResultsService, winnersService, utilities);
-const resultsService = new DefaultResultsService(formatResultsService);
-const pmResultsService = new DefaultPmResultsService(pockyDb, webex);
+const winnersService = new DefaultWinnersService(pockyDb, config, utilities, pegService);
+const formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
+const resultsService = new DefaultResultsService(pockyDb, formatResultsService, pegService, winnersService);
+const pmResultsService = new DefaultPmResultsService(pockyDb, webex, utilities, pegService, resultsService);
 
 pockyDb.loadConfig(config);
 config.updateAll();
