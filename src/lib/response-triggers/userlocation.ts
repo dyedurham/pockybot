@@ -36,7 +36,7 @@ export default class UserLocation extends Trigger {
 			args = xmlMessageParser.parseOutArgs(message);
 		} catch(error) {
 			Logger.error(`[UserLocation.createMessage] Error parsing args: ${error.message}`);
-			return { markdown: `Error parsing request: ${error.message}` }
+			return { markdown: `Error parsing request: ${error.message}` };
 		}
 
 		if (args.length < 3 || args[2].isMention) {

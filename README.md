@@ -145,8 +145,11 @@ Use any of these commands in a room PockyBot is participating in to perform comm
 * `@PockyBot unpeg @OtherPerson <reason>` &mdash; pretend to remove a peg from `@OtherPerson`.
   * Use `@PockyBot unpeg <concept> for <reason>` to unpeg abstract concepts that can't be tagged.
 * `@PockyBot locationconfig get` &mdash; get the list of available locations.
-* `@PockyBot userlocation get|set|delete {location} me|all|unset|@User` &mdash; configure user locations. Note that normal users may not
+* `@PockyBot userlocation` &mdash; configure user locations (details below). Note that normal users may not
 configure locations for people other than themselves, but admins can access the full functionality of this command.
+  * `@PockyBot userlocation get me|all|unset|@User` &mdash; get a user's location
+  * `@PockyBot userlocation set {location} me` &mdash; set your location
+  * `@PockyBot userlocation delete me` &mdash; delete your location
 
 ##### Direct message commands
 
@@ -173,6 +176,10 @@ These commands can only be performed by users with the role of 'ADMIN' or users 
 * `@PockyBot roleconfig get|set|refresh|delete {@User} {role}` &mdash; get or change user roles
 * `@PockyBot locationconfig get|set|delete {location}` &mdash; get or change locations
 * `@PockyBot removeuser @User|username` &mdash; remove a user
+* `@PockyBot userlocation` &mdash; configure user locations as an admin (details below).
+  * `@PockyBot userlocation get me|all|unset|@User` &mdash; get a user's location
+  * `@PockyBot userlocation set {location} me|@User1 @User2` &mdash; set one or more users' locations
+  * `@PockyBot userlocation delete me|@User1 @User2` &mdash; delete one or more users' locations
 
 ## Contributing
 
