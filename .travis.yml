@@ -5,6 +5,8 @@ node_js:
 stages:
   - test
   - build
+  - name: dry-run-release
+    if: branch != master
   - name: release
     if: branch = master
 
@@ -16,6 +18,10 @@ jobs:
     - stage: build
       script:
         - npm run build
+    - stage: dry-run-release
+      node_js: lts/*
+      script:
+        - npx semantic-release --dry-run
     - stage: release
       node_js: lts/*
       script:
