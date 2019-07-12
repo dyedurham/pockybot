@@ -1,5 +1,12 @@
 # Pockybot 📍👏🏆🤖
 
+<p align="center">
+    <a href="https://www.npmjs.com/package/pockybot"><img src="https://flat.badgen.net/npm/v/pockybot" alt="Pockybot npm package" /></a>
+    <a href="https://travis-ci.org/GlobalX/pockybot"><img src="https://flat.badgen.net/travis/GlobalX/pockybot" alt="Pockybot on Travis CI" /></a>
+    <img src="https://flat.badgen.net/badge/icon/dependabot?icon=dependabot&label" alt="dependabot" />
+    <a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" alt="semantic-release" /></a>
+</p>
+
 > Webex bot that handles team recognition. A chatbot for [pegs & pocky](#what-is-pegs--pocky).
 
 ## What is Pegs & Pocky?
