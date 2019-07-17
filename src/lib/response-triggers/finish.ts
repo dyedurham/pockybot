@@ -40,27 +40,19 @@ export default class Finish extends Trigger {
 		return parsedMessage.botId === constants.botId && parsedMessage.command.toLowerCase() === Command.Finish;
 	}
 
-	async createMessage(commandMessage : MessageObject, room : string) : Promise<MessageObject> {
-		let winnersMarkdown: string;
-		let resultsMarkdown: string;
+	async createMessage(commandMessage: MessageObject, room: string): Promise<MessageObject> {
+		let results: string;
 
-		const winnersPromise = this.winnersService.returnWinnersResponse();
-		const resultsPromise = this.resultsService.returnResultsMarkdown();
-		await Promise.all([winnersPromise, resultsPromise])
-			.then(function(values) {
-				winnersMarkdown = values[0];
-				resultsMarkdown = values[1];
-			}).catch(function(error){
-				Logger.error(`[Finish.createMessage] Error returning winners or results: ${error.message}`);
-				return { markdown: `error returning winners or results` };
-			});
-		Logger.debug('[Finish.createMessage] Got winners and responses');
-
-		let message = `## Winners\n\n` + winnersMarkdown + '\n\n';
-		message += resultsMarkdown;
+		try {
+			results = await this.resultsService.returnResultsMarkdown();
+			Logger.debug('[Finish.createMessage] Got results');
+		} catch (error) {
+			Logger.error(`[Finish.createMessage] Error returning results: ${error.message}`);
+			return { markdown: 'error returning results' };
+		}
 
 		this.webex.messages.create({
-			markdown: message,
+			markdown: results,
 			roomId: room
 		});
 
