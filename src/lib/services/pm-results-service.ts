@@ -65,7 +65,7 @@ export class DefaultPmResultsService implements PmResultsService {
 			try {
 				this.webex.messages.create({
 					markdown:
-						`Here are the pegs your have received this cycle:
+						`Here are the pegs you have received this cycle:
 \`\`\`
 ${pegsReceived[receiver]}
 \`\`\``,
