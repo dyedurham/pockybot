@@ -82,6 +82,7 @@ export class DefaultResultsService implements ResultsService {
 			}
 		});
 
-		return results;
+
+		return results.sort((a, b) => a.weightedPegsReceived - b.weightedPegsReceived);
 	}
 }
