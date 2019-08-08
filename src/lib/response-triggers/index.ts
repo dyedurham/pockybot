@@ -47,6 +47,9 @@ import { DefaultPmResultsService } from '../services/pm-results-service';
 import { DefaultFormatResultsService } from '../services/format-results-service';
 import { DefaultCategoryResultsService } from '../services/category-results-service';
 import { DefaultPegService } from '../services/peg-service';
+import { DefaultGetUserLocationService } from '../services/get-user-location-service';
+import { DefaultSetUserLocationService } from '../services/set-user-location-service';
+import { DefaultDeleteUserLocationService } from '../services/delete-user-location-service';
 
 // Service instantiation
 const queryHandler = new QueryHandler(new Client());
@@ -62,6 +65,9 @@ const winnersService = new DefaultWinnersService(pockyDb, config, utilities, peg
 const formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
 const resultsService = new DefaultResultsService(pockyDb, formatResultsService, pegService, winnersService);
 const pmResultsService = new DefaultPmResultsService(pockyDb, webex, utilities, pegService, resultsService);
+const getUserLocationService = new DefaultGetUserLocationService(dbLocation, dbUsers);
+const setUserLocationService = new DefaultSetUserLocationService(dbLocation, dbUsers);
+const deleteUserLocationService = new DefaultDeleteUserLocationService(dbLocation);
 
 pockyDb.loadConfig(config);
 config.updateAll();
@@ -84,7 +90,7 @@ const help = new Help(config);
 const ping = new Ping();
 const rotation = new Rotation(config);
 const locationConfig = new LocationConfig(dbLocation, config);
-const userLocation = new UserLocation(dbUsers, dbLocation, config);
+const userLocation = new UserLocation(config, getUserLocationService, setUserLocationService, deleteUserLocationService);
 const removeUser = new RemoveUser(config, dbUsers, dbLocation, pockyDb);
 const defaultTrigger = new Default();
 
