@@ -35,7 +35,7 @@ beforeAll(() => {
 		}
 
 		return [];
-	})
+	});
 });
 
 describe('configuration message parsing', () => {
@@ -56,6 +56,7 @@ describe('configuration message parsing', () => {
 `Here is the current config:
 \`\`\`
 Name | Value
+-----+------
 test | test
 \`\`\``
 		);

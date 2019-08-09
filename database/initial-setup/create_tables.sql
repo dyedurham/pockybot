@@ -18,7 +18,7 @@ CREATE TABLE generalconfig (
 	PRIMARY KEY (name)
 );
 
-CREATE TYPE role AS ENUM ('ADMIN', 'UNMETERED', 'RESULTS', 'FINISH', 'RESET', 'UPDATE', 'WINNERS', 'CONFIG');
+CREATE TYPE role AS ENUM ('ADMIN', 'UNMETERED', 'RESULTS', 'FINISH', 'RESET', 'UPDATE', 'WINNERS', 'CONFIG', 'USERLOCATION', 'REMOVEUSER');
 
 CREATE TABLE roles (
 	userid varchar(255) REFERENCES pockyusers(userid),
@@ -30,4 +30,15 @@ CREATE TABLE stringconfig (
 	name varchar(255) NOT NULL,
 	value varchar(255) NOT NULL,
 	PRIMARY KEY (name, value)
+);
+
+CREATE TABLE locations (
+	name varchar(255) NOT NULL,
+	PRIMARY KEY (name)
+);
+
+CREATE TABLE user_locations (
+	userid varchar(255) REFERENCES pockyusers(userid),
+	location varchar(255) REFERENCES locations(name),
+	PRIMARY KEY (userid)
 );

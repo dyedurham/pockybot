@@ -6,5 +6,7 @@ export enum Role {
 	Reset = 'RESET',
 	Update = 'UPDATE',
 	Winners = 'WINNERS',
-	Config = 'CONFIG'
+	Config = 'CONFIG',
+	UserLocation = 'USERLOCATION',
+	RemoveUser = 'REMOVEUSER'
 }

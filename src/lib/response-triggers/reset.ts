@@ -1,7 +1,7 @@
 import Trigger from '../../models/trigger';
 import constants from '../../constants';
 import { PockyDB } from '../database/db-interfaces';
-import Config from '../config';
+import Config from '../config-interface';
 import { Logger } from '../logger';
 import { MessageObject } from 'webex/env';
 import { Role } from '../../models/database';

@@ -12,6 +12,7 @@ export default class DbUsers implements DbUsersInterface {
 	private readonly sqlGetUser : string;
 	private readonly sqlCreateUser : string;
 	private readonly sqlExists : string;
+	private readonly sqlDeleteUser : string;
 
 	private webex : Webex;
 	private queryHandler : QueryHandler;
@@ -25,8 +26,8 @@ export default class DbUsers implements DbUsersInterface {
 		this.sqlGetUser = this.queryHandler.readFile('../../../database/queries/select_user.sql');
 		this.sqlCreateUser = this.queryHandler.readFile('../../../database/queries/create_pocky_user.sql');
 		this.sqlExists = this.queryHandler.readFile('../../../database/queries/exists.sql');
+		this.sqlDeleteUser = this.queryHandler.readFile('../../../database/queries/delete_pocky_user.sql');
 	}
-
 
 	async createUser(userid : string) : Promise<QueryResult> {
 		let user : PersonObject;
@@ -130,5 +131,16 @@ export default class DbUsers implements DbUsersInterface {
 		Logger.debug(`[DbUsers.exists] Checking if user ${userid} exists`);
 		let existingUser = await this.queryHandler.executeQuery(query);
 		return existingUser[0]['exists'];
+	}
+
+	async deleteUser(userid : string) : Promise<void> {
+		let query : QueryConfig = {
+			name: 'deleteUserQuery',
+			text: this.sqlDeleteUser,
+			values: [userid]
+		};
+
+		Logger.debug(`[DbUsers.deleteUser] Deleting user ${userid}`);
+		await this.queryHandler.executeNonQuery(query);
 	}
 }

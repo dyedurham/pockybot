@@ -24,6 +24,9 @@ import Rotation from './rotation';
 import NumberConfig from './numberconfig';
 import StringConfig from './stringconfig';
 import RoleConfig from './roleconfig';
+import LocationConfig from './locationconfig';
+import UserLocation from './userlocation';
+import RemoveUser from './removeuser';
 import Default from './default';
 
 // Services
@@ -37,12 +40,16 @@ import QueryHandler from '../database/query-handler';
 import PockyDB from '../database/pocky-db';
 import DbUsers from '../database/db-users';
 import DbConfig from '../database/db-config';
+import DbLocation from '../database/db-location';
 import { DefaultWinnersService } from '../services/winners-service';
 import { DefaultResultsService } from '../services/results-service';
 import { DefaultPmResultsService } from '../services/pm-results-service';
 import { DefaultFormatResultsService } from '../services/format-results-service';
 import { DefaultCategoryResultsService } from '../services/category-results-service';
 import { DefaultPegService } from '../services/peg-service';
+import { DefaultGetUserLocationService } from '../services/get-user-location-service';
+import { DefaultSetUserLocationService } from '../services/set-user-location-service';
+import { DefaultDeleteUserLocationService } from '../services/delete-user-location-service';
 
 // Service instantiation
 const queryHandler = new QueryHandler(new Client());
@@ -50,24 +57,28 @@ const dbConfig = new DbConfig(queryHandler);
 const config = new Config(dbConfig);
 const utilities = new Utilities(config);
 const dbUsers = new DbUsers(webex, queryHandler);
-const database = new PockyDB(queryHandler, dbUsers, utilities);
+const dbLocation = new DbLocation(queryHandler);
+const pockyDb = new PockyDB(queryHandler, dbUsers, utilities);
 const pegService = new DefaultPegService(config, utilities);
 const categoryResultsService = new DefaultCategoryResultsService();
-const winnersService = new DefaultWinnersService(database, config, utilities, pegService);
+const winnersService = new DefaultWinnersService(pockyDb, config, utilities, pegService);
 const formatResultsService = new DefaultFormatResultsService(config, categoryResultsService);
-const resultsService = new DefaultResultsService(database, formatResultsService, pegService, winnersService);
-const pmResultsService = new DefaultPmResultsService(database, webex, utilities, pegService, resultsService);
+const resultsService = new DefaultResultsService(pockyDb, formatResultsService, pegService, winnersService);
+const pmResultsService = new DefaultPmResultsService(pockyDb, webex, utilities, pegService, resultsService);
+const getUserLocationService = new DefaultGetUserLocationService(dbLocation, dbUsers);
+const setUserLocationService = new DefaultSetUserLocationService(dbLocation, dbUsers);
+const deleteUserLocationService = new DefaultDeleteUserLocationService(dbLocation);
 
-database.loadConfig(config);
+pockyDb.loadConfig(config);
 config.updateAll();
 
 // Trigger instantiation
-const peg = new Peg(webex, database, dbUsers, config);
+const peg = new Peg(webex, pockyDb, dbUsers, config);
 const unpeg = new Unpeg(webex, dbUsers, utilities);
-const reset = new Reset(database, config);
+const reset = new Reset(pockyDb, config);
 const winners = new Winners(winnersService, config);
 const results = new Results(resultsService, config);
-const status = new Status(webex, database, config, utilities);
+const status = new Status(webex, pockyDb, config, utilities);
 const update = new Update(webex, dbUsers, config);
 const finish = new Finish(winnersService, resultsService, pmResultsService, reset, config, webex);
 const welcome = new Welcome(config);
@@ -78,6 +89,9 @@ const roleConfig = new RoleConfig(dbUsers, config);
 const help = new Help(config);
 const ping = new Ping();
 const rotation = new Rotation(config);
+const locationConfig = new LocationConfig(dbLocation, config);
+const userLocation = new UserLocation(config, getUserLocationService, setUserLocationService, deleteUserLocationService);
+const removeUser = new RemoveUser(config, dbUsers, dbLocation, pockyDb);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -97,6 +111,9 @@ const triggers : Trigger[] = [
 	numberConfig,
 	stringConfig,
 	roleConfig,
+	locationConfig,
+	userLocation,
+	removeUser,
 	defaultTrigger,
 ];
 

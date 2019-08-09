@@ -1,6 +1,6 @@
 import Trigger from '../../models/trigger';
 import Reset from './reset';
-import Config from '../config';
+import Config from '../config-interface';
 import constants from '../../constants';
 import { Logger } from '../logger';
 import { MessageObject, Webex } from 'webex/env';

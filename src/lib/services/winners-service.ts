@@ -2,7 +2,7 @@ import { ResultRow } from '../../models/database';
 import { PockyDB } from '../database/db-interfaces';
 import TableHelper from '../parsers/tableHelper';
 import { Receiver } from '../../models/receiver';
-import Config from '../config';
+import Config from '../config-interface';
 import { distinct } from '../helpers/helpers';
 import Utilities from '../utilities';
 import { Result } from '../../models/result';

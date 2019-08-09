@@ -29,4 +29,8 @@ export default class MockDbUsers implements DbUsers {
 	async exists(userid : string) : Promise<boolean> {
 		return true;
 	}
+
+	async deleteUser(userid : string) : Promise<void> {
+		return;
+	}
 }

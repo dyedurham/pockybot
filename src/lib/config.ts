@@ -1,4 +1,4 @@
-import DbConfig from './database/db-config';
+import { DbConfig } from './database/db-interfaces';
 import { Logger } from './logger';
 import { ConfigRow, StringConfigRow, RolesRow, Role } from '../models/database';
 import ConfigInterface from './config-interface';

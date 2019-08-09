@@ -14,5 +14,8 @@ export enum Command {
 	NumberConfig = 'numberconfig',
 	StringConfig = 'stringconfig',
 	RoleConfig = 'roleconfig',
-	Unpeg = 'unpeg'
+	Unpeg = 'unpeg',
+	LocationConfig = 'locationconfig',
+	UserLocation = 'userlocation',
+	RemoveUser = 'removeuser'
 }

@@ -1,6 +1,5 @@
 import { PegRecipient } from '../../models/peg-recipient';
 const stringWidth = require('string-width');
-import { RolesRow, StringConfigRow, ConfigRow } from '../../models/database';
 import { Receiver } from '../../models/receiver';
 import { Result } from '../../models/result';
 import { Peg } from '../../models/peg';
@@ -76,68 +75,28 @@ function getReceiverColumnWidths(results: Result[]) : { receiver : number, sende
 	}
 }
 
-function getRolesColumnWidths(configValues : RolesRow[]) : { name : number, value : number } {
-	let longestname = stringWidth('name');
-	let longestvalue = stringWidth('value');
-
-	configValues.forEach((value : RolesRow) => {
-		if (stringWidth(value.role) > longestname) {
-			longestname = stringWidth(value.role);
-		}
-
-		if (stringWidth(value.userid.toString()) > longestvalue) {
-			longestvalue = stringWidth(value.userid.toString());
-		}
-	});
-
-	return {
-		name: longestname,
-		value: longestvalue
-	}
-}
-
-function getStringConfigColumnWidths(configValues : StringConfigRow[]) : { name : number, value : number } {
+function getColumnWidths(arr : any[], accessors : ((value : any) => string)[], columnNames ?: string[]) : number[] {
 	const stringWidth = require('string-width');
+	const longestValues = [];
 
-	let longestname = stringWidth('name');
-	let longestvalue = stringWidth('value');
-
-	configValues.forEach((value : StringConfigRow) => {
-		if (stringWidth(value.name) > longestname) {
-			longestname = stringWidth(value.name);
+	for (let i = 0; i < accessors.length; i++) {
+		if (columnNames.length > i) {
+			longestValues.push(stringWidth(columnNames[i]));
+		} else {
+			longestValues.push(0);
 		}
+	}
 
-		if (stringWidth(value.value) > longestvalue) {
-			longestvalue = stringWidth(value.value);
+	arr.forEach((value: any) => {
+		for (let i = 0; i< accessors.length; i++) {
+			const width = stringWidth(accessors[i](value));
+			if (width > longestValues[i]) {
+				longestValues[i] = width;
+			}
 		}
 	});
 
-	return {
-		name: longestname,
-		value: longestvalue
-	}
-}
-
-function getConfigColumnWidths(configValues : ConfigRow[]) : { name : number, value : number } {
-	const stringWidth = require('string-width');
-
-	let longestname = stringWidth('name');
-	let longestvalue = stringWidth('value');
-
-	configValues.forEach((value : ConfigRow) => {
-		if (stringWidth(value.name) > longestname) {
-			longestname = stringWidth(value.name);
-		}
-
-		if (stringWidth(value.value.toString()) > longestvalue) {
-			longestvalue = stringWidth(value.value.toString());
-		}
-	});
-
-	return {
-		name: longestname,
-		value: longestvalue
-	}
+	return longestValues;
 }
 
 function padString(str : string, length : number) : string {
@@ -154,9 +113,7 @@ export default {
 	mapResults,
 	mapPenalties,
 	getReceiverColumnWidths,
-	getRolesColumnWidths,
-	getStringConfigColumnWidths,
-	getConfigColumnWidths,
+	getColumnWidths,
 	padString,
 	stringLength
 }

@@ -1,9 +1,9 @@
 import Trigger from '../../models/trigger';
-import Config from '../config';
+import Config from '../config-interface';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'webex/env';
-import { Role } from '../../models/database';
+import { Role, RolesRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 import DbUsers from '../database/db-users';
@@ -12,8 +12,6 @@ import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
 
 export default class RoleConfig extends Trigger {
-	readonly roleConfigCommand : string = `(?: )*${Command.RoleConfig}(?: )*`;
-
 	dbUsers : DbUsers;
 	config : Config;
 
@@ -51,7 +49,7 @@ export default class RoleConfig extends Trigger {
 					response = await this.getConfigMessage();
 					break;
 				case ConfigAction.Set: {
-					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
+					const { userId, username, role } = await this.parseSetDeleteMessage(parsedMessage);
 
 					if (this.config.getRoles(userId).includes(role)) {
 						response = `Role "${role}" is already set for user "${username}".`;
@@ -67,7 +65,7 @@ export default class RoleConfig extends Trigger {
 					response = 'Roles has been updated';
 					break;
 				case ConfigAction.Delete: {
-					const { userId, username, role } = this.parseSetDeleteMessage(message, parsedMessage);
+					const { userId, username, role } = await this.parseSetDeleteMessage(parsedMessage);
 
 					if (!this.config.getRoles(userId).includes(role)) {
 						response = `Role "${role}" is not set for user "${username}"`;
@@ -91,7 +89,7 @@ export default class RoleConfig extends Trigger {
 		};
 	}
 
-	private parseSetDeleteMessage(message: MessageObject, parsedMessage : Element[]) : { userId : string, username : string, role : Role } {
+	private async parseSetDeleteMessage(parsedMessage : Element[]) : Promise<{ userId : string, username : string, role : Role }> {
 		if (parsedMessage.length < 4) {
 			throw new Error('You must specify a user and a role to set/delete.');
 		}
@@ -109,7 +107,7 @@ export default class RoleConfig extends Trigger {
 		const username = parsedMessage[2].text();
 
 		try {
-			let exists = this.dbUsers.existsOrCanBeCreated(userId);
+			let exists = await this.dbUsers.existsOrCanBeCreated(userId);
 			if (!exists) {
 				throw new Error(`User ${username} could not be found or created. Exiting.`);
 			}
@@ -127,15 +125,26 @@ export default class RoleConfig extends Trigger {
 	private async getConfigMessage() : Promise<string> {
 		const roles = this.config.getAllRoles();
 
-		let columnWidths = tableHelper.getRolesColumnWidths(roles);
+		const mappedPromise = roles.map(async x => {
+			const user = await this.dbUsers.getUser(x.userid);
+			return {
+				username: user.username,
+				role: x.role
+			};
+		});
+
+		const mapped = await Promise.all(mappedPromise);
+
+		let columnWidths = tableHelper.getColumnWidths(
+			mapped, [x => x.username, x => x.role], ['Name', 'Value']);
 
 		let message = 'Here is the current config:\n```\n';
 
-		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
+		message += TableHelper.padString('Name', columnWidths[0]) + ' | Value\n';
+		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '\n';
 
-		for (const config of roles) {
-			const user = await this.dbUsers.getUser(config.userid);
-			message += config.role.padEnd(columnWidths.name) + ' | ' + user.username + '\n';
+		for (const config of mapped) {
+			message += config.username.padEnd(columnWidths[0]) + ' | ' + config.role + '\n';
 		}
 
 		message += '```';

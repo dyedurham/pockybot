@@ -1,5 +1,5 @@
 import Trigger from '../../models/trigger';
-import Config from '../config';
+import Config from '../config-interface';
 import constants from '../../constants';
 import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'webex/env';
@@ -29,7 +29,7 @@ export default class NumberConfig extends Trigger {
 
 	async createMessage(message : MessageObject) : Promise<MessageObject> {
 		let parsedMessage = xmlMessageParser.parseNonPegMessage(message);
-		let words = parsedMessage.command.trim().split(' ');
+		let words = parsedMessage.command.trim().split(' ').filter(x => x !== '');
 
 		if (words.length < 2) {
 			return { markdown: `Please specify a command. Possible values are ${Object.values(ConfigAction).join(', ')}` };
@@ -86,14 +86,16 @@ export default class NumberConfig extends Trigger {
 	private getConfigMessage() : string {
 		const numberConfig = this.config.getAllConfig();
 
-		let columnWidths = tableHelper.getConfigColumnWidths(numberConfig);
+		let columnWidths = tableHelper.getColumnWidths(
+			numberConfig, [(x : ConfigRow) => x.name, (x : ConfigRow) => x.value.toString()], ['Name', 'Value']);
 
 		let message = 'Here is the current config:\n```\n';
 
-		message += TableHelper.padString('Name', columnWidths.name) + ' | Value\n';
+		message += TableHelper.padString('Name', columnWidths[0]) + ' | Value\n';
+		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '\n';
 
 		numberConfig.forEach((config : ConfigRow) => {
-			message += config.name.padEnd(columnWidths.name) + ' | ' + config.value + '\n';
+			message += config.name.padEnd(columnWidths[0]) + ' | ' + config.value + '\n';
 		});
 
 		message += '```';

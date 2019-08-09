@@ -1,5 +1,5 @@
 import Config from '../../lib/config-interface';
-import { Role, RolesRow, ConfigRow } from '../../models/database';
+import { Role, RolesRow, ConfigRow, StringConfigRow } from '../../models/database';
 
 export default class MockConfig implements Config {
 	private limit : number;
@@ -79,6 +79,10 @@ export default class MockConfig implements Config {
 		throw new Error('Method not implemented.');
 	}
 
+	getAllStringConfig() : StringConfigRow[] {
+		throw new Error('Method not implemented.');
+	}
+
 	async updateAll() : Promise<void> {
 		throw new Error('Method not implemented.');
 	}
@@ -104,6 +108,18 @@ export default class MockConfig implements Config {
 	}
 
 	async setStringConfig(config : string, value : string) : Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async deleteRole(userid : string, role : Role) : Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async deleteConfig(config : string) : Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	async deleteStringConfig(config : string, value : string) : Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 }
