@@ -1,9 +1,7 @@
 import { PockyDB } from '../database/db-interfaces';
 import { ResultRow } from '../../models/database';
-import { Receiver } from '../../models/receiver';
 import TableHelper from '../parsers/tableHelper';
 import { Logger } from '../logger';
-import { PegReceivedData } from '../../models/peg-received-data';
 import { Webex } from 'webex/env';
 import Utilities from '../utilities';
 import { Peg } from '../../models/peg';
@@ -34,7 +32,7 @@ export class DefaultPmResultsService implements PmResultsService {
 
 	async pmResults() : Promise<void> {
 		const fullData: ResultRow[] = await this.database.returnResults();
-		const allPegs: Peg[] = this.pegService.getPegs(fullData);
+		const allPegs: Peg[] = await this.pegService.getPegs(fullData);
 		const fullResults: Result[] = this.resultsService.getResults(allPegs);
 
 		let columnWidths = TableHelper.getReceiverColumnWidths(fullResults);

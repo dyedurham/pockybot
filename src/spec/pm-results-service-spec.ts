@@ -4,12 +4,10 @@ import { DefaultPmResultsService, PmResultsService } from '../lib/services/pm-re
 import { ResultRow } from '../models/database';
 import MockPockyDb from './mocks/mock-pockydb';
 import MockWebex from './mocks/mock-spark';
-import utilities from '../lib/utilities';
 import { ResultsService } from '../lib/services/results-service';
 import { Arg, Substitute } from '@fluffy-spoon/substitute';
 import { PegService } from '../lib/services/peg-service';
 import MockDataService from './services/mock-data-service';
-import { Peg } from '../models/peg';
 
 function createData(): ResultRow[] {
 	return [{
@@ -38,7 +36,7 @@ describe('pm results service', () => {
 		spark = new MockWebex();
 		spyOn(spark.messages, 'create').and.callThrough();
 		let pegService = Substitute.for<PegService>();
-		pegService.getPegs(null).returns([]);
+		pegService.getPegs(null).returns(Promise.resolve([]));
 		let resultsService = Substitute.for<ResultsService>();
 		let results = [
 			{
