@@ -17,7 +17,7 @@ export class DefaultCategoryResultsService implements CategoryResultsService {
 				tables += `
 					<h2 class="clickable collapsed" data-toggle="collapse" data-target="#section-${sectionId}" aria-expanded="false" aria-controls="section-${sectionId}"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>
 `;
-				tables += HtmlHelper.generateTable(categoryResults, sectionId);
+				tables += HtmlHelper.generateCategoryResultsTable(categoryResults, sectionId);
 			} else {
 				tables += `
 					<h2>Category: ${HtmlHelper.uppercaseFirstChar(category)}</h2>

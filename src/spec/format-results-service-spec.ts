@@ -38,12 +38,13 @@ class FormatResultsServiceSpec {
 			{
 				personId: 'p1',
 				personName: 'Luke',
-				weightedPegsReceived: 3,
+				personLocation: 'Location 1',
+				weightedPegsReceived: 5,
 				validPegsReceived: [
-					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true, 2, 'Location 2'),
 					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'b', ['cat1', 'cat2'], true),
 					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'c', ['cat2'], true),
-					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true, 2, 'Location 2'),
 				],
 				penaltyPegsGiven: [
 					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', 'e', ['shame'], false)
@@ -52,19 +53,20 @@ class FormatResultsServiceSpec {
 			{
 				personId: 'p2',
 				personName: 'Gillian',
-				weightedPegsReceived: 2,
+				personLocation: 'Location 2',
+				weightedPegsReceived: 3,
 				validPegsReceived: [
 					MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', 'f', ['cat1'], true),
-					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true, 2, 'Location 1'),
 				],
 				penaltyPegsGiven: []
 			},
 			{
 				personId: 'p3',
 				personName: 'Dula',
-				weightedPegsReceived: 1,
+				weightedPegsReceived: 2,
 				validPegsReceived: [
-					MockDataService.createPeg('p3', 'Dula', 'p2', 'Gillian', 'h', [], true),
+					MockDataService.createPeg('p3', 'Dula', 'p2', 'Gillian', 'h', [], true, 2, 'Location 2'),
 				],
 				penaltyPegsGiven: []
 			},
@@ -83,12 +85,13 @@ class FormatResultsServiceSpec {
 			{
 				personId: 'p1',
 				personName: 'Luke',
-				weightedPegsReceived: 3,
+				personLocation: 'Location 1',
+				weightedPegsReceived: 5,
 				validPegsReceived: [
-					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'a', ['cat1'], true, 2, 'Location 2'),
 					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'b', ['cat1', 'cat2'], true),
 					MockDataService.createPeg('p1', 'Luke', 'p3', 'Dula', 'c', ['cat2'], true),
-					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true),
+					MockDataService.createPeg('p1', 'Luke', 'p2', 'Gillian', 'd', ['cat3'], true, 2, 'Location 2'),
 				],
 				penaltyPegsGiven: [
 					MockDataService.createPeg('b1', 'Gif', 'p1', 'Luke', 'e', ['shame'], false)
@@ -97,10 +100,11 @@ class FormatResultsServiceSpec {
 			{
 				personId: 'p2',
 				personName: 'Gillian',
-				weightedPegsReceived: 2,
+				personLocation: 'Location 2',
+				weightedPegsReceived: 3,
 				validPegsReceived: [
 					MockDataService.createPeg('p2', 'Gillian', 'p3', 'Dula', 'f', ['cat1'], true),
-					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true),
+					MockDataService.createPeg('p2', 'Gillian', 'p1', 'Luke', 'g', ['cat2', 'cat3'], true, 2, 'Location 1'),
 				],
 				penaltyPegsGiven: []
 			}
@@ -127,30 +131,30 @@ class FormatResultsServiceSpec {
 		expect(this.htmlResultsOutput).toContain(`<title>Pegs ${todayString}</title>`);
 		expect(this.htmlResultsOutput).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
 
-		let testString = `<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke &mdash; 3 (4) pegs total</th></tr>
+		let testString = `<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke (Location 1) &mdash; 5 (6) pegs total</th></tr>
 			</thead><tbody id="section-winners-0" class="collapse show">
-			<tr><td>Dula</td><td>b</td><td>cat1, cat2</td></tr>
-			<tr><td>Dula</td><td>c</td><td>cat2</td></tr>
-			<tr><td>Gillian</td><td>a</td><td>cat1</td></tr>
-			<tr><td>Gillian</td><td>d</td><td>cat3</td></tr>
+			<tr><td>Dula</td><td>1</td><td>b</td><td>cat1, cat2</td><td></td></tr>
+			<tr><td>Dula</td><td>1</td><td>c</td><td>cat2</td><td></td></tr>
+			<tr><td>Gillian</td><td>2</td><td>a</td><td>cat1</td><td>Location 2</td></tr>
+			<tr><td>Gillian</td><td>2</td><td>d</td><td>cat3</td><td>Location 2</td></tr>
 			</tbody>`
 			.replace(/>\s+</g, '><');
 		expect(html).toContain(testString);
 
 		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-winners-1" aria-expanded="true" aria-controls="section-winners-1">
-			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Gillian &mdash; 2 pegs total</th></tr>
+			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Gillian (Location 2) &mdash; 3 pegs total</th></tr>
 			</thead><tbody id="section-winners-1" class="collapse show">
-			<tr><td>Dula</td><td>f</td><td>cat1</td></tr>
-			<tr><td>Luke</td><td>g</td><td>cat2, cat3</td></tr></tbody>`
+			<tr><td>Dula</td><td>1</td><td>f</td><td>cat1</td><td></td></tr>
+			<tr><td>Luke</td><td>2</td><td>g</td><td>cat2, cat3</td><td>Location 1</td></tr></tbody>`
 			.replace(/>\s+</g, '><');
 		expect(html).toContain(testString);
 
 		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-0" aria-expanded="true" aria-controls="section-losers-0">
-			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Dula &mdash; 1 peg total</th></tr>
+			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Dula &mdash; 2 pegs total</th></tr>
 			</thead><tbody id="section-losers-0" class="collapse show">
-			<tr><td>Gillian</td><td>h</td><td></td></tr></tbody>
+			<tr><td>Gillian</td><td>2</td><td>h</td><td></td><td>Location 2</td></tr></tbody>
 			<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-1" aria-expanded="true" aria-controls="section-losers-1">
-			<tr><th colspan="3"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Jim &mdash; -1 (0) peg(s) total</th></tr>
+			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Jim &mdash; -1 (0) peg(s) total</th></tr>
 			</thead><tbody id="section-losers-1" class="collapse show"></tbody>`
 			.replace(/>\s+</g, '><');
 		expect(html).toContain(testString);

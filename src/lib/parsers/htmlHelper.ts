@@ -36,6 +36,41 @@ function generateTable(receivers: Result[], section: string = null) : string {
 	return htmlTable;
 }
 
+function generateCategoryResultsTable(receivers: Result[], section: string = null) : string {
+	let htmlTable =
+'					<table class="table pb-3">';
+	if(section) {
+		htmlTable =
+`					<table id="section-${section}" class="table pb-3 collapse">`;
+	}
+
+	receivers.forEach((result: Result, index: number) => {
+		const subsectionId = section ? `section-${section}-${index}` : null;
+
+		htmlTable += `
+						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
+							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived, section)}</th></tr>
+						</thead>
+						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
+
+		result.validPegsReceived.sort((a, b) => a.senderName.localeCompare(b.senderName));
+
+		result.validPegsReceived.forEach((peg: Peg) => {
+			htmlTable += `
+							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
+`;
+		});
+
+		htmlTable +=
+`						</tbody>
+`;
+	});
+	htmlTable +=
+`					</table>`;
+
+	return htmlTable;
+}
+
 function generatePenaltyTable(receivers: Result[]): string {
 	let htmlTable =
 		`					<table id="section-penalties" class="table pb-3 collapse">`;
@@ -108,5 +143,6 @@ function pegsReceived(weightedPegs: number, validPegsReceived: Peg[], section: s
 export default {
 	generateTable,
 	generatePenaltyTable,
+	generateCategoryResultsTable,
 	uppercaseFirstChar
 }
