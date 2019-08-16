@@ -14,7 +14,7 @@ function generateTable(receivers: Result[], section: string = null) : string {
 
 		htmlTable += `
 						<thead class="thead-light ${section ? `clickable" data-toggle="collapse" data-target="#${subsectionId}" aria-expanded="true" aria-controls="${subsectionId}`:''}">
-							<tr><th colspan="3">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived, section)}</th></tr>
+							<tr><th colspan="5">${section ? '<i class="fas fa-plus"></i><i class="fas fa-minus"></i>' : ''} ${result.personName}${result.personLocation ? ` (${result.personLocation})` : ''} &mdash; ${pegsReceived(result.weightedPegsReceived, result.validPegsReceived, section)}</th></tr>
 						</thead>
 						<tbody ${section ? `id="${subsectionId}" class="collapse show"` : ''}>`;
 
@@ -22,7 +22,7 @@ function generateTable(receivers: Result[], section: string = null) : string {
 
 		result.validPegsReceived.forEach((peg: Peg) => {
 			htmlTable += `
-							<tr><td>${peg.senderName}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td></tr>
+							<tr><td>${peg.senderName}</td><td>${peg.pegWeighting}</td><td>${peg.comment}</td><td>${peg.categories.join(', ')}</td><td>${peg.senderLocation ? peg.senderLocation : ''}</td></tr>
 `;
 		});
 
