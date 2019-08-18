@@ -115,7 +115,7 @@ function uppercaseFirstChar(word: string) : string {
  * appropriately pluralising (or not) the word 'peg'
  */
 function pegsReceived(weightedPegs: number, validPegsReceived: Peg[], section: string): string {
-	const validPegs = validPegsReceived.reduce((a, b) => a + b.pegWeighting, 0);
+	const validPegs = validPegsReceived.length;
 
 	const numberOfPegs = (weightedPegs: number, validPegs: number): string => {
 		if (weightedPegs === validPegs) {
