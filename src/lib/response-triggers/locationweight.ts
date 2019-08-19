@@ -112,8 +112,8 @@ export default class LocationWeight extends Trigger {
 	}
 
 	private getLocationWeightConfig(location1 : string, location2 : string, allConfig : ConfigRow[]) : ConfigRow | null {
-		const location1To2 = `${location1}to${location2}`.toLowerCase();
-		const location2To1 = `${location2}to${location1}`.toLowerCase();
+		const location1To2 = `locationWeight${location1}to${location2}`.toLowerCase();
+		const location2To1 = `locationWeight${location2}to${location1}`.toLowerCase();
 		const configIndex = allConfig.findIndex(item =>
 			item.name.toLowerCase() === location1To2 || item.name.toLowerCase() === location2To1);
 
@@ -146,7 +146,7 @@ export default class LocationWeight extends Trigger {
 			return 'Weight should be greater than or equal to 0.';
 		}
 
-		let configName = `${words[2]}to${words[3]}`;
+		let configName = `locationWeight${words[2]}to${words[3]}`;
 		const existingConfig = this.getLocationWeightConfig(words[2], words[3], this.config.getAllConfig());
 		if (existingConfig) {
 			configName = existingConfig.name;

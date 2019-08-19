@@ -57,8 +57,8 @@ export class DefaultPegService implements PegService {
 		if (senderLocation == null || receiverLocation == null || senderLocation === receiverLocation) {
 			return 1;
 		} else {
-			const senderToReceiver = `${senderLocation}to${receiverLocation}`.toLowerCase();
-			const receiverToSender = `${receiverLocation}to${senderLocation}`.toLowerCase();
+			const senderToReceiver = `locationWeight${senderLocation}to${receiverLocation}`.toLowerCase();
+			const receiverToSender = `locationWeight${receiverLocation}to${senderLocation}`.toLowerCase();
 			const allConfig = this.config.getAllConfig();
 			const configIndex = allConfig.findIndex(item =>
 				item.name.toLowerCase() === senderToReceiver || item.name.toLowerCase() === receiverToSender);
