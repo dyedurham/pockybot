@@ -27,6 +27,7 @@ import RoleConfig from './roleconfig';
 import LocationConfig from './locationconfig';
 import UserLocation from './userlocation';
 import RemoveUser from './removeuser';
+import LocationWeight from './locationweight';
 import Default from './default';
 
 // Services
@@ -92,6 +93,7 @@ const rotation = new Rotation(config);
 const locationConfig = new LocationConfig(dbLocation, config);
 const userLocation = new UserLocation(config, getUserLocationService, setUserLocationService, deleteUserLocationService);
 const removeUser = new RemoveUser(config, dbUsers, dbLocation, pockyDb);
+const locationWeight = new LocationWeight(dbLocation, config);
 const defaultTrigger = new Default();
 
 const triggers : Trigger[] = [
@@ -112,6 +114,7 @@ const triggers : Trigger[] = [
 	stringConfig,
 	roleConfig,
 	locationConfig,
+	locationWeight,
 	userLocation,
 	removeUser,
 	defaultTrigger,

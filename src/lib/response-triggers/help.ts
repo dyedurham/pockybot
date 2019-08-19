@@ -79,6 +79,8 @@ export default class Help extends Trigger {
 				return this.createUserLocationHelpMessage(message);
 			case Command.RemoveUser:
 				return this.createRemoveUserHelpMessage(message);
+			case Command.LocationWeight:
+				return this.createLocationWeightHelpMessage(message);
 			default:
 				return this.createDefaultHelpMessage();
 		}
@@ -119,7 +121,8 @@ export default class Help extends Trigger {
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
 			newMessage += `* ${Command.NumberConfig}
 * ${Command.StringConfig}
-* ${Command.RoleConfig}\n`;
+* ${Command.RoleConfig}
+* ${Command.LocationWeight}\n`;
 		}
 
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.RemoveUser)) {
@@ -291,6 +294,16 @@ export default class Help extends Trigger {
 		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.RemoveUser)) {
 			return `### How to remove users!
 1. To remove a user, type \`@${constants.botName} ${Command.RemoveUser} {@User}|'{username}'\`
+1. I will respond in the room you messaged me in.`;
+		} else {
+			return this.createDefaultHelpMessage();
+		}
+	}
+
+	createLocationWeightHelpMessage(message: MessageObject) : string {
+		if (this.config.checkRole(message.personId, Role.Admin) || this.config.checkRole(message.personId, Role.Config)) {
+			return `### How to configure location weight values!
+1. To get/edit/delete location weight values, type \`@${constants.botName} ${Command.LocationWeight} ${Object.values(LocationAction).join('|')} {location1} {location2} {weight}\`
 1. I will respond in the room you messaged me in.`;
 		} else {
 			return this.createDefaultHelpMessage();

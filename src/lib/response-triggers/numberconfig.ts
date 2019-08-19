@@ -5,7 +5,6 @@ import TableHelper from '../parsers/tableHelper';
 import { MessageObject } from 'webex/env';
 import { Role, ConfigRow } from '../../models/database';
 import { ConfigAction } from '../../models/config-action';
-import tableHelper from '../parsers/tableHelper';
 import { Command } from '../../models/command';
 import xmlMessageParser from '../parsers/xmlMessageParser';
 
@@ -86,7 +85,7 @@ export default class NumberConfig extends Trigger {
 	private getConfigMessage() : string {
 		const numberConfig = this.config.getAllConfig();
 
-		let columnWidths = tableHelper.getColumnWidths(
+		let columnWidths = TableHelper.getColumnWidths(
 			numberConfig, [(x : ConfigRow) => x.name, (x : ConfigRow) => x.value.toString()], ['Name', 'Value']);
 
 		let message = 'Here is the current config:\n```\n';

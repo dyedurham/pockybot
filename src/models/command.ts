@@ -17,5 +17,6 @@ export enum Command {
 	Unpeg = 'unpeg',
 	LocationConfig = 'locationconfig',
 	UserLocation = 'userlocation',
-	RemoveUser = 'removeuser'
+	RemoveUser = 'removeuser',
+	LocationWeight = 'locationweight'
 }
