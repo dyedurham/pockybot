@@ -131,7 +131,7 @@ class FormatResultsServiceSpec {
 		expect(this.htmlResultsOutput).toContain(`<title>Pegs ${todayString}</title>`);
 		expect(this.htmlResultsOutput).toContain(`<h1 class="pt-3 pb-3">Pegs and Pocky ${todayString}</h1>`);
 
-		let testString = `<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke (Location 1) &mdash; 5 (6) pegs total</th></tr>
+		let testString = `<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Luke (Location 1) &mdash; 5 (4) pegs total</th></tr>
 			</thead><tbody id="section-winners-0" class="collapse show">
 			<tr><td>Dula</td><td>1</td><td>b</td><td>cat1, cat2</td><td></td></tr>
 			<tr><td>Dula</td><td>1</td><td>c</td><td>cat2</td><td></td></tr>
@@ -142,7 +142,7 @@ class FormatResultsServiceSpec {
 		expect(html).toContain(testString);
 
 		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-winners-1" aria-expanded="true" aria-controls="section-winners-1">
-			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Gillian (Location 2) &mdash; 3 pegs total</th></tr>
+			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Gillian (Location 2) &mdash; 3 (2) pegs total</th></tr>
 			</thead><tbody id="section-winners-1" class="collapse show">
 			<tr><td>Dula</td><td>1</td><td>f</td><td>cat1</td><td></td></tr>
 			<tr><td>Luke</td><td>2</td><td>g</td><td>cat2, cat3</td><td>Location 1</td></tr></tbody>`
@@ -150,7 +150,7 @@ class FormatResultsServiceSpec {
 		expect(html).toContain(testString);
 
 		testString = `<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-0" aria-expanded="true" aria-controls="section-losers-0">
-			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Dula &mdash; 2 pegs total</th></tr>
+			<tr><th colspan="5"><i class="fas fa-plus"></i><i class="fas fa-minus"></i> Dula &mdash; 2 (1) peg(s) total</th></tr>
 			</thead><tbody id="section-losers-0" class="collapse show">
 			<tr><td>Gillian</td><td>2</td><td>h</td><td></td><td>Location 2</td></tr></tbody>
 			<thead class="thead-light clickable" data-toggle="collapse" data-target="#section-losers-1" aria-expanded="true" aria-controls="section-losers-1">
