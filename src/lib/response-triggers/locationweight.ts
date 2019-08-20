@@ -97,9 +97,9 @@ export default class LocationWeight extends Trigger {
 			],
 			['Location 1', 'Location 2', 'Weight']);
 
-		let message = 'Here are the current location weights:\n';
+		let message = 'Here are the current location weights:\n```\n';
 
-		message += TableHelper.padString('Location 1', columnWidths[0]) + ' | ' + TableHelper.padString('Value', columnWidths[1]) + ' | Weight\n';
+		message += TableHelper.padString('Location 1', columnWidths[0]) + ' | ' + TableHelper.padString('Location 2', columnWidths[1]) + ' | Weight\n';
 		message += ''.padEnd(columnWidths[0], '-') + '-+-' + ''.padEnd(columnWidths[1], '-') + '-+-' + ''.padEnd(columnWidths[2], '-') + '\n';
 
 		locationWeights.forEach((config : LocationWeightConfig) => {
@@ -175,6 +175,6 @@ export default class LocationWeight extends Trigger {
 		}
 
 		await this.config.deleteConfig(existingConfig.name);
-		return 'Location has been deleted';
+		return 'Location weight has been deleted';
 	}
 }
