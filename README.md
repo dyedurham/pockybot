@@ -29,12 +29,14 @@ Pegs & Pocky was created within GlobalX as a merit-based system to encourage goo
 ## Setup
 
 Using npm:
-```
+
+```bash
 npm i pockybot
 ```
 
 Using yarn:
-```
+
+```bash
 yarn add pockybot
 ```
 
@@ -67,6 +69,7 @@ GCLOUD_CLIENT_CERT_URL | Required to connect to the gcloud bucket | https://www.
 GCLOUD_BUCKET_NAME | The name of the gcloud bucket being used to store the pockybot results | pockybucket
 
 ### Code
+
 The following is example code showing usage of the bot with express in a typescript project:
 
 ```typescript
@@ -188,6 +191,7 @@ These commands can only be performed by users with the role of 'ADMIN' or users 
   * `@PockyBot userlocation get me|all|unset|@User` &mdash; get a user's location
   * `@PockyBot userlocation set {location} me|@User1 @User2` &mdash; set one or more users' locations
   * `@PockyBot userlocation delete me|@User1 @User2` &mdash; delete one or more users' locations
+* `@PockyBot locationweight get|set|delete {location1} {location2} {number}` &mdash; get or change location weight configs
 
 ## Contributing
 
