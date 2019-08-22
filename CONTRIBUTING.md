@@ -43,6 +43,42 @@ Here's a few links:
 1. Commit your new code.
 1. Make a PR.
 
+### Building branches
+
+To build and test a branch of PockyBot in order to test functionality before merging it to master,
+follow the following steps:
+
+1. Set the `version` in the `package.json` to [the next version number](https://www.npmjs.com/package/pockybot) marked as a preview.
+	For example, if the current version is `1.4.0`, set to `1.4.1-preview`. Do not commit this change.
+1. Locally, run:
+	```bash
+	npm i
+	npm run build
+	```
+1. Log your terminal in to npm:
+	```bash
+	npm login
+	```
+	And provide your npm login details, ensuring that your account has permission to publish PockyBot.
+	(Contact the developers if you believe you should have this permission but do not.)
+1. Publish your preview build:
+	```bash
+	npm publish --tag preview
+	```
+1. In the `package.json` of the `pockybot-endpoint` repo (in private source repository), set the `version` of the `pockybot` dependency to the one you just published, e.g. `1.4.1-preview`.
+1. Run
+	```bash
+	npm i
+	```
+1. Commit the result
+1. Build the `pockybot-endpoint` using CI tool.
+
+When testing with this preview version is finished, deprecate the preview by running
+
+```bash
+npm deprecate pockybot@<version> "This is the reason for deprecating"
+```
+
 ## I just want to report something
 
 If you would like to report a bug or request a feature you can do this through the Issues tab. We will do our best to reply promptly. If there is something you would rather not ask publicly, you can always contact us at pockybotdeveloper@gmail.com.
