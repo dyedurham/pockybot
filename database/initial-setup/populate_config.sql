@@ -6,7 +6,7 @@ VALUES
 ('commentsRequired', 1),
 ('pegWithoutKeyword', 0),
 ('requireValues', 1),
-('remoteLocationWeighting', 2);
+('remoteLocationWeightingDefault', 2);
 
 INSERT INTO stringconfig (name, value)
 VALUES

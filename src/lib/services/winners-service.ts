@@ -1,7 +1,6 @@
 import { ResultRow } from '../../models/database';
 import { PockyDB } from '../database/db-interfaces';
 import TableHelper from '../parsers/tableHelper';
-import { Receiver } from '../../models/receiver';
 import Config from '../config-interface';
 import { distinct } from '../helpers/helpers';
 import Utilities from '../utilities';
@@ -45,7 +44,7 @@ export class DefaultWinnersService implements WinnersService {
 
 	async returnWinnersResponse() : Promise<string> {
 		const data : ResultRow[] = await this.database.returnResults();
-		const pegs = this.pegService.getPegs(data);
+		const pegs = await this.pegService.getPegs(data);
 		const winners = this.getWinners(pegs);
 
 		let columnWidths = TableHelper.getReceiverColumnWidths(winners);
@@ -94,13 +93,16 @@ export class DefaultWinnersService implements WinnersService {
 			if (validPegsSent.length >= minimum) {
 				const validPegsReceived = results.filter(x =>
 					x.receiverId === person && this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
+				const validPegsTotal = validPegsReceived.reduce((a, b) => a + b.pegWeighting, 0);
 				const penaltyPegsGiven = results.filter(x =>
 					x.senderId === person && !this.utilities.pegValid(x.comment, requireKeywords, keywords, penaltyKeywords));
 				const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
+				const personLocation = validPegsReceived.length > 0 ? validPegsReceived[0].receiverLocation : penaltyPegsGiven[0].senderLocation;
 				resultsForEligibleWinners.push({
 					personId: person,
 					personName,
-					weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
+					personLocation,
+					weightedPegsReceived: validPegsTotal - penaltyPegsGiven.length,
 					validPegsReceived,
 					penaltyPegsGiven
 				});

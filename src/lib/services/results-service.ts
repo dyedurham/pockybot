@@ -41,7 +41,7 @@ export class DefaultResultsService implements ResultsService {
 		Logger.information("[ResultsService.returnResultsMarkdown] File path: " + filePath);
 
 		const fullData: ResultRow[] = await this.database.returnResults();
-		const allPegs: Peg[] = this.pegService.getPegs(fullData);
+		const allPegs: Peg[] = await this.pegService.getPegs(fullData);
 		const fullResults: Result[] = this.getResults(allPegs);
 		const winners = this.winnersService.getWinners(allPegs);
 
@@ -71,11 +71,14 @@ export class DefaultResultsService implements ResultsService {
 			const penaltyPegsGiven = pegs.filter(peg => peg.senderId === personId && !peg.isValid);
 
 			if (validPegsReceived.length > 0 || penaltyPegsGiven.length > 0) {
+				const validPegsTotal = validPegsReceived.reduce((a, b) => a + b.pegWeighting, 0);
 				const personName = validPegsReceived.length > 0 ? validPegsReceived[0].receiverName : penaltyPegsGiven[0].senderName;
+				const personLocation = validPegsReceived.length > 0 ? validPegsReceived[0].receiverLocation : penaltyPegsGiven[0].senderLocation;
 				results.push({
 					personId,
 					personName,
-					weightedPegsReceived: validPegsReceived.length - penaltyPegsGiven.length,
+					personLocation,
+					weightedPegsReceived: validPegsTotal - penaltyPegsGiven.length,
 					validPegsReceived,
 					penaltyPegsGiven
 				});

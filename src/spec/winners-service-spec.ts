@@ -6,7 +6,7 @@ import Config from '../lib/config';
 import Utilities from '../lib/utilities';
 import { DefaultPegService, PegService } from '../lib/services/peg-service';
 import { Peg } from '../models/peg';
-import { Arg, Substitute } from '@fluffy-spoon/substitute';
+import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
 const config = new Config(null);
 
@@ -103,7 +103,7 @@ describe('winners service', () => {
 	let winnersService: WinnersService;
 	let database: PockyDB;
 	let data: ResultRow[];
-	let pegService;
+	let pegService: SubstituteOf<PegService>;
 
 	beforeEach(() => {
 		const utilities = new Utilities(config);
@@ -115,7 +115,7 @@ describe('winners service', () => {
 	});
 
 	it('should parse a proper message', async (done : DoneFn) => {
-		pegService.getPegs(Arg.any()).returns([
+		pegService.getPegs(Arg.any()).returns(Promise.resolve([
 			{
 				"receiverId": "r1ID",
 				"receiverName": "mock receiver",
@@ -126,7 +126,8 @@ describe('winners service', () => {
 					"awesome",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "r1ID",
@@ -138,7 +139,8 @@ describe('winners service', () => {
 					"brave",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "r2ID",
@@ -150,7 +152,8 @@ describe('winners service', () => {
 					"brave",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "s1ID",
@@ -162,7 +165,8 @@ describe('winners service', () => {
 					"customer",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "s1ID",
@@ -174,7 +178,8 @@ describe('winners service', () => {
 					"customer",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "s1ID",
@@ -186,7 +191,8 @@ describe('winners service', () => {
 					"customer",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "s1ID",
@@ -198,7 +204,8 @@ describe('winners service', () => {
 					"customer",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			},
 			{
 				"receiverId": "s1ID",
@@ -210,9 +217,10 @@ describe('winners service', () => {
 					"customer",
 					"test"
 				],
-				"isValid": true
+				"isValid": true,
+				"pegWeighting": 1
 			}
-		]);
+		]));
 		let message = await winnersService.returnWinnersResponse();
 		expect(message).toBe('```\n' +
 '  Receiver    |   Sender    | Comments\n' +
@@ -234,7 +242,8 @@ describe('winners service', () => {
 				receiverName: 'GifBot',
 				comment: 'shame',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -243,7 +252,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'shame',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -252,7 +262,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'shame',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -261,7 +272,8 @@ describe('winners service', () => {
 				receiverName: 'Blake',
 				comment: 'shame',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -270,7 +282,8 @@ describe('winners service', () => {
 				receiverName: 'OtherBot',
 				comment: 'shame',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -279,7 +292,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'shame more',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -288,7 +302,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'brave shame iOS',
 				categories: ['brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -297,7 +312,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'shame iOS',
 				categories: [],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '100',
@@ -306,7 +322,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'awesome iOS',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -315,7 +332,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'amusijg mistake with test pegs',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -324,7 +342,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'test iOS peg',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -333,7 +352,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'for fixing your tests',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -342,7 +362,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'awesome making PockyBot work',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -351,7 +372,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'awesome making PockyBot work',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -360,7 +382,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'test from web',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -369,7 +392,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'test from iOS',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -378,7 +402,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'test web',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -387,7 +412,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'test iOS',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '100',
@@ -396,7 +422,8 @@ describe('winners service', () => {
 				receiverName: 'Nicole',
 				comment: 'test radicalisation',
 				categories: ['test'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -405,7 +432,8 @@ describe('winners service', () => {
 				receiverName: 'Jim',
 				comment: 'real',
 				categories: ['real'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -414,7 +442,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'real',
 				categories: ['real'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -423,7 +452,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'test awesome',
 				categories: ['test', 'awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -432,7 +462,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'awesome',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -441,7 +472,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'brave',
 				categories: ['brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -450,7 +482,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'brave',
 				categories: ['brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '106',
@@ -459,7 +492,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'shame',
 				categories: ['shame'],
-				isValid: false
+				isValid: false,
+				pegWeighting: 0
 			},
 			{
 				senderId: '102',
@@ -468,7 +502,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'customer',
 				categories: ['customer'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '102',
@@ -477,7 +512,8 @@ describe('winners service', () => {
 				receiverName: 'Jim',
 				comment: 'test awesome',
 				categories: ['test', 'awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '102',
@@ -486,7 +522,8 @@ describe('winners service', () => {
 				receiverName: 'Jim',
 				comment: 'test awesome',
 				categories: ['test', 'awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '102',
@@ -495,7 +532,8 @@ describe('winners service', () => {
 				receiverName: 'OtherBot',
 				comment: 'test awesome',
 				categories: ['test', 'awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '102',
@@ -504,7 +542,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'awesome',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '103',
@@ -513,7 +552,8 @@ describe('winners service', () => {
 				receiverName: 'Jim',
 				comment: 'customer',
 				categories: ['customer'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '103',
@@ -522,7 +562,8 @@ describe('winners service', () => {
 				receiverName: 'Jim',
 				comment: 'customer',
 				categories: ['customer'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '103',
@@ -531,7 +572,8 @@ describe('winners service', () => {
 				receiverName: 'Laura',
 				comment: 'real',
 				categories: ['real'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '103',
@@ -540,7 +582,8 @@ describe('winners service', () => {
 				receiverName: 'Evelyne',
 				comment: 'real',
 				categories: ['real'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '103',
@@ -549,7 +592,8 @@ describe('winners service', () => {
 				receiverName: 'Nathanael',
 				comment: 'really didnt know you were in here',
 				categories: ['real'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderId: '109',
@@ -558,7 +602,8 @@ describe('winners service', () => {
 				receiverName: 'Gillian',
 				comment: 'testing awesome code',
 				categories: ['test', 'awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			}
 		];
 		let response = winnersService.getWinners(results);

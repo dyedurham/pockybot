@@ -13,7 +13,8 @@ function createData(): Result[] {
 				senderName: 'sender 1',
 				comment: 'test awesome',
 				categories: ['awesome'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			},
 			{
 				senderName: 'sender 2',
@@ -22,7 +23,8 @@ function createData(): Result[] {
 				receiverId: 'testReceiver',
 				comment: 'test awesome brave',
 				categories: ['awesome', 'brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			}
 		],
 		penaltyPegsGiven: [],
@@ -39,7 +41,8 @@ function createData(): Result[] {
 				senderName: 'sender 1',
 				comment: 'test brave',
 				categories: ['brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1,
 			},
 			{
 				receiverId: 'testReceiver2',
@@ -48,7 +51,8 @@ function createData(): Result[] {
 				senderName: 'sender 2',
 				comment: 'test shame brave',
 				categories: ['shame', 'brave'],
-				isValid: true
+				isValid: true,
+				pegWeighting: 1
 			}
 		],
 		penaltyPegsGiven: [],
