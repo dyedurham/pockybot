@@ -179,7 +179,7 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 	}
 
 	private getDestinationName(from: string, to: string): string {
-		if(to === "me") {
+		if (to === "me") {
 			return from;
 		}
 		return to;
