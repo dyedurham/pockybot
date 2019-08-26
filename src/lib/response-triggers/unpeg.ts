@@ -47,7 +47,7 @@ export default class  Unpeg extends Trigger {
 			if (!fromData.userid) {
 				throw new Error('No from person was obtained');
 			}
-
+			toPerson = this.getDestinationName(fromData.username, toPerson);
 			return await this.returnRandomResponse(toPerson, fromData.username, room);
 		} catch (error) {
 			return {
@@ -176,5 +176,12 @@ Error: Access Denied user ${fromUser} does not have the correct privileges
 		return {
 			markdown: followUp
 		};
+	}
+
+	private getDestinationName(from: string, to: string): string {
+		if(to === "me") {
+			return from;
+		}
+		return to;
 	}
 };
