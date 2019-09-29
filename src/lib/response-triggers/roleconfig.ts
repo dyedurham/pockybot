@@ -99,7 +99,7 @@ export default class RoleConfig extends Trigger {
 		}
 
 		let role = parsedMessage[3].text().toUpperCase().trim();
-		if (!Object.values(Role).includes(role)) {
+		if (!Object.values(Role).map(x => x.valueOf()).includes(role)) {
 			throw new Error(`Invalid role ${role}. Valid values are: ${Object.values(Role).join(', ')}`);
 		}
 
