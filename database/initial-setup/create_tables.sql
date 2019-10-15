@@ -8,7 +8,7 @@ CREATE TABLE pegs (
 	id SERIAL NOT NULL,
 	sender varchar(255) REFERENCES pockyusers(userid),
 	receiver varchar(255) REFERENCES pockyusers(userid),
-	comment varchar(255) NULL,
+	comment varchar(500) NULL,
 	PRIMARY KEY (id)
 );
 
