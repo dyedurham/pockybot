@@ -53,7 +53,7 @@
     "husky": "^4.0.7",
     "jasmine": "^3.4.0",
     "jasmine-ts": "^0.3.0",
-    "semantic-release": "^15.13.16",
+    "semantic-release": "^16.0.1",
     "sinon": "^7.3.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
