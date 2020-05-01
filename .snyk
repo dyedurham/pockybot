@@ -1,0 +1,140 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - webex > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-feature > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-feature > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > @webex/http-core > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > @webex/http-core > @webex/common > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > @webex/http-core > @webex/common > @webex/common > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/storage-adapter-local-storage > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-authorization > @webex/plugin-authorization-node > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-authorization > @webex/plugin-authorization-node > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-authorization > @webex/plugin-authorization-node > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-authorization > @webex/plugin-authorization-node > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-authorization > @webex/plugin-authorization-node > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-rooms > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-user > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-lyra > @webex/internal-plugin-feature > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-collection > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-state > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-collection > ampersand-class-extend > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-collection > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
+    - webex > @webex/plugin-device-manager > @webex/internal-plugin-search > @webex/internal-plugin-conversation > @webex/internal-plugin-encryption > @webex/internal-plugin-mercury > @webex/internal-plugin-metrics > @webex/internal-plugin-device > @webex/webex-core > @webex/webex-core > ampersand-state > ampersand-events > lodash:
+        patched: '2020-05-01T04:28:05.001Z'
