@@ -14,7 +14,9 @@
     "test": "jasmine-ts --config=jasmine.json",
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -38,7 +40,8 @@
     "pjson": "^1.0.9",
     "string-width": "^4.1.0",
     "unescape": "^1.0.1",
-    "webex": "^1.60.2"
+    "webex": "^1.60.2",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
@@ -67,5 +70,6 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "snyk": true
 }
