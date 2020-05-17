@@ -48,7 +48,7 @@
     "@types/libxmljs": "^0.18.3",
     "@types/node": "^13.1.4",
     "@types/pg": "^7.4.14",
-    "@types/sinon": "^7.0.13",
+    "@types/sinon": "^9.0.1",
     "cz-conventional-changelog": "^3.0.2",
     "husky": "^4.0.7",
     "jasmine": "^3.4.0",
