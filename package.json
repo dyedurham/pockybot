@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
-    "@commitlint/config-conventional": "^8.0.0",
+    "@commitlint/config-conventional": "^9.1.1",
     "@fluffy-spoon/substitute": "^1.89.0",
     "@types/jasmine": "^3.3.13",
     "@types/libxmljs": "^0.18.3",
