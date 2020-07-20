@@ -2,7 +2,7 @@
 
 # ARCHIVED
 
-The `pockybot` project has been supersede by [PockyBot.Net](https://github.com/GlobalX/PockyBot.NET).
+The `pockybot` project has been superseded by [PockyBot.Net](https://github.com/GlobalX/PockyBot.NET).
 Please visit that project instead.
 
 <p align="center">
