@@ -1,5 +1,10 @@
 # Pockybot 📍👏🏆🤖
 
+# ARCHIVED
+
+The `pockybot` project has been supersede by [PockyBot.Net](https://github.com/GlobalX/PockyBot.NET).
+Please visit that project instead.
+
 <p align="center">
     <a href="https://www.npmjs.com/package/pockybot"><img src="https://flat.badgen.net/npm/v/pockybot" alt="Pockybot npm package" /></a>
     <a href="https://travis-ci.org/GlobalX/pockybot"><img src="https://flat.badgen.net/travis/GlobalX/pockybot" alt="Pockybot on Travis CI" /></a>
